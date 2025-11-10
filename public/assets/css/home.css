@@ -1,0 +1,171 @@
+:root {
+  --color-principal: #1E4D7B;
+  --color-secundario: #4e81d2;
+  --fondo: #f5f7fa;
+  --fondo-card: #dcd3d3;
+  --fondo-header: #e0ecf7;
+  --eliminar:rgb(255, 55, 55);
+  --logo-verde:#96C03A;
+  --correcto:rgb(13, 158, 13);
+  --eliminar-hover:rgb(226, 28, 28);
+}
+* ,p, a.btn{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Trebuchet MS', sans-serif;
+}
+button, a.btn{
+    color:white;
+    text-decoration:none;
+}
+.btn:hover{
+    transition: 0.5s;
+}
+p{
+    color: var(--color-principal);
+}
+h1,h2,h3, a{
+    font-family: "Jockey One", sans-serif;
+    color: var(--color-principal);
+}
+
+h1{
+    font-size: 3em;
+}
+h2{
+    font-size: 2em;
+}
+h3{
+    font-size: 1em;
+}
+body {
+    background-color: var(--fondo);
+    color: var(--color-secundario);
+}
+.error{
+    color: var(--eliminar);
+}
+.aprobado{
+    color: var(--correcto);
+}
+
+/* Sección Bienvenida */
+.bienvenida {
+    text-align: center;
+    padding: 7em 12em;
+}
+
+.bienvenida h1 {
+    margin-bottom: 1.5em;
+}
+.bienvenida p{
+    text-align: justify;
+    margin-bottom: 2em;
+}
+
+/* Empresas */
+.empresas {
+    text-align: center;
+    padding: 4em;
+}
+
+.empresas h2 {
+    margin-bottom: 30px;
+}
+
+.logos {
+    display: flex;
+    justify-content: center;
+    gap: 60px;
+    flex-wrap: wrap;
+}
+
+.empresa {
+    width: 20em;
+}
+
+.empresa img {
+    width: 13em;
+    height: 11em;
+    margin-bottom: 10px;
+}
+
+/* Oferta destacada */
+.oferta {
+    display: flex;
+    justify-content: center;
+    margin: 60px 0;
+}
+
+.oferta-card {
+    display: grid;
+    grid-template-columns: 20% 77%;
+    align-items: center;
+    background: white;
+    border-radius: 10px;
+    padding: 1.5em 2em;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    max-width: 70em;
+    gap:1em;
+}
+.oferta-card img {
+    width: 10em;
+    grid-row: 1/5;
+}
+.oferta-card div{
+    display: flex;
+    justify-content: end;
+}
+.oferta-card button {
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 10em;
+}
+
+/* Contacto */
+.contacto {
+    text-align: center;
+    padding: 6em 2em;
+}
+
+.contacto-card {
+    display: inline-block;
+    background-color: var(--fondo-card);
+    padding: 2em 4em;
+    border-radius: 10px;
+    margin-top: 20px;
+}
+
+.contacto-card button {
+    margin-top: 15px;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn:hover{
+    background-color: var(--color-secundario);
+    cursor: pointer;
+}
+.btn{
+    background-color: var(--color-principal);
+    border-radius: 6px;
+    border:0;
+}
+
+.btn a{
+    color:white;
+    text-decoration:none;
+}
+
+@media (max-width:480px){
+    h2{
+        font-size:2em;
+    }
+}

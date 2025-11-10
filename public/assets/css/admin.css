@@ -1,0 +1,84 @@
+
+.panel{
+    display: flex;
+}
+.admin-header{
+    display: flex;
+    width: 100%;
+    background-color: var(--fondo-header);
+    justify-content: space-around;
+    align-items: center;
+}
+.admin-header > img{
+    height: 8em;
+}
+.perfil img {
+    height: 3.5em;
+}
+.sidebar{
+    width: 23em;
+}
+.sidebar > nav img{
+    width: 2em;
+    height: 2em;
+}
+nav{
+    display: flex;
+    flex-direction: column;
+    margin: 4em 2em 4em 4em;
+}
+.nav-item{
+    display: flex;
+    align-items: center;
+    gap: 1em;
+    padding: 1em;
+    border-radius: 5px;
+}
+.btn{
+    font-size: 0.85em;
+    text-decoration: none;
+}
+.nav-item:hover, .active{
+    background-color: var(--fondo-header);
+    box-shadow: -1em 0em var(--logo-verde);
+    padding-left: 2em;
+    transition: 0.5s;
+}
+main{
+    flex:1;
+    margin: 2em;
+}
+.card-content{
+    border: 1px solid var(--color-principal);
+    background-color: white;
+    box-shadow: 0.2em 0.2em var(--color-principal);
+}
+.card, .card-content{
+    border-radius: 5px;
+    margin-bottom: 2em;
+    padding: 1em;
+    width: 100%;
+}
+.card{
+    display: flex;
+    justify-content: space-around;
+}
+a.btn, button.btn{
+    padding: 0.919em;
+}
+button.btn{
+    width: 9.9em;
+}
+.options > .inscribir, button.guardar{
+    background-color: var(--correcto);
+}
+.options > .inscribir:hover, button.guardar:hover{
+    background-color: rgb(48, 227, 48);
+    
+}
+.eliminar{
+    background-color: var(--eliminar);
+}
+.eliminar:hover{
+    background-color: var(--eliminar-hover);
+}

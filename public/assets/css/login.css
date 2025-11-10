@@ -1,0 +1,103 @@
+/* Estilos exclusivos del login */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Visualización de la pantalla */
+    background-color: var(--fondo);
+    margin-top:2%;
+}
+
+.login-card {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    padding: 3em 3em;
+    border-radius: 15px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    align-items: center;
+    width: 380px;
+}
+
+.login-logo {
+    width: 150px;
+}
+
+.login-form {
+    margin: 3em 0;
+}
+
+
+.login-form input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 2em;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+.login-btn {
+    width: 100%;
+    padding: 10px;
+    font-size: 1em;
+}
+
+.login-extra {
+    text-align: center;
+}
+
+.login-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 2em;
+    margin:2em 0;
+    
+}
+
+.login-buttons .btn, .login-back .btn  {
+    padding: 0.7em;
+    font-size: 0.7em;
+}
+
+.login-link {
+    display: block;
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+
+.login-link:hover {
+    text-decoration: underline;
+}
+
+.login-back {
+    margin-top:3em;
+    width: 100%;
+}
+
+
+input:focus {
+    border: 2px solid var(--color-secundario);
+    /* Borde azul */
+    outline: none;
+}
+
+@media (max-width: 480px) {
+    .login-card {
+        padding: 2em 2em;
+    }
+    .login-form input {
+        font-size: 0.8em;
+    }
+    .login-btn{
+        font-size: 0.8em;
+    }
+    .login-buttons .btn{
+        font-size: 0.6em;
+    }
+    .login-back{
+        display: flex;
+        justify-content: center;
+    }
+}

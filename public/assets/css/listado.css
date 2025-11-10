@@ -1,0 +1,55 @@
+.header-listado{
+    display: grid;
+    background-color: var(--color-secundario);
+    grid-template-columns: 1.5fr 2fr 2fr 1.5fr;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    margin-top: 1em;
+    padding: 0.5em 0;
+}
+.header-listado p{
+    color: white;
+}
+.content-listado p, form{
+    text-align: center;
+}
+.listado form button{
+    background-color: transparent;
+}
+button:hover{
+    cursor: pointer;
+}
+.listado img, button{
+width: 20px;
+height: 20px;
+border: none;
+}
+.listado-empresa{
+    display: grid;
+    grid-template-columns: 1.5fr 2fr 2fr 1.5fr;
+    width: 100%;
+    margin: 1em 0;
+    border-bottom: 1px solid var(--color-principal);
+    padding-bottom: 1em;
+}
+.listado form{
+    display: flex;
+    place-items: center;
+    justify-content: space-around;
+}
+
+a.btn.disabled {
+    pointer-events: none;   
+    opacity: 0.5;           
+    cursor: default;        
+}
+.pagination{
+    margin: 3em 0;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+.content-listado{
+    margin-top:3em;
+}
+

@@ -1,0 +1,43 @@
+/* Navbar */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--fondo-header);
+    padding: 1em 6em;
+    position: sticky;
+    top:0;
+    z-index: 20;
+    width: 100%;
+    height: 6em;
+}
+
+.navbar img {
+    height: 8em;
+}
+
+.navbar ul {
+    list-style: none;
+    display: flex;
+    gap: 3em;
+}
+.navbar a {
+    text-decoration: none;
+    color: var(--color-principal);
+    font-size: 1em;
+}
+.navbar a:hover{
+    color: var(--color-secundario);
+    text-decoration:underline;
+}
+
+.perfil img {
+    height: 3.5em;
+}
+@media (max-width:850px){
+    .navbar{
+        padding: 1em 3em;
+    }
+    /* A partir de 700px menu hamburguesa */
+
+}

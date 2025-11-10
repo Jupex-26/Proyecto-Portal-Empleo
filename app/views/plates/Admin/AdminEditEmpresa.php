@@ -1,0 +1,59 @@
+<?= $this->layout('Admin/AdminEmpresa',['page'=>$page])?>
+<?= $this->push('css')?>
+<link rel="stylesheet" href="./assets/css/editEmpresa.css">
+<?= $this->end()?>
+<?= $this->start('card-options')?>
+<h1>Editar Empresa</h1>
+<?= $this->stop()?>
+<?= $this->start('card-content')?>
+<form class="container" method="post" action="?page=empresas&accion=<?=$accion?>" enctype="multipart/form-data">
+    <div class="top-section">
+      <div class="left">
+        <img id="preview" src="./assets/img/<?=$empresa->getFoto()?>" alt="Foto de perfil">
+        <input type="file" id="fileInput" name="foto" placeholder="Cambiar Imagen">
+      </div>
+
+      <div class="right">
+        <div class="form-group">
+          <label for="nombre">Nombre:</label>
+          <input type="text" id="nombre" name="nombre" placeholder="Ingresa tu nombre" required value="<?= $empresa->getNombre()?>">
+          <?= $validator->imprimirError('nombre');?>
+        </div>
+        <div class="form-group">
+          <label for="correo">Correo:</label>
+          <input type="email" id="correo" name="correo" placeholder="Ingresa tu correo" required value="<?= $empresa->getEmail()?>">
+          <?= $validator->imprimirError('correo');?>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-section">
+      <div class="form-group">
+        <label for="direccion">Dirección:</label>
+        <input type="text" id="direccion" name="direccion" placeholder="Ingresa tu dirección" value="<?= $empresa->getDireccion()?>">
+        <?= $validator->imprimirError('direccion');?>
+      </div>
+
+      <div class="form-contacto">
+            <div class="form-group">
+              <label for="correo-contacto">Correo de contacto:</label>
+              <input type="email" id="correo-contacto" name="correo_contacto" placeholder="Correo de contacto" value="<?= $empresa->getCorreoContacto()?>">
+              <?= $validator->imprimirError('correo_contacto');?>
+            </div>
+
+            <div class="form-group">
+            <label for="telefono-contacto">Teléfono de contacto:</label>
+            <input type="tel" id="telefono-contacto" name="telefono_contacto" placeholder="Teléfono de contacto" value="<?= $empresa->getTelefonoContacto()?>">
+            <?= $validator->imprimirError('telefono_contacto');?>
+            </div>
+      </div>
+      <?= $validator->imprimir()?>
+      <div class="buttons-form">
+        <button type="submit" class="btn" name="action" value="cancelar">Cancelar</button>
+        <button type="submit" class="btn guardar" name="action" value="guardar">Guardar</button>
+      </div>
+    </div>
+    <input type="hidden" name="accion" value="editar">
+    <input type="hidden" name="id" value="<?= $empresa->getId()?>">
+  </form>
+<?= $this->stop()?>
