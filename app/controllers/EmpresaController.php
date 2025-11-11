@@ -27,6 +27,7 @@ class EmpresaController{
                     $this->manejarSolicitudes($accion);
                     break;
                 case 'inscribir':
+                    $this->manejarNewEmpresa($accion);
                     break;
                 default: header('location:?page=empresas');
             }
@@ -44,6 +45,10 @@ class EmpresaController{
 
     }     
 
+    private function manejarNewEmpresa($accion){
+        $validator=new Validator();
+        echo $this->templates->render('Admin/AdminNewEmpresa',['validator'=>$validator, 'page'=>$_GET['page'], 'accion'=>$accion]);
+    }
     
     /**
      * manejarSolicitudes
@@ -214,7 +219,7 @@ class EmpresaController{
      * @param  mixed $repo
      * @return void
      */
-    private function manejarGuardar($empresa,$validator, $repo){
+    private function manejarGuardar($empresa=null, $validator, $repo){
         $this->validarEmpresa($validator);
         $this->actualizarEmpresa($empresa);
         
