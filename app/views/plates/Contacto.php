@@ -1,14 +1,12 @@
 <?= $this->layout('layout')?>
 <?php $this->push('css') ?>
-<link rel="stylesheet" href="./assets/css/header.css">
-<link rel="stylesheet" href="./assets/css/footer.css">
 <link rel="stylesheet" href="./assets/css/contacto.css">
 <?php $this->end() ?>
 <?php $this->start('header')?>
 <?php $this->insert('partials/header')?>
 <?php $this->stop()?>
 <?= $this->start('main')?>
-    <main class="form-main">
+    <main class="contacto-form">
         <h1>Contacto</h1>
         <div class="form-container">
             <form class="contact-form">

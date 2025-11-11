@@ -1,78 +1,213 @@
+/* ==========================
+   VARIABLES Y RESET
+========================== */
 :root {
-  --color-principal: #1E4D7B;
-  --color-secundario: #4e81d2;
-  --fondo: #f5f7fa;
-  --fondo-card: #dcd3d3;
-  --fondo-header: #e0ecf7;
-  --eliminar:rgb(255, 55, 55);
-  --logo-verde:#96C03A;
-  --correcto:rgb(13, 158, 13);
-  --correcto-hover: rgb(48, 227, 48);
-  --eliminar-hover:rgb(226, 28, 28);
+    --color-principal: #1E4D7B;
+    --color-secundario: #4e81d2;
+    --fondo: #f5f7fa;
+    --fondo-card: #dcd3d3;
+    --fondo-header: #e0ecf7;
+    --eliminar: rgb(255, 55, 55);
+    --logo-verde: #96C03A;
+    --correcto: rgb(13, 158, 13);
+    --correcto-hover: rgb(48, 227, 48);
+    --eliminar-hover: rgb(226, 28, 28);
+    --duplicado: #ffcccc;
 }
-* ,p, a.btn{
+
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     font-family: 'Trebuchet MS', sans-serif;
 }
-.btn:hover{
-    background-color: var(--color-secundario);
-    cursor: pointer;
-}
-.btn{
-    background-color: var(--color-principal);
-    border-radius: 6px;
-    border:0;
-}
-button, a.btn{
-    color:white;
-    text-decoration:none;
-}
-.btn:hover{
-    transition: 0.5s;
-}
-.guardar{
-    background-color: var(--correcto);
-}
-.guardar:hover{
-    background-color: var(--correcto-hover);
-}
-.eliminar{
-    background-color: var(--eliminar);
-}
-.eliminar:hover{
-    background-color: var(--eliminar-hover);
-}
-p{
-    color: var(--color-principal);
-}
-h1,h2,h3, a{
-    font-family: "Jockey One", sans-serif;
-    color: var(--color-principal);
-}
 
-h1{
-    font-size: 3em;
-}
-h2{
-    font-size: 2em;
-}
-h3{
-    font-size: 1em;
-}
 body {
     background-color: var(--fondo);
     color: var(--color-secundario);
 }
-.error{
+
+/* ==========================
+   TIPOGRAFÍA
+========================== */
+h1,
+h2,
+h3 {
+    font-family: "Jockey One", sans-serif;
+    color: var(--color-principal);
+}
+
+h1 {
+    font-size: 3em;
+}
+
+h2 {
+    font-size: 2em;
+}
+
+h3 {
+    font-size: 1em;
+}
+
+p {
+    color: var(--color-principal);
+}
+
+/* ==========================
+   ENLACES Y BOTONES BASE
+========================== */
+a {
+    color: white;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+button {
+    color: white;
+}
+
+button:hover {
+    cursor: pointer;
+}
+
+/* ==========================
+   SISTEMA DE BOTONES
+========================== */
+.btn {
+    background-color: var(--color-principal);
+    border-radius: 6px;
+    border: 0;
+    font-size: 0.85em;
+    padding: 0.919em;
+}
+
+.btn:hover {
+    background-color: var(--color-secundario);
+    cursor: pointer;
+    transition: 0.5s;
+}
+
+.btn a {
+    color: white;
+}
+
+button.btn {
+    width: 9.9em;
+    height: auto;
+}
+
+.btn.disabled {
+    pointer-events: none;
+    opacity: 0.5;
+    cursor: default;
+}
+
+/* Botones de estado */
+.guardar {
+    background-color: var(--correcto);
+}
+
+.guardar:hover {
+    background-color: var(--correcto-hover);
+}
+
+.eliminar {
+    background-color: var(--eliminar);
+}
+
+.eliminar:hover {
+    background-color: var(--eliminar-hover);
+}
+
+/* ==========================
+   CLASES DE UTILIDAD
+========================== */
+.error {
     color: var(--eliminar);
 }
-.aprobado{
+
+.aprobado {
     color: var(--correcto);
 }
 
-/* Sección Bienvenida */
+/* ==========================
+   HEADER / NAVBAR
+========================== */
+header.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--fondo-header);
+    padding: 1em 6em;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    width: 100%;
+    height: 6em;
+    color: var(--color-secundario);
+}
+
+header.navbar img {
+    height: 8em;
+}
+
+header.navbar ul {
+    list-style: none;
+    display: flex;
+    gap: 3em;
+}
+
+header.navbar a {
+    color: var(--color-principal);
+    font-size: 1em;
+}
+
+header .perfil img {
+    height: 3.5em;
+}
+
+/* ==========================
+   FOOTER
+========================== */
+footer {
+    background-color: #f8f9fb;
+    text-align: center;
+    padding: 30px;
+    border-top: 1px solid #ccc;
+}
+
+.footer-top {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 2em;
+    height: 8em;
+}
+
+footer ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 20px;
+}
+
+footer a {
+    color: #1a2a43;
+    font-size: 13px;
+}
+
+footer p {
+    font-size: 12px;
+    color: gray;
+    margin-bottom: 2em;
+}
+
+/* ==========================
+   PÁGINA HOME
+========================== */
 .bienvenida {
     text-align: center;
     padding: 7em 12em;
@@ -81,12 +216,15 @@ body {
 .bienvenida h1 {
     margin-bottom: 1.5em;
 }
-.bienvenida p{
+
+.bienvenida p {
     text-align: justify;
     margin-bottom: 2em;
 }
 
-/* Empresas */
+/* ==========================
+   PÁGINA HOME - EMPRESAS
+========================== */
 .empresas {
     text-align: center;
     padding: 4em;
@@ -113,7 +251,9 @@ body {
     margin-bottom: 10px;
 }
 
-/* Oferta destacada */
+/* ==========================
+    OFERTAS
+========================== */
 .oferta {
     display: flex;
     justify-content: center;
@@ -129,16 +269,19 @@ body {
     padding: 1.5em 2em;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     max-width: 70em;
-    gap:1em;
+    gap: 1em;
 }
+
 .oferta-card img {
     width: 10em;
-    grid-row: 1/5;
+    grid-row: 1 / 5;
 }
-.oferta-card div{
+
+.oferta-card div {
     display: flex;
     justify-content: end;
 }
+
 .oferta-card button {
     color: white;
     border: none;
@@ -148,7 +291,9 @@ body {
     width: 10em;
 }
 
-/* Contacto */
+/* ==========================
+   PÁGINA HOME - CONTACTO
+========================== */
 .contacto {
     text-align: center;
     padding: 6em 2em;
@@ -171,15 +316,206 @@ body {
     cursor: pointer;
 }
 
-
-
-.btn a{
-    color:white;
-    text-decoration:none;
+/* ==========================
+   PÁGINA CONTACTO - FORMULARIO
+========================== */
+.contacto-form {
+    display: flex;
+    place-items: center;
+    flex-direction: column;
+    gap: 4em;
+    margin: 4em 0;
 }
 
-@media (max-width:480px){
-    h2{
-        font-size:2em;
+.contacto-form > .form-container {
+    background: #fff;
+    padding: 30px 40px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
+}
+
+.contacto-form .form-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.contacto-form .form-header .icon {
+    font-size: 20px;
+    margin-right: 8px;
+}
+
+.contacto-form .form-header p {
+    margin: 0;
+    font-size: 14px;
+}
+
+.contacto-form label {
+    display: block;
+    margin-top: 12px;
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.contacto-form input,
+.contacto-form textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.contacto-form input:focus,
+.contacto-form textarea:focus {
+    border: 2px solid var(--color-secundario);
+    outline: none;
+}
+
+.contacto-form .apellidos {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.contacto-form .apellidos input {
+    width: 100%;
+}
+
+.contacto-form .btn-enviar {
+    border: none;
+    border-radius: 6px;
+    width: 100%;
+    padding: 0.7em;
+    font-size: 1em;
+    font-weight: bold;
+    margin-top: 2em;
+}
+
+/* ==========================
+   PÁGINA LOGIN
+========================== */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: var(--fondo);
+    margin-top: 2%;
+}
+
+.login-card {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    padding: 3em;
+    border-radius: 15px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    align-items: center;
+    width: 380px;
+}
+
+.login-logo {
+    width: 150px;
+}
+
+.login-form {
+    margin: 3em 0;
+}
+
+.login-form input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 2em;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+button.login-btn {
+    width: 100%;
+    padding: 10px;
+    font-size: 1em;
+}
+
+.login-extra {
+    text-align: center;
+}
+
+.login-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 2em;
+    margin: 2em 0;
+}
+
+.login-buttons .btn,
+.login-back .btn {
+    padding: 0.7em;
+    font-size: 0.7em;
+}
+
+.login-link {
+    display: block;
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+.login-back {
+    margin-top: 3em;
+    width: 100%;
+}
+
+/* ==========================
+   ESTILOS GENERALES DE INPUTS
+========================== */
+input:focus {
+    border: 2px solid var(--color-secundario);
+    outline: none;
+}
+
+/* ==========================
+   RESPONSIVE - MOBILE
+========================== */
+@media (max-width: 480px) {
+
+    /* Login mobile */
+    .login-card {
+        padding: 2em;
+    }
+
+    .login-form input {
+        font-size: 0.8em;
+    }
+
+    .login-btn {
+        font-size: 0.8em;
+    }
+
+    .login-buttons .btn {
+        font-size: 0.6em;
+    }
+
+    .login-back {
+        display: flex;
+        justify-content: center;
+    }
+
+    /* Contacto mobile */
+    .contacto-form .apellidos {
+        flex-direction: column;
+        gap: 0;
+    }
+}
+
+/* ==========================
+   RESPONSIVE - TABLET
+========================== */
+@media (max-width: 850px) {
+    .navbar {
+        padding: 1em 3em;
     }
 }

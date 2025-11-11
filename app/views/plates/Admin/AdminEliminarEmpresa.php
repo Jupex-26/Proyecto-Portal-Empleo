@@ -3,7 +3,7 @@
 <h1>Eliminar Empresa</h1>
 <?= $this->stop()?>
 <?= $this->start('bottom')?>
-<div class="delete-action">
+<div class="btn-actions">
   <p class="error">¿Estás seguro de eliminar esta empresa?</p>
   <form method="post" action="?page=empresas&accion=<?=$accion?>">
     <input type="hidden" name="id" value="<?= $empresa->getId() ?>">

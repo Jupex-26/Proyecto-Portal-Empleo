@@ -1,8 +1,4 @@
 <?php $this->layout('layout');?>
-<?php $this->push('css') ?>
-<link rel="stylesheet" href="./assets/css/header.css">
-<link rel="stylesheet" href="./assets/css/footer.css">
-<?php $this->end() ?>
 <?php $this->start('header')?>
 <?php $this->insert('partials/header')?>
 <?php $this->stop()?>

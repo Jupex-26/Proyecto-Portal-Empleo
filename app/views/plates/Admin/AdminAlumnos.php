@@ -1,7 +1,4 @@
 <?=$this->layout('Admin/AdminLayout',['page'=>$page])?>
-<?= $this->push('css')?>
-<link rel="stylesheet" href="./assets/css/adminalumno.css">
-<?php $this->end() ?>
 <?= $this->push('js')?>
 <script src="./assets/js/tabla.js"></script>
 <script src="./assets/js/select.js"></script>

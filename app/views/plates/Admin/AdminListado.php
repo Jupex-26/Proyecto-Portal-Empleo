@@ -1,7 +1,4 @@
 <?= $this->layout('Admin/AdminEmpresa', ['page'=>$page])?>
-<?= $this->push('css')?>
-<link rel="stylesheet" href="./assets/css/listado.css">
-<?= $this->end()?>
 <?= $this->push('js')?>
 <script src="./assets/js/listado.js"></script>
 <?php $this->end() ?>

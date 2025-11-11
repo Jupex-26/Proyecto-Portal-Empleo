@@ -267,7 +267,7 @@ class EmpresaController{
         $empresa->setCorreoContacto($correo_contacto);
         $empresa->setTelefonoContacto($telefono_contato);
         $empresa->setDireccion($direccion);
-        $empresa->setDescripcion($direccion);
+        $empresa->setDescripcion($descripcion);
         $empresa->setFoto($foto_url??$empresa->getFoto());
     }
     

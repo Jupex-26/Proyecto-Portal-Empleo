@@ -1,75 +1,494 @@
-
-.panel{
+/* ==========================
+   LAYOUT PRINCIPAL
+========================== */
+.panel {
     display: flex;
 }
-.admin-header{
+
+.admin-header {
     display: flex;
     width: 100%;
     background-color: var(--fondo-header);
     justify-content: space-around;
     align-items: center;
 }
-.admin-header > img{
+
+.admin-header > img {
     height: 8em;
 }
+
 .perfil img {
     height: 3.5em;
 }
-.sidebar{
+
+main {
+    flex: 1;
+    margin: 2em;
+}
+
+/* ==========================
+   SIDEBAR Y NAVEGACIÓN
+========================== */
+.sidebar {
     width: 23em;
 }
-.sidebar > nav img{
+
+.sidebar > nav img {
     width: 2em;
     height: 2em;
 }
-nav{
+
+nav {
     display: flex;
     flex-direction: column;
     margin: 4em 2em 4em 4em;
 }
-.nav-item{
+
+.nav-item {
     display: flex;
     align-items: center;
     gap: 1em;
     padding: 1em;
     border-radius: 5px;
+    color: var(--color-principal);
+    transition: all 0.5s ease;
 }
-.btn{
-    font-size: 0.85em;
-    text-decoration: none;
+
+a#link-size {
+    color: var(--color-principal);
 }
-.nav-item:hover, .active{
+
+.nav-item:hover,
+.nav-item.active {
     background-color: var(--fondo-header);
-    box-shadow: -1em 0em var(--logo-verde);
+    box-shadow: -1em 0 var(--logo-verde);
     padding-left: 2em;
-    transition: 0.5s;
 }
-main{
-    flex:1;
-    margin: 2em;
-}
-.card-content{
-    border: 1px solid var(--color-principal);
-    background-color: white;
-    box-shadow: 0.2em 0.2em var(--color-principal);
-}
-.card-content > h1{
-    text-align: center;
-}
-.card, .card-content{
+
+/* ==========================
+   CARDS
+========================== */
+.card {
+    display: flex;
+    justify-content: space-around;
     border-radius: 5px;
     margin-bottom: 2em;
     padding: 1em;
     width: 100%;
 }
-.card{
-    display: flex;
-    justify-content: space-around;
-}
-a.btn, button.btn{
-    padding: 0.919em;
-}
-button.btn{
-    width: 9.9em;
+
+.card-content {
+    border: 1px solid var(--color-principal);
+    background-color: white;
+    box-shadow: 0.2em 0.2em var(--color-principal);
+    border-radius: 5px;
+    margin-bottom: 2em;
+    padding: 1em;
+    width: 100%;
 }
 
+.card-content > h1 {
+    text-align: center;
+}
+
+/* ==========================
+   GRIDS Y SECCIONES
+========================== */
+div > .top-section {
+    display: grid;
+    grid-template-columns: repeat(2, 3fr);
+    gap: 4em;
+    place-items: center;
+}
+
+.card-content form > .top-section {
+    display: grid;
+    grid-template-columns: 2fr 3fr;
+    gap: 4em;
+    place-items: center;
+}
+
+.bottom-section {
+    display: grid;
+    grid-template-columns: repeat(2, 2fr);
+    gap: 2em;
+    text-align: center;
+    margin: 2em;
+}
+
+.form-contacto {
+    display: grid;
+    grid-template-columns: repeat(2, 2fr);
+    gap: 5em;
+    text-align: center;
+}
+
+/* Elementos que ocupan 2 columnas */
+.aprobado,
+form > .bottom-section > div,
+.back-action,
+.last-dato-empresa,
+.btn-actions {
+    grid-column: 1 / 3;
+}
+
+/* ==========================
+   IMÁGENES
+========================== */
+.top-section img,
+.left img {
+    width: 9em;
+    height: 9em;
+    border: none;
+}
+
+.listado img,
+.listado button {
+    width: 20px;
+    height: 20px;
+    border: none;
+}
+
+/* ==========================
+   FORMULARIOS
+========================== */
+form.alumno {
+    max-width: 50em;
+    margin: 20px 15%;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: var(--fondo);
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px 40px;
+}
+
+form .form-group {
+    display: flex;
+    flex-direction: column;
+    margin: 1em 0;
+}
+
+form label {
+    margin-bottom: 5px;
+}
+
+form input {
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+
+form button {
+    background-color: transparent;
+}
+
+.buttons-form {
+    display: flex;
+    justify-content: space-around;
+    margin: 1em 0;
+}
+
+/* Contenedores de formulario */
+.container {
+    margin: 1em;
+}
+
+.left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-left:2em;
+}
+
+.right {
+    padding-top: 1em;
+    width: 80%;
+}
+
+/* ==========================
+   MODALES
+========================== */
+.velo {
+    position: fixed;
+    inset: 0;
+    background: rgba(200, 200, 200, 0.8);
+    z-index: 98;
+}
+
+.modal {
+    position: fixed;
+    top: 10%;
+    left: 5%;
+    width: 90%;
+    height: 85%;
+    background: white;
+    z-index: 99;
+    overflow-y: auto;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.hidden {
+    display: none;
+}
+
+.activo {
+    display: flex;
+    flex-direction: column;
+}
+
+/* ==========================
+   UTILIDADES Y CARGA
+========================== */
+
+.choose{
+    order: 0;
+}
+.util-btns{
+    order: 2;
+}
+
+.choose,
+.util-btns {
+    width: 80%;
+    margin: 3em;
+}
+
+.choose-ciclo {
+    display: flex;
+    flex-direction: column;
+}
+
+.duplicado,.duplicado:hover {
+    background-color: var(--duplicado);
+}
+
+.util-btns .btn,
+.cargas.btn {
+    width: auto;
+}
+
+.charge,
+.util-btns {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 3em 5em;
+    align-items: center;
+    justify-items: stretch;
+    padding: 1em;
+}
+
+.carga-masiva,
+.carga-alumno {
+    width: 9em;
+    height: 3em;
+}
+
+/* ==========================
+   LISTADOS
+========================== */
+.header-listado {
+    display: grid;
+    background-color: var(--color-secundario);
+    grid-template-columns: 1.5fr 2fr 2fr 1.5fr;
+    border-radius: 6px 6px 0 0;
+    margin-top: 1em;
+    padding: 0.5em 0;
+}
+
+.header-listado p {
+    color: white;
+}
+
+.content-listado {
+    margin-top: 3em;
+}
+
+.content-listado p,
+.content-listado form {
+    text-align: center;
+}
+
+.listado-empresa {
+    display: grid;
+    grid-template-columns: 1.5fr 2fr 2fr 1.5fr;
+    width: 100%;
+    margin: 1em 0;
+    border-bottom: 1px solid var(--color-principal);
+    padding-bottom: 1em;
+    align-items: center;
+}
+
+.listado form {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.pagination {
+    margin: 3em 0;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+/* ==========================
+   TABLAS
+========================== */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+table.editable {
+    width: 80%;
+}
+
+table.ordenable {
+    width: 100%;
+}
+
+table thead {
+    background-color: var(--color-secundario);
+    color: #fff;
+    text-align: left;
+}
+
+table th {
+    padding: 12px 16px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+table tbody tr {
+    border-bottom: 1px solid var(--fondo);
+    transition: background-color 0.2s ease;
+}
+
+table tbody tr:nth-child(even) {
+    background-color: var(--fondo);
+}
+
+table tbody tr:hover {
+    background-color: var(--fondo-header);
+}
+
+table td {
+    color: var(--color-principal);
+    padding: 10px;
+    vertical-align: middle;
+}
+
+td.edit {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1em;
+    border: none;
+}
+
+td input[type='text'] {
+    width: 100%;
+}
+
+table.editable input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #2563eb;
+    cursor: pointer;
+}
+
+table.editable .seleccion_total,
+table.editable .seleccion {
+    text-align: center;
+    width: 80px;
+}
+
+/* ==========================
+   ICONOS Y BOTONES DE ACCIÓN
+========================== */
+.row-up,
+.row-down {
+    display: inline-block;
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 15px;
+    height: 13px;
+    text-indent: -9999px;
+    overflow: hidden;
+}
+
+.row-up {
+    background-image: url("../img/row-up.png");
+}
+
+.row-down {
+    background-image: url("../img/row-down.png");
+}
+
+.btn-cancel,
+.btn-borrar,
+.btn-editar,
+.btn-save {
+    width: 15px;
+    height: 1em;
+    background-size: 15px;
+    background-repeat: no-repeat;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.btn-cancel {
+    background-image: url("../img/cancelar.png");
+}
+
+.btn-borrar {
+    background-image: url("../img/borrar.png");
+}
+
+.btn-editar {
+    background-image: url("../img/editar.png");
+}
+
+.btn-save {
+    background-image: url("../img/save.png");
+}
+
+.btn-cancel:hover,
+.btn-borrar:hover,
+.btn-editar:hover,
+.btn-save:hover {
+    opacity: 0.7;
+}
+
+/* ==========================
+   RESPONSIVE
+========================== */
+@media (max-width: 600px) {
+    form.alumno {
+        grid-template-columns: 1fr;
+    }
+
+    .charge,
+    .util-btns {
+        grid-template-columns: 1fr;
+        gap: 2em;
+    }
+
+    div > .top-section,
+    .bottom-section,
+    .form-contacto {
+        grid-template-columns: 1fr;
+    }
+}

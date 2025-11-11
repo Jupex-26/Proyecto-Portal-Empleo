@@ -1,7 +1,5 @@
 <?= $this->layout('Admin/AdminEmpresa',['page'=>$page])?>
-<?= $this->push('css')?>
-<link rel="stylesheet" href="./assets/css/editEmpresa.css">
-<?= $this->end()?>
+
 <?= $this->start('card-options')?>
 <h1>Editar Empresa</h1>
 <?= $this->stop()?>
@@ -10,7 +8,7 @@
     <div class="top-section">
       <div class="left">
         <img id="preview" src="./assets/img/<?=$empresa->getFoto()?>" alt="Foto de perfil">
-        <input type="file" id="fileInput" name="foto" placeholder="Cambiar Imagen" accept="image/*">
+        <input type="file" id="fileInput" name="foto" accept="image/*">
         <?= $validator->imprimirError('imagen');?>
       </div>
 

@@ -1,7 +1,5 @@
 <?= $this->layout('Admin/AdminEmpresa',['page'=>$page])?>
-<?= $this->push('css')?>
-<link rel="stylesheet" href="./assets/css/fichaEmpresa.css">
-<?= $this->end()?>
+
 <?= $this->start('card-content')?>
 <div class="container">
     <div class="top-section">
