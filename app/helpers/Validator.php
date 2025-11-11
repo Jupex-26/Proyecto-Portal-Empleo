@@ -163,6 +163,22 @@ public function validarEmail (string $nombreCampo, array $array): bool {
     public function mensajeExito($mensaje='Se ha guardado perfectamente'){
         $this->aprobado=$mensaje;
     }
+    
+    /**
+     * isImagen
+     * Esta función comprueba si se ha enviado una imagn
+     *
+     * @param  mixed $rutaTemporal
+     * @return void
+     */
+    function isImagen($rutaTemporal) {
+        if (!str_starts_with(mime_content_type($rutaTemporal), 'image/')) {
+            $this->errores['imagen'] = "El archivo debe ser una imagen válida";
+            return false;
+        }
+
+        return true;
+    }
 }
 
 ?>

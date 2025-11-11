@@ -29,6 +29,10 @@
             <label>Teléfono de contacto:</label>
             <p><?= $empresa->getTelefonoContacto() ?></p>
         </div>
+        <div class="empresa-group last-dato-empresa">
+            <label>Descripción de la Empresa:</label>
+            <p><?= $empresa->getDescripcion() ?></p>
+        </div>
         
 <?= $this->section('bottom')?>
     </div>

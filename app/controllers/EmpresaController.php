@@ -206,11 +206,21 @@ class EmpresaController{
         
     }
 
-
+    
+    /**
+     * manejarGuardar
+     *
+     * @param  mixed $empresa
+     * @param  mixed $validator
+     * @param  mixed $repo
+     * @return void
+     */
     private function manejarGuardar($empresa,$validator, $repo){
-        $this->actualizarEmpresa($empresa);
         $this->validarEmpresa($validator);
+        $this->actualizarEmpresa($empresa);
+        
         if ($validator->validacionPasada()){
+            
             $repo->update($empresa);
         }
     }    
@@ -223,11 +233,16 @@ class EmpresaController{
      * @return void
      */
     private function validarEmpresa($validator) {
+
         $validator->validarEmail('correo',$_POST);
         $validator->validarEmail('correo_contacto',$_POST);
         $validator->validarTelefono('telefono_contacto',$_POST);
         $validator->validarNombre('nombre',$_POST);
         $validator->required('direccion', $_POST);
+        if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
+            $validator->isImagen($_FILES['foto']['tmp_name']);
+        }
+        
         if ($validator->validacionPasada()){
             $validator->mensajeExito();
         }
@@ -241,19 +256,50 @@ class EmpresaController{
      * @return void
      */
     private function actualizarEmpresa($empresa){
+        $foto_url=$this->guardarFoto($empresa);
         $nombre=$_POST['nombre']??$empresa->getNombre();
         $correo=$_POST['correo']??$empresa->getEmail();
         $correo_contacto=$_POST['correo_contacto']??$empresa->getCorreoContacto();
         $telefono_contato=$_POST['telefono_contacto']??$empresa->getTelefonoContacto();
         $direccion=$_POST['direccion']??$empresa->getDireccion();
+        $descripcion=$_POST['descripcion']??$empresa->getDescripcion();
         $empresa->setNombre($nombre);
         $empresa->setEmail($correo);
         $empresa->setCorreoContacto($correo_contacto);
         $empresa->setTelefonoContacto($telefono_contato);
         $empresa->setDireccion($direccion);
+        $empresa->setDescripcion($direccion);
+        $empresa->setFoto($foto_url??$empresa->getFoto());
     }
+    
+    /**
+     * guardarFoto
+     *  Función para guardar la foto en la carpeta img, si no es foto devuelve null
+     * @param  mixed $empresa
+     * @return void
+     */
+    private function guardarFoto($empresa){
+        $directorio = "./assets/img/";
+        $validator = new Validator();
+        // Nombre por defecto: la foto que ya existe
+        $nombreFinal = $empresa->getFoto();
+        // Verificar si se subió un archivo
+        if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
+            $nombreTemp = $_FILES['foto']['tmp_name'];
+            // Validar que sea una imagen
+            if ($validator->isImagen($nombreTemp)) {
+                $extension = strtolower(pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION));
+                $nombreFinal = "empresa_" . $empresa->getId() . "." . $extension;
+                $rutaDestino = $directorio . $nombreFinal;
+                // Mover la imagen a la carpeta final
+                move_uploaded_file($nombreTemp, $rutaDestino);
+            }
+        }
+        return $nombreFinal; // Devuelve la foto actualizada o la anterior si no se sube
+    }
+}
     
 
     
-}
+
 ?>

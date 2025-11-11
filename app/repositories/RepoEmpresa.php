@@ -214,7 +214,7 @@ public function findById(int $id): ?Empresa {
                 'id' => $entity->getId(),
                 'correoContacto' => $entity->getCorreoContacto(),
                 'telefonoContacto' => $entity->getTelefonoContacto(),
-                'activo' => $entity->isActivo(),
+                'activo' => $entity->isActivo()? 1 : 0,
                 'descripcion' => $entity->getDescripcion(),
             ]);
 

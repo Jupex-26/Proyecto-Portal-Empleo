@@ -16,9 +16,11 @@
     gap:3em;
     text-align: center;
 }
-.delete-action, .back-action{
+
+.delete-action, .back-action, .last-dato-empresa {
     grid-column: 1/3;
 }
+
 .buttons-form{
     display: flex;
     justify-content: space-around;

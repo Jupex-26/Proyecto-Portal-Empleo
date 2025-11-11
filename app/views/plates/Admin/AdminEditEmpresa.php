@@ -10,7 +10,8 @@
     <div class="top-section">
       <div class="left">
         <img id="preview" src="./assets/img/<?=$empresa->getFoto()?>" alt="Foto de perfil">
-        <input type="file" id="fileInput" name="foto" placeholder="Cambiar Imagen">
+        <input type="file" id="fileInput" name="foto" placeholder="Cambiar Imagen" accept="image/*">
+        <?= $validator->imprimirError('imagen');?>
       </div>
 
       <div class="right">
@@ -46,6 +47,11 @@
             <input type="tel" id="telefono-contacto" name="telefono_contacto" placeholder="Teléfono de contacto" value="<?= $empresa->getTelefonoContacto()?>">
             <?= $validator->imprimirError('telefono_contacto');?>
             </div>
+      </div>
+      <div class="form-group">
+        <label for="descripcion">Descripción:</label>
+        <input id="descripcion" name="descripcion" placeholder="Ingresa una descripcion" value="<?= $empresa->getDescripcion()?>">
+        <?= $validator->imprimirError('descripcion');?>
       </div>
       <?= $validator->imprimir()?>
       <div class="buttons-form">
