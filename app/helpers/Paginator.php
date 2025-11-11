@@ -14,10 +14,10 @@ class Paginator {
         return $size * ($page - 1);
     }
 
-    public static function renderPagination($page, $size, $pages) {
+    public static function renderPagination($page, $size, $pages, $accion) {
             
-        $ref_anterior = "?page=empresas&accion=listado&pagina=" . max(1, $page - 1) . "&size=$size";
-        $ref_posterior = "?page=empresas&accion=listado&pagina=" . min($pages, $page + 1) . "&size=$size";
+        $ref_anterior = "?page=empresas&accion=$accion&pagina=" . max(1, $page - 1) . "&size=$size";
+        $ref_posterior = "?page=empresas&accion=$accion&pagina=" . min($pages, $page + 1) . "&size=$size";
 
         
         $prevClass = $page <= 1 ? ' disabled' : '';

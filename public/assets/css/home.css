@@ -7,6 +7,7 @@
   --eliminar:rgb(255, 55, 55);
   --logo-verde:#96C03A;
   --correcto:rgb(13, 158, 13);
+  --correcto-hover: rgb(48, 227, 48);
   --eliminar-hover:rgb(226, 28, 28);
 }
 * ,p, a.btn{
@@ -15,12 +16,33 @@
     box-sizing: border-box;
     font-family: 'Trebuchet MS', sans-serif;
 }
+.btn:hover{
+    background-color: var(--color-secundario);
+    cursor: pointer;
+}
+.btn{
+    background-color: var(--color-principal);
+    border-radius: 6px;
+    border:0;
+}
 button, a.btn{
     color:white;
     text-decoration:none;
 }
 .btn:hover{
     transition: 0.5s;
+}
+.guardar{
+    background-color: var(--correcto);
+}
+.guardar:hover{
+    background-color: var(--correcto-hover);
+}
+.eliminar{
+    background-color: var(--eliminar);
+}
+.eliminar:hover{
+    background-color: var(--eliminar-hover);
 }
 p{
     color: var(--color-principal);
@@ -149,15 +171,7 @@ body {
     cursor: pointer;
 }
 
-.btn:hover{
-    background-color: var(--color-secundario);
-    cursor: pointer;
-}
-.btn{
-    background-color: var(--color-principal);
-    border-radius: 6px;
-    border:0;
-}
+
 
 .btn a{
     color:white;

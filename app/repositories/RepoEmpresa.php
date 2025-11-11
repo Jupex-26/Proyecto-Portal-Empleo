@@ -319,9 +319,10 @@ public function findById(int $id): ?Empresa {
      *
      * @return void
      */
-    public function getCount(){
-        $sql = "SELECT COUNT(*) as total FROM empresa";
+    public function getCount($activo){
+        $sql = "SELECT COUNT(*) as total FROM empresa where activo = :activo";
         $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':activo', $activo, PDO::PARAM_BOOL);
         $stmt->execute();
 
         // Obtener el valor del count

@@ -53,6 +53,9 @@ main{
     background-color: white;
     box-shadow: 0.2em 0.2em var(--color-principal);
 }
+.card-content > h1{
+    text-align: center;
+}
 .card, .card-content{
     border-radius: 5px;
     margin-bottom: 2em;
@@ -69,16 +72,4 @@ a.btn, button.btn{
 button.btn{
     width: 9.9em;
 }
-.options > .inscribir, button.guardar{
-    background-color: var(--correcto);
-}
-.options > .inscribir:hover, button.guardar:hover{
-    background-color: rgb(48, 227, 48);
-    
-}
-.eliminar{
-    background-color: var(--eliminar);
-}
-.eliminar:hover{
-    background-color: var(--eliminar-hover);
-}
+

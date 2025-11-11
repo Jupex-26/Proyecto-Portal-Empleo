@@ -44,9 +44,8 @@
 .modal .botones:last-of-type{
     order:2;
 }
-.charge .btn, .util-btns .btn{
+.util-btns .btn, .cargas.btn{
     width: auto;
-    height: 2em;
 }
 form {
     max-width: 50em;          

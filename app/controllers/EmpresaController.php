@@ -54,9 +54,9 @@ class EmpresaController{
     private function manejarSolicitudes($accion){
         $repo=new RepoEmpresa();
         if (isset($_POST['accion'])){
-            $this->chooseAction($repo);
+            $this->chooseAction($repo, $accion);
             if ($_POST['accion']=='aceptar'){
-                $this->activateEmpresa($repo);
+                $this->activateEmpresa($repo, $accion);
             }
         }
         else{
@@ -73,8 +73,7 @@ class EmpresaController{
     private function manejarListado($accion){
         $repo=new RepoEmpresa();
         if (isset($_POST['accion'])){
-            $this->chooseAction($repo);
-            
+            $this->chooseAction($repo, $accion);
         }
         else{
             $this->paginacionListadoEmpresas(true,$repo,$accion); 
@@ -87,13 +86,13 @@ class EmpresaController{
      * @param  mixed $repo
      * @return void
      */
-    private function activateEmpresa($repo){
+    private function activateEmpresa($repo, $pageAccion){
         
         $empresa=$repo->findById($_POST['id']);
         $empresa->setActivo(true);
         /* echo "<h1>".$empresa->getToken()."</h1>"; */
         $repo->update($empresa); 
-        header('location?page=empresas&accion='.$_GET['accion']);
+        header('location?page=empresas&accion='.$pageAccion);
     }
     
     /**
@@ -102,17 +101,17 @@ class EmpresaController{
      *
      * @return void
      */
-    private function chooseAction($repo){
+    private function chooseAction($repo, $pageAccion){
         $accion=$_POST['accion'];
             switch($accion){
                 case 'editar': 
-                    $this->editarEmpresa($repo);
+                    $this->editarEmpresa($repo,$pageAccion);
                     break;
                 case 'eliminar':
-                    $this->eliminarEmpresa($repo);
+                    $this->eliminarEmpresa($repo,$pageAccion);
                     break;
                 case 'ver':
-                    $this->verEmpresa($repo);
+                    $this->verEmpresa($repo,$pageAccion);
                 break;
         }
     }
@@ -130,15 +129,15 @@ class EmpresaController{
      * @return void
      */
     private function paginacionListadoEmpresas(bool $activo, $repo, $accion){
-        $empresas=$repo->findAll();
-        $total=$repo->getCount();
+        
+        $total=$repo->getCount($activo);
         $page=$_GET['pagina']??1;
         $size=$_GET['size']??10;
         $index=Paginator::getIndex($size,$page);
         $pages=Paginator::getPages($total,$size); 
         $empresas=$repo->findAllLimitWActive($index,$size,$activo);
         if ($page>$pages) $page--;
-        $paginator=Paginator::renderPagination($page,$size,$pages);
+        $paginator=Paginator::renderPagination($page,$size,$pages,$accion);
         print $this->templates->render('Admin/AdminListado',['empresas'=>$empresas,'paginator'=>$paginator, 'page'=>$_GET['page'], 'activo'=>$activo,'accion'=>$accion]); 
     }
 
@@ -149,7 +148,7 @@ class EmpresaController{
      * @param  mixed $repo
      * @return void
      */
-    private function editarEmpresa($repo){
+    private function editarEmpresa($repo, $pageAccion){
         $empresa=$repo->findById($_POST['id']);
         $validator=new Validator();
         if (isset($_POST['action'])){
@@ -159,11 +158,11 @@ class EmpresaController{
                     $this->manejarGuardar($empresa,$validator, $repo);
                     break;
                 case 'cancelar':
-                    header("location:?page=empresas&accion=".$_GET['accion']);
+                    header("location:?page=empresas&accion=".$pageAccion);
                     break;
             }
         }
-        echo $this->templates->render('Admin/AdminEditEmpresa',['empresa'=>$empresa, 'validator'=>$validator, 'page'=>$_GET['page'], 'accion'=>$_GET['accion']]);
+        echo $this->templates->render('Admin/AdminEditEmpresa',['empresa'=>$empresa, 'validator'=>$validator, 'page'=>$_GET['page'], 'accion'=>$pageAccion]);
     }
         
     /**
@@ -172,7 +171,7 @@ class EmpresaController{
      * @param  mixed $repo
      * @return void
      */
-    private function eliminarEmpresa($repo){
+    private function eliminarEmpresa($repo, $pageAccion){
         if (isset($_POST['action'])){
             $action=$_POST['action'];
             $id=$_POST['id'];
@@ -180,12 +179,12 @@ class EmpresaController{
                 case 'eliminar':
                     $repo->delete($id);
                 case 'cancelar':
-                    header("location:?page=empresas&accion=".$_GET['accion']);
+                    header("location:?page=empresas&accion=".$pageAccion);
                     break;
             }
         }else{
             $empresa=$repo->findById($_POST['id']);
-            print $this->templates->render('Admin/AdminEliminarEmpresa',['empresa'=>$empresa,'page'=>$_GET['page'],'accion'=>$_GET['accion']]);
+            print $this->templates->render('Admin/AdminEliminarEmpresa',['empresa'=>$empresa,'page'=>$_GET['page'],'accion'=>$pageAccion]);
         }
         
     }    
@@ -196,12 +195,12 @@ class EmpresaController{
      * @param  mixed $accion
      * @return void
      */
-    private function verEmpresa($repo){
+    private function verEmpresa($repo, $pageAccion){
         if (isset($_POST['action'])&&$_POST['action']=='cancelar'){
-            header("location:?page=empresas&accion=".$_GET['accion']);
+            header("location:?page=empresas&accion=".$pageAccion);
         }else{
             $empresa=$repo->findById($_POST['id']);
-            print $this->templates->render('Admin/AdminVerEmpresa',['empresa'=>$empresa,'page'=>$_GET['page'],'accion'=>$_GET['accion']]);
+            print $this->templates->render('Admin/AdminVerEmpresa',['empresa'=>$empresa,'page'=>$_GET['page'],'accion'=>$pageAccion]);
         }
         
     }

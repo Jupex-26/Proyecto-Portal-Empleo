@@ -10,7 +10,7 @@
 <?php $this->end() ?>
 <?= $this->start('panel-main')?>
     <div class="card">
-        <button class="carga-masiva btn">Carga Masiva</button>
+        <button class="carga-masiva btn guardar">Carga Masiva</button>
 
         <button class="carga-alumno btn">Introducir Alumno</button>
     </div>
@@ -36,10 +36,10 @@
         </div>
         
         <div class="botones util-btns">
-            <button class="save btn">Guardar</button>
+            <button class="save btn guardar">Guardar</button>
             <button class="editar btn">Editar</button>
             <button class="back btn">Volver</button>
-            <button class="borrar btn">Borrar</button>
+            <button class="borrar btn eliminar">Borrar</button>
         </div>
     </div>
     <div class="card-content">
