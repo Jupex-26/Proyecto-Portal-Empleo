@@ -1,13 +1,14 @@
-<?= $this->layout('Admin/AdminEmpresa',['page'=>$page])?>
-
-<?= $this->start('card-options')?>
-<h1>Editar Empresa</h1>
-<?= $this->stop()?>
-<?= $this->start('card-content')?>
-<form class="container" method="post" action="?page=empresas&accion=<?=$accion?>" enctype="multipart/form-data">
-    <div class="top-section">
+<form class="container" method="post" action="?page=<?=$page?>&accion=<?=$accion?>" enctype="multipart/form-data">
+  <?php if($accion=='inscribir') {?>
+        <div>
+          <label for="activo">Activo</label>
+          <input type="checkbox" name="activo" id="">
+        </div>
+      <?php } ?>  
+  <div class="top-section">
+      
       <div class="left">
-        <img id="preview" src="./assets/img/<?=$empresa->getFoto()?>" alt="Foto de perfil">
+        <img id="preview" src="./assets/img/<?=$empresa->getFoto()==''?'usuario.png':$empresa->getFoto()?>" alt="Foto de perfil">
         <input type="file" id="fileInput" name="foto" accept="image/*">
         <?= $validator->imprimirError('imagen');?>
       </div>
@@ -53,11 +54,12 @@
       </div>
       <?= $validator->imprimir()?>
       <div class="buttons-form">
-        <button type="submit" class="btn" name="action" value="cancelar">Cancelar</button>
+        <a href="?page=<?=$page?>" class="btn" name="action" value="cancelar">Cancelar</a>
         <button type="submit" class="btn guardar" name="action" value="guardar">Guardar</button>
       </div>
     </div>
+    <?php if($accion=='listado') {?>
     <input type="hidden" name="accion" value="editar">
     <input type="hidden" name="id" value="<?= $empresa->getId()?>">
+    <?php } ?>
   </form>
-<?= $this->stop()?>

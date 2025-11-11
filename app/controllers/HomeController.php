@@ -21,7 +21,7 @@ class HomeController {
             $rol=$_SESSION['user']->getRol();
             switch($rol){
                 case 1:
-                    echo $this->templates->render('Admin/AdminHome',['page'=>$_GET['page']]);
+                    echo $this->templates->render('Admin/AdminHome',['page'=>$_GET['page']??'home']);
                     break;
                 case 2:
                     echo $this->templates->render('EmpresaHome');

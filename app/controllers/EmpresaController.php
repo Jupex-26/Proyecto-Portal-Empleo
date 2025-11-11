@@ -1,25 +1,38 @@
 <?php
 namespace app\controllers;
+
 use League\Plates\Engine;
 use app\repositories\RepoEmpresa;
+use app\repositories\RepoUser;
 use app\helpers\Login;
 use app\helpers\Session;
 use app\helpers\Paginator;
 use app\helpers\Validator;
 use app\models\User;
+use app\models\Empresa;
 
-class EmpresaController{
-    private $templates;
-    private $user;
-    public function __construct($platePath){
-        $this->templates=new Engine($platePath);
-        $this->user=Session::readSession('user');  /* Cuando se haga una instancia de este controlador, creo una propiedad con la instancia de engine para los plates*/
+class EmpresaController {
+    private $templates; // Motor de templates Plates
+    private $user;      // Usuario logueado
+    private $page;      // Página actual (sanitizada desde GET)
+
+    /**
+     * Constructor: inicializa plates, usuario y página actual
+     */
+    public function __construct($platePath) {
+        $this->templates = new Engine($platePath);
+        $this->user = Session::readSession('user');
+        $this->page = filter_input(INPUT_GET, 'page', FILTER_SANITIZE_SPECIAL_CHARS) ?? 'empresas';
     }
-    public function index(){
-        
-        if (Login::isLogin() && $this->user->getRol()==1){
-            $accion=$_GET['accion']??'listado';
-            switch ($accion){
+
+    /**
+     * Método principal: decide acción a ejecutar según GET['accion']
+     */
+    public function index() {
+        if (Login::isLogin() && $this->user->getRol() == 1) {
+            $accion = filter_input(INPUT_GET, 'accion', FILTER_SANITIZE_SPECIAL_CHARS) ?? 'listado';
+
+            switch ($accion) {
                 case 'listado':
                     $this->manejarListado($accion);
                     break;
@@ -29,281 +42,311 @@ class EmpresaController{
                 case 'inscribir':
                     $this->manejarNewEmpresa($accion);
                     break;
-                default: header('location:?page=empresas');
+                default:
+                    header('location:?page=empresas');
+                    exit;
             }
-        }else{
+        } else {
             header('location:?page=home');
+            exit;
         }
-        /* 
-        Acciones:
-            Listado -> posibilidad de editar, eliminar, ver más detalles
-            Inscribir Empresa
-            Solicitudes de Empresas aprobar o no
-
-
-         */
-
-    }     
-
-    private function manejarNewEmpresa($accion){
-        $validator=new Validator();
-        echo $this->templates->render('Admin/AdminNewEmpresa',['validator'=>$validator, 'page'=>$_GET['page'], 'accion'=>$accion]);
     }
-    
+
+    // =====================================================
+    // MÉTODOS DE MANEJO DE ACCIONES
+    // =====================================================
+
     /**
-     * manejarSolicitudes
-     *
-     * @param  mixed $accion
-     * @return void
+     * Listado de empresas activas
      */
-    private function manejarSolicitudes($accion){
-        $repo=new RepoEmpresa();
-        if (isset($_POST['accion'])){
-            $this->chooseAction($repo, $accion);
-            if ($_POST['accion']=='aceptar'){
-                $this->activateEmpresa($repo, $accion);
+    private function manejarListado($accion) {
+        $repo = new RepoEmpresa();
+        $postData = filter_input_array(INPUT_POST, FILTER_SANITIZE_SPECIAL_CHARS) ?? [];
+
+        if (isset($postData['accion'])) {
+            $this->chooseAction($repo, $accion, $postData);
+        } else {
+            $this->paginacionListadoEmpresas(true, $repo, $accion);
+        }
+    }
+
+    /**
+     * Maneja solicitudes de empresas (aprobación)
+     */
+    private function manejarSolicitudes($accion) {
+        $repo = new RepoEmpresa();
+        $postData = filter_input_array(INPUT_POST, FILTER_SANITIZE_SPECIAL_CHARS) ?? [];
+
+        if (isset($postData['accion'])) {
+            $this->chooseAction($repo, $accion, $postData);
+            if ($postData['accion'] === 'aceptar') {
+                $this->activateEmpresa($repo, $accion, $postData);
+            }
+        } else {
+            $this->paginacionListadoEmpresas(false, $repo, $accion);
+        }
+    }
+
+    /**
+     * Valida y guarda una nueva empresa.
+     */
+    private function procesarNuevaEmpresa(Empresa $empresa, Validator $validator, array $postData, ?array $fileData): void {
+        $validator->requiredFile('foto');
+        $this->validarEmpresa($validator, $postData, $fileData);
+        $this->actualizarEmpresa($empresa, $postData, $fileData);
+
+        if ($validator->validacionPasada()) {
+            $repo = new RepoEmpresa();
+            $empresa->setActivo(isset($postData['activo']));
+            $repo->save($empresa);
+            $validator->mensajeExito();
+        }
+    }
+
+    /**
+     * Renderiza el formulario para nueva empresa.
+     */
+    private function renderFormularioEmpresa(Empresa $empresa, Validator $validator, string $accion): void {
+        echo $this->templates->render('Admin/AdminFormEmpresa', [
+            'empresa' => $empresa,
+            'validator' => $validator,
+            'page' => $this->page,
+            'accion' => $accion,
+            'action' => $accion
+        ]);
+    }
+
+    /**
+     * Maneja la lógica completa de creación de empresa.
+     */
+    private function manejarNewEmpresa(string $accion) {
+        $validator = new Validator();
+        $empresa = new Empresa();
+        $postData = filter_input_array(INPUT_POST, FILTER_SANITIZE_SPECIAL_CHARS) ?? [];
+        $fileData = $_FILES['foto'] ?? null;
+
+        if (isset($postData['action'])) {
+            $this->procesarNuevaEmpresa($empresa, $validator, $postData, $fileData);
+        }
+
+        echo $this->renderFormularioEmpresa($empresa, $validator, $accion);
+    }
+
+
+    // =====================================================
+    // MÉTODOS AUXILIARES DE ACCIÓN (EDITAR, ELIMINAR, VER, GUARDAR)
+    // =====================================================
+
+    private function editarEmpresa($repo, $pageAccion, $postData, $accion) {
+        $id = filter_var($postData['id'] ?? null, FILTER_VALIDATE_INT);
+        $empresa = $repo->findById($id);
+        $validator = new Validator();
+
+        if (isset($postData['action'])) {
+            switch ($postData['action']) {
+                case 'guardar':
+                    $this->manejarGuardar($empresa, $validator, $repo, $postData, $_FILES['foto'] ?? null);
+                    break;
+                case 'cancelar':
+                    header("location:?page=empresas&accion=".$pageAccion);
+                    exit;
             }
         }
-        else{
-            $this->paginacionListadoEmpresas(false,$repo,$accion); 
+
+        echo $this->templates->render('Admin/AdminFormEmpresa', [
+            'empresa' => $empresa,
+            'validator' => $validator,
+            'page' => $this->page,
+            'accion' => $pageAccion,
+            'action' => $accion
+        ]);
+    }
+
+    private function eliminarEmpresa($repo, $pageAccion, $postData) {
+        $id = filter_var($postData['id'] ?? null, FILTER_VALIDATE_INT);
+
+        if (isset($postData['action'])) {
+            switch ($postData['action']) {
+                case 'eliminar':
+                    if ($id) $repo->delete($id);
+                case 'cancelar':
+                    header("location:?page=".$this->page."&accion=".$pageAccion);
+                    exit;
+            }
+        } else {
+            $empresa = $repo->findById($id);
+            echo $this->templates->render('Admin/AdminEliminarEmpresa', [
+                'empresa' => $empresa,
+                'page' => $this->page,
+                'accion' => $pageAccion
+            ]);
         }
     }
 
-    
-    /**
-     * manejarListado
-     *
-     * @return void
-     */
-    private function manejarListado($accion){
-        $repo=new RepoEmpresa();
-        if (isset($_POST['accion'])){
-            $this->chooseAction($repo, $accion);
-        }
-        else{
-            $this->paginacionListadoEmpresas(true,$repo,$accion); 
+    private function verEmpresa($repo, $pageAccion, $postData) {
+        if (isset($postData['action']) && $postData['action'] === 'cancelar') {
+            header("location:?page=".$this->page."&accion=".$pageAccion);
+            exit;
+        } else {
+            $id = filter_var($postData['id'] ?? null, FILTER_VALIDATE_INT);
+            $empresa = $repo->findById($id);
+            echo $this->templates->render('Admin/AdminVerEmpresa', [
+                'empresa' => $empresa,
+                'page' => $this->page,
+                'accion' => $pageAccion
+            ]);
         }
     }
-    
-    /**
-     * activateEmpresa
-     *  Este método activa una empresa el cual un admin haya aceptado
-     * @param  mixed $repo
-     * @return void
-     */
-    private function activateEmpresa($repo, $pageAccion){
-        
-        $empresa=$repo->findById($_POST['id']);
-        $empresa->setActivo(true);
-        /* echo "<h1>".$empresa->getToken()."</h1>"; */
-        $repo->update($empresa); 
-        header('location?page=empresas&accion='.$pageAccion);
+
+    private function manejarGuardar($empresa, $validator, $repo, $postData, $fileData) {
+        $this->validarEmpresa($validator, $postData, $fileData);
+        if ($empresa->getEmail() == ($postData['correo'] ?? '')) {
+            $validator->remove('correo');
+        }
+        $this->actualizarEmpresa($empresa, $postData, $fileData);
+        if ($validator->validacionPasada()) {
+            $validator->mensajeExito();
+            $repo->update($empresa);
+        }
     }
-    
+
+    // =====================================================
+    // MÉTODOS DE VALIDACIÓN Y ACTUALIZACIÓN
+    // =====================================================
+
+    private function validarEmpresa($validator, $data, $fileData) {
+        $validator->validarEmail('correo', $data);
+        $validator->validarEmail('correo_contacto', $data);
+        $validator->validarTelefono('telefono_contacto', $data);
+        $validator->validarNombre('nombre', $data);
+        $validator->required('direccion', $data);
+        $validator->required('descripcion', $data);
+
+        $repo = new RepoUser();
+        if (!empty($data['correo']) && $repo->correoExiste($data['correo'])) {
+            $validator->insertarError('correo', "Este correo ya existe");
+        }
+
+        if ($fileData && $fileData['error'] === UPLOAD_ERR_OK) {
+            $validator->isImagen($fileData['tmp_name']);
+        }
+    }
+
+    private function actualizarEmpresa($empresa, $data, $fileData) {
+        $foto_url = $this->guardarFoto($empresa, $fileData);
+        $empresa->setNombre($data['nombre'] ?? $empresa->getNombre());
+        $empresa->setEmail($data['correo'] ?? $empresa->getEmail());
+        $empresa->setCorreoContacto($data['correo_contacto'] ?? $empresa->getCorreoContacto());
+        $empresa->setTelefonoContacto($data['telefono_contacto'] ?? $empresa->getTelefonoContacto());
+        $empresa->setDireccion($data['direccion'] ?? $empresa->getDireccion());
+        $empresa->setDescripcion($data['descripcion'] ?? $empresa->getDescripcion());
+        $empresa->setFoto($foto_url ?? $empresa->getFoto());
+    }
+
+    // =====================================================
+    // MÉTODOS DE UTILIDAD
+    // =====================================================
+
     /**
-     * chooseAction
-     * Según la accion que indique mediante el POST, hará una opción entre las que vienen incluidas
-     *
-     * @return void
+     * Guarda la foto subida en carpeta assets/img
      */
-    private function chooseAction($repo, $pageAccion){
-        $accion=$_POST['accion'];
-            switch($accion){
-                case 'editar': 
-                    $this->editarEmpresa($repo,$pageAccion);
-                    break;
-                case 'eliminar':
-                    $this->eliminarEmpresa($repo,$pageAccion);
-                    break;
-                case 'ver':
-                    $this->verEmpresa($repo,$pageAccion);
+    private function guardarFoto($empresa, $fileData) {
+        $directorio = "./assets/img/";
+        $validator = new Validator();
+        $nombreFinal = $empresa->getFoto(); // Mantener nombre anterior por defecto
+
+        if ($fileData && $fileData['error'] === UPLOAD_ERR_OK) {
+            $nombreTemp = $fileData['tmp_name'];
+            if ($validator->isImagen($nombreTemp)) {
+                $extension = strtolower(pathinfo($fileData['name'], PATHINFO_EXTENSION));
+                $nombreFinal = "empresa_" . $empresa->getId() . "." . $extension;
+                $rutaDestino = $directorio . $nombreFinal;
+                move_uploaded_file($nombreTemp, $rutaDestino);
+            }
+        }
+
+        return $nombreFinal;
+    }
+
+    /**
+     * Obtiene los datos paginados de empresas.
+     */
+    private function obtenerEmpresasPaginadas(bool $activo, $repo) {
+        $total = $repo->getCount($activo);
+        $page = filter_input(INPUT_GET, 'pagina', FILTER_VALIDATE_INT, [
+            'options' => ['default' => 1, 'min_range' => 1]
+        ]);
+        $size = filter_input(INPUT_GET, 'size', FILTER_VALIDATE_INT, [
+            'options' => ['default' => 10, 'min_range' => 1]
+        ]);
+
+        $index = Paginator::getIndex($size, $page);
+        $pages = Paginator::getPages($total, $size);
+        if ($page > $pages) $page--;
+
+        $empresas = $repo->findAllLimitWActive($index, $size, $activo);
+        $paginator = Paginator::renderPagination($page, $size, $pages, $this->page);
+
+        return [
+            'empresas' => $empresas,
+            'paginator' => $paginator,
+            'page' => $page,
+            'size' => $size,
+            'pages' => $pages,
+        ];
+    }
+
+    /**
+     * Renderiza la vista de listado de empresas.
+     */
+    private function mostrarListadoEmpresas(array $datos, bool $activo, string $accion) {
+        echo $this->templates->render('Admin/AdminListado', [
+            'empresas' => $datos['empresas'],
+            'paginator' => $datos['paginator'],
+            'page' => $this->page,
+            'activo' => $activo,
+            'accion' => $accion
+        ]);
+    }
+
+    /**
+     * Orquesta la paginación y el renderizado.
+     */
+    private function paginacionListadoEmpresas(bool $activo, $repo, $accion) {
+        $datos = $this->obtenerEmpresasPaginadas($activo, $repo);
+        $this->mostrarListadoEmpresas($datos, $activo, $accion);
+    }
+
+    /**
+     * Determina acción según POST['accion']
+     */
+    private function chooseAction($repo, $pageAccion, $postData) {
+        $accion = $postData['accion'] ?? '';
+        switch ($accion) {
+            case 'editar':
+                $this->editarEmpresa($repo, $pageAccion, $postData, $accion);
+                break;
+            case 'eliminar':
+                $this->eliminarEmpresa($repo, $pageAccion, $postData);
+                break;
+            case 'ver':
+                $this->verEmpresa($repo, $pageAccion, $postData);
                 break;
         }
     }
 
-    
-
-    
     /**
-     * paginacionListadoEmpresas
-     *
-     * Este método obtiene los datos necesarios para la paginación de empresas
-     * A su vez hace busca según los cálculos el array de empresas necesario y si están activas o no
-     * @param  mixed $activo
-     * @param  mixed $repo
-     * @return void
+     * Activa una empresa
      */
-    private function paginacionListadoEmpresas(bool $activo, $repo, $accion){
-        
-        $total=$repo->getCount($activo);
-        $page=$_GET['pagina']??1;
-        $size=$_GET['size']??10;
-        $index=Paginator::getIndex($size,$page);
-        $pages=Paginator::getPages($total,$size); 
-        $empresas=$repo->findAllLimitWActive($index,$size,$activo);
-        if ($page>$pages) $page--;
-        $paginator=Paginator::renderPagination($page,$size,$pages,$accion);
-        print $this->templates->render('Admin/AdminListado',['empresas'=>$empresas,'paginator'=>$paginator, 'page'=>$_GET['page'], 'activo'=>$activo,'accion'=>$accion]); 
-    }
-
-        
-    /**
-     * editarEmpresa
-     *
-     * @param  mixed $repo
-     * @return void
-     */
-    private function editarEmpresa($repo, $pageAccion){
-        $empresa=$repo->findById($_POST['id']);
-        $validator=new Validator();
-        if (isset($_POST['action'])){
-            $action=$_POST['action'];
-            switch ($action){
-                case 'guardar':
-                    $this->manejarGuardar($empresa,$validator, $repo);
-                    break;
-                case 'cancelar':
-                    header("location:?page=empresas&accion=".$pageAccion);
-                    break;
-            }
-        }
-        echo $this->templates->render('Admin/AdminEditEmpresa',['empresa'=>$empresa, 'validator'=>$validator, 'page'=>$_GET['page'], 'accion'=>$pageAccion]);
-    }
-        
-    /**
-     * eliminarEmpresa
-     *
-     * @param  mixed $repo
-     * @return void
-     */
-    private function eliminarEmpresa($repo, $pageAccion){
-        if (isset($_POST['action'])){
-            $action=$_POST['action'];
-            $id=$_POST['id'];
-            switch ($action){
-                case 'eliminar':
-                    $repo->delete($id);
-                case 'cancelar':
-                    header("location:?page=empresas&accion=".$pageAccion);
-                    break;
-            }
-        }else{
-            $empresa=$repo->findById($_POST['id']);
-            print $this->templates->render('Admin/AdminEliminarEmpresa',['empresa'=>$empresa,'page'=>$_GET['page'],'accion'=>$pageAccion]);
-        }
-        
-    }    
-    /**
-     * verEmpresa
-     *
-     * @param  mixed $repo
-     * @param  mixed $accion
-     * @return void
-     */
-    private function verEmpresa($repo, $pageAccion){
-        if (isset($_POST['action'])&&$_POST['action']=='cancelar'){
-            header("location:?page=empresas&accion=".$pageAccion);
-        }else{
-            $empresa=$repo->findById($_POST['id']);
-            print $this->templates->render('Admin/AdminVerEmpresa',['empresa'=>$empresa,'page'=>$_GET['page'],'accion'=>$pageAccion]);
-        }
-        
-    }
-
-    
-    /**
-     * manejarGuardar
-     *
-     * @param  mixed $empresa
-     * @param  mixed $validator
-     * @param  mixed $repo
-     * @return void
-     */
-    private function manejarGuardar($empresa=null, $validator, $repo){
-        $this->validarEmpresa($validator);
-        $this->actualizarEmpresa($empresa);
-        
-        if ($validator->validacionPasada()){
-            
+    private function activateEmpresa($repo, $pageAccion, $postData) {
+        $id = filter_var($postData['id'] ?? null, FILTER_VALIDATE_INT);
+        if ($id) {
+            $empresa = $repo->findById($id);
+            $empresa->setActivo(true);
             $repo->update($empresa);
         }
-    }    
-    /**
-     * validarEmpresa
-     * 
-     * Valida la empresa según los campos que le han llegado por método POST
-     *
-     * @param  mixed $validator
-     * @return void
-     */
-    private function validarEmpresa($validator) {
-
-        $validator->validarEmail('correo',$_POST);
-        $validator->validarEmail('correo_contacto',$_POST);
-        $validator->validarTelefono('telefono_contacto',$_POST);
-        $validator->validarNombre('nombre',$_POST);
-        $validator->required('direccion', $_POST);
-        if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
-            $validator->isImagen($_FILES['foto']['tmp_name']);
-        }
-        
-        if ($validator->validacionPasada()){
-            $validator->mensajeExito();
-        }
-    }
-    
-    /**
-     * actualizarEmpresa
-     *  Actualiza la empresa con los campos que le han llegado por POST,
-     *  Si no le llego nada por post, se deja el nombre que tenía
-     * @param  mixed $empresa
-     * @return void
-     */
-    private function actualizarEmpresa($empresa){
-        $foto_url=$this->guardarFoto($empresa);
-        $nombre=$_POST['nombre']??$empresa->getNombre();
-        $correo=$_POST['correo']??$empresa->getEmail();
-        $correo_contacto=$_POST['correo_contacto']??$empresa->getCorreoContacto();
-        $telefono_contato=$_POST['telefono_contacto']??$empresa->getTelefonoContacto();
-        $direccion=$_POST['direccion']??$empresa->getDireccion();
-        $descripcion=$_POST['descripcion']??$empresa->getDescripcion();
-        $empresa->setNombre($nombre);
-        $empresa->setEmail($correo);
-        $empresa->setCorreoContacto($correo_contacto);
-        $empresa->setTelefonoContacto($telefono_contato);
-        $empresa->setDireccion($direccion);
-        $empresa->setDescripcion($descripcion);
-        $empresa->setFoto($foto_url??$empresa->getFoto());
-    }
-    
-    /**
-     * guardarFoto
-     *  Función para guardar la foto en la carpeta img, si no es foto devuelve null
-     * @param  mixed $empresa
-     * @return void
-     */
-    private function guardarFoto($empresa){
-        $directorio = "./assets/img/";
-        $validator = new Validator();
-        // Nombre por defecto: la foto que ya existe
-        $nombreFinal = $empresa->getFoto();
-        // Verificar si se subió un archivo
-        if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
-            $nombreTemp = $_FILES['foto']['tmp_name'];
-            // Validar que sea una imagen
-            if ($validator->isImagen($nombreTemp)) {
-                $extension = strtolower(pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION));
-                $nombreFinal = "empresa_" . $empresa->getId() . "." . $extension;
-                $rutaDestino = $directorio . $nombreFinal;
-                // Mover la imagen a la carpeta final
-                move_uploaded_file($nombreTemp, $rutaDestino);
-            }
-        }
-        return $nombreFinal; // Devuelve la foto actualizada o la anterior si no se sube
+        header('location?page='.$this->page.'&accion='.$pageAccion);
+        exit;
     }
 }
-    
-
-    
-
 ?>

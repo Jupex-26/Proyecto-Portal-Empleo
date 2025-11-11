@@ -68,6 +68,7 @@ public function findAll(): array {
  * @return Empresa|null
  */
 public function findById(int $id): ?Empresa {
+    
     $sql = "
         SELECT 
             u.id,
@@ -118,7 +119,6 @@ public function findById(int $id): ?Empresa {
      * @return bool
      */
     public function save(object $entity): ?int {
-
         try {
             $this->conn->beginTransaction();
 
@@ -140,6 +140,14 @@ public function findById(int $id): ?Empresa {
 
             $userId = (int)$this->conn->lastInsertId();
 
+            $this->renombrarFotoEmpresa($entity, $userId);
+
+            $sqlUpdateFoto = "UPDATE user SET foto = :foto WHERE id = :id";
+            $stmtUpdate = $this->conn->prepare($sqlUpdateFoto);
+            $stmtUpdate->execute([
+                'foto' => $entity->getFoto(),
+                'id' => $userId]);
+
             // Inserta en "empresa"
             $sqlEmpresa = "
                 INSERT INTO empresa (id, correoContacto, telefonoContacto, activo, descripcion)
@@ -150,7 +158,7 @@ public function findById(int $id): ?Empresa {
                 'id' => $userId,
                 'correoContacto' => $entity->getCorreoContacto(),
                 'telefonoContacto' => $entity->getTelefonoContacto(),
-                'activo' => $entity->isActivo(),
+                'activo' => $entity->isActivo()? 1 : 0,
                 'descripcion' => $entity->getDescripcion(),
             ]);
 
@@ -159,8 +167,10 @@ public function findById(int $id): ?Empresa {
 
         } catch (PDOException $e) {
             $this->conn->rollBack();
-            error_log("Error al guardar empresa: " . $e->getMessage());
+            // Puedes guardar el error en una propiedad o devolver algo más informativo
+            
             return null;
+            
         }
     }
 
@@ -329,6 +339,32 @@ public function findById(int $id): ?Empresa {
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
         return (int) $result['total'];
+    }
+
+    
+    /**
+     * renombrarFotoEmpresa
+     *
+     * Renombra la foto de la empresa para incluir el ID generado por la base de datos,
+     * y actualiza la entidad con el nuevo nombre de archivo.
+     *
+     * @param Empresa $empresa La entidad Empresa cuyo nombre de foto se va a actualizar.
+     * @param int $userId El ID generado por la base de datos para el usuario/empresa.
+     * @return void
+     */
+    private function renombrarFotoEmpresa(Empresa $empresa, int $userId): void{
+        $carpeta = './assets/img/';
+        $fotoActual = $empresa->getFoto();
+        $ext = pathinfo($fotoActual, PATHINFO_EXTENSION);
+        $rutaActual = $carpeta . $fotoActual;
+        $nuevoNombre = "empresa_{$userId}." . $ext;
+        $nuevaRuta = $carpeta . $nuevoNombre;
+        // Verifica que exista el archivo antes de renombrar
+        if (file_exists($rutaActual)) {
+            rename($rutaActual, $nuevaRuta);
+        }
+
+        $empresa->setFoto($nuevoNombre);
     }
 }
 ?>

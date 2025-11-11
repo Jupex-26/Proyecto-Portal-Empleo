@@ -9,7 +9,7 @@
     <option value="50" data-size="50">50</option>
 </select>
 
-<a id="link-size" href="?page=empresas&accion=<?=$accion?>&size=10&pagina=1">Actualizar</a>
+<a id="link-size" href="?page=<?=$page?>&accion=<?=$accion?>&size=10&pagina=1">Actualizar</a>
 </div>
 <div class="content-listado">
     
@@ -25,7 +25,7 @@
                 <p><?= $empresa->getId(); ?></p>
                 <p><?= $empresa->getNombre(); ?></p>
                 <p><?= $empresa->getEmail(); ?></p>
-                <form action="?page=empresas&accion=<?=$accion?>" method="POST">
+                <form action="?page=<?=$page?>&accion=<?=$accion?>" method="POST">
                     <button name="accion" class="editar" value="editar"><img src="./assets/img/editar.png" alt="editar"></button>
                     <button name="accion" class="ver" value="ver"><img src="./assets/img/ver.png" alt="ver"></button>
                     <button name="accion" class="remove" value="eliminar"><img src="./assets/img/borrar.png" alt="eliminar"></button>

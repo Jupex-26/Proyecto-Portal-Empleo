@@ -4,7 +4,7 @@
 <script src="./assets/js/select.js"></script>
 <script src="./assets/js/modal.js"></script>
 <script src="./assets/js/logica.js"></script>
-<?php $this->end() ?>
+<?= $this->end() ?>
 <?= $this->start('panel-main')?>
     <div class="card">
         <button class="carga-masiva btn guardar">Carga Masiva</button>

@@ -83,6 +83,10 @@ button:hover {
     font-size: 0.85em;
     padding: 0.919em;
 }
+a.btn{
+    padding-left: 2.9901em;
+    padding-right: 2.9901em;
+}
 
 .btn:hover {
     background-color: var(--color-secundario);

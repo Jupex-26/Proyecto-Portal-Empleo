@@ -38,6 +38,27 @@ class Validator{
             $this->errores[$campo] = "El campo $campo no puede estar vacío";
         }
     }
+
+    
+    /**
+     * Valida que el usuario ha enviado un fichero, sino da error
+     * 
+     * Si el campo no está definido en el array añade un mensaje de error
+     * al array de errores con la clave del campo.
+     * requiredFile
+     *
+     * @param  mixed $campo
+     * @return void
+     */
+    public function requiredFile($campo){
+    if (
+        !isset($_FILES[$campo]) ||                     // no se envió el campo
+        $_FILES[$campo]['error'] !== UPLOAD_ERR_OK ||  // ocurrió un error
+        empty($_FILES[$campo]['name'])                 // no seleccionaron archivo
+    ){
+        $this->errores['imagen'] = "Debe subir un archivo en el campo $campo";
+    }
+}
     /**
 * Comprueba si el campo es un email válido (versión estricta con DNS)
 * @param string $nombreCampo El nombre del campo (para la clave del error).
@@ -171,7 +192,7 @@ public function validarEmail (string $nombreCampo, array $array): bool {
      * @param  mixed $rutaTemporal
      * @return void
      */
-    function isImagen($rutaTemporal) {
+    public function isImagen($rutaTemporal) {
         if (!str_starts_with(mime_content_type($rutaTemporal), 'image/')) {
             $this->errores['imagen'] = "El archivo debe ser una imagen válida";
             return false;
@@ -179,6 +200,31 @@ public function validarEmail (string $nombreCampo, array $array): bool {
 
         return true;
     }
+    
+    /**
+     * insertarError 
+     *
+     * @param  mixed $campo
+     * @param  mixed $mensaje
+     * @return void
+     */
+    public function insertarError($campo,$mensaje) {
+        $this->errores[$campo] = $mensaje;
+        return true;
+    }
+
+    /**
+     * remove
+     *
+     * Elimina un error del array de errores por su clave.
+     *
+     * @param string $campo La clave del error a eliminar.
+     * @return void
+     */
+    public function remove($campo){
+        unset($this->errores[$campo]);
+    }
+
 }
 
 ?>

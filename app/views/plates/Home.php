@@ -1,8 +1,8 @@
-<?php $this->layout('layout');?>
-<?php $this->start('header')?>
-<?php $this->insert('partials/header')?>
-<?php $this->stop()?>
-<?php $this->start('main') ?>
+<?= $this->layout('layout');?>
+<?= $this->start('header')?>
+<?= $this->insert('partials/header')?>
+<?= $this->stop()?>
+<?= $this->start('main') ?>
 <main>
     <section class="bienvenida">
       <h1>Encuentra oportunidades</h1>
@@ -20,9 +20,9 @@
       </div>
     </section>
 </main>
-<?php $this->stop() ?>
+<?= $this->stop() ?>
 
-<?php $this->start('footer')?>
-<?php $this->insert('partials/footer')?>
-<?php $this->stop()?>
+<?= $this->start('footer')?>
+<?= $this->insert('partials/footer')?>
+<?= $this->stop()?>
 

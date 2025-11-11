@@ -218,5 +218,23 @@ class RepoUser implements RepoMethods {
             token: (int)($row['token_id'] ?? null)
         );
     }
+    
+    /**
+     * correoExiste
+     * 
+     * Comprueba si el correo ya existe en la base de datos
+     *
+     * @param  mixed $correo
+     * @return bool
+     */
+    public function correoExiste(string $correo): bool
+{
+    $sql = "SELECT COUNT(*) FROM user WHERE correo = :correo";
+    $stmt = $this->conn->prepare($sql);
+    $stmt->execute(['correo' => $correo]);
+    $count = $stmt->fetchColumn();
+
+    return $count > 0;
+}
 }
 ?>

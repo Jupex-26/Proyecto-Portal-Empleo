@@ -1,7 +1,7 @@
 <?= $this->layout('layout'); 
 $this->start('css'); ?>
 <link rel="stylesheet" href="./assets/css/login.css">
-<?php $this->stop();
+<?= $this->stop();
 $this->start('main'); ?>
     <main>
         <div class="login-container">
@@ -29,5 +29,5 @@ $this->start('main'); ?>
             </div>
         </div>
     </main> 
-<?php $this->stop(); 
+<?= $this->stop(); 
 ?>

@@ -1,10 +1,10 @@
 <?= $this->layout('layout')?>
-<?php $this->push('css') ?>
+<?= $this->push('css') ?>
 <link rel="stylesheet" href="./assets/css/contacto.css">
-<?php $this->end() ?>
-<?php $this->start('header')?>
-<?php $this->insert('partials/header')?>
-<?php $this->stop()?>
+<?= $this->end() ?>
+<?= $this->start('header')?>
+<?= $this->insert('partials/header')?>
+<?= $this->stop()?>
 <?= $this->start('main')?>
     <main class="contacto-form">
         <h1>Contacto</h1>
@@ -43,6 +43,6 @@
         </div>
   </main>
 <?= $this->stop()?>
-<?php $this->start('footer')?>
-<?php $this->insert('partials/footer')?>
-<?php $this->stop()?>
+<?= $this->start('footer')?>
+<?= $this->insert('partials/footer')?>
+<?= $this->stop()?>
