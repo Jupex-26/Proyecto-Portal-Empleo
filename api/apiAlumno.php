@@ -6,13 +6,19 @@ require __DIR__ . '/../bootstrap.php';
 require PROJECT_ROOT . 'vendor/autoload.php';
 
 use app\repositories\RepoAlumno;
+use app\repositories\RepoAlumCiclo;
 use app\repositories\RepoFamilia;
 use app\repositories\RepoUser;
 use app\repositories\RepoCiclo;
 use app\helpers\Converter;
 use app\helpers\Validator;
 use app\models\Alumno;
+use app\models\AlumCursadoCiclo;
+use DateTime;
 
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
 /* Comprobar si tiene token y si pertene a administrador */
 $auth=$_SERVER['HTTP_AUTHORIZATION']??'';
 router();
@@ -57,7 +63,7 @@ function manejarGet(){
                     nombre:"Juan Pedro",
                     ap1:"Exposito",
                     ap2:"Pozuelo", 
-                    email:"jexppoz579@g.educaand.es",
+                    correo:"jexppoz579@g.educaand.es",
                     direccion:"Calle True 123, Andújar",
                     fechaNacimiento:new \DateTime("2003-03-26"));
                 $repo->save($alumno);
@@ -124,7 +130,7 @@ ini_set('display_startup_errors', 1);
     *   "nombre": "María",
     *   "ap1": "Lopez",
     *   "ap2": "Lopez",
-    *   "email": "maria.lopez@example.com",
+    *   "correo": "maria.lopez@example.com",
     *   "rol": 1,
     *   "direccion": "Calle Sol 22",
     *   "familia":"familia";
@@ -137,41 +143,64 @@ ini_set('display_startup_errors', 1);
  *
  */
 function manejarPost(){
-    $validator=new Validator();
-    $mock=$_SERVER['HTTP_MOCK']??false;
+    $validator = new Validator();
+    $mock = $_SERVER['HTTP_MOCK'] ?? false;
+    
     if ($mock){
         $json = file_get_contents('php://input');
-        $array=json_decode($json,true);
-        $familia=$array['familia'];
-        $ciclo=$array['ciclo'];
+        $data = json_decode($json, true);
+        $familia = $data['familia'];
+        $ciclo = $data['ciclo'];
+        $alumnosArray = $data['alumnos'];
+        $hoy = new DateTime();
+        
         /* Añadir el validator y pasarle los strings, para la fecha hacer uso de:
             $fecha = DateTime::createFromFormat('d/m/Y', fecha);
          */
-        $alumnos=array_map(fn($array)=>new Alumno(
-            nombre:$array['nombre'],
-            ap1: $array['ap1'],
-            ap2: $array['ap2'],
-            email: $array['email'], 
-            fechaNacimiento: new DateTime($array['fechaNacimiento']),
-            direccion: $array['direccion']),
-        $array);
-        $correos=array_map(fn($alumno)=>$alumno->getEmail(),$alumnos);
-        $repoUser=new RepoUser();
-        $correos_existentes=$repo->existenCorreos($correos);
-        $alumnosNoExisten=array_filter($alumnos, fn($alumno)=>!in_array($alumno->getCorreo(),$correos_existentes));
-        $repoUser=new RepoAlumno();
-        $repoCiclo=new RepoCiclo();
-        $repoCiclo->findByNameAndFamily($ciclo,$familia);
-        foreach($alumnosNoExisten as $alumno){
-            $id=$repoUser->save($alumno);
-            
-        }
-
-        echo json_encode($correos_existentes);
-    }else{
+        $alumnos = array_map(
+            fn($array) => new Alumno(
+                nombre: $array['nombre'],
+                ap1: $array['ap1'],
+                ap2: $array['ap2'] ?? '',
+                correo: $array['correo'], 
+                fechaNacimiento: new DateTime($array['fechaNacimiento']),
+                direccion: $array['direccion'],
+                rol: 3,
+                passwd: $array['nombre'] . '@' . $hoy->format('i') . $hoy->format('m')
+            ),
+            $alumnosArray // ← CORREGIDO: pasar el array correcto
+        );
         
+        $correos = array_map(fn($alumno) => $alumno->getCorreo(), $alumnos);
+        $repoUser = new RepoUser();
+        $correos_existentes = $repoUser->existenCorreos($correos); 
+        
+        $alumnosNoExisten = array_filter(
+            $alumnos, 
+            fn($alumno) => !in_array($alumno->getCorreo(), $correos_existentes)
+        );
+        
+        $repoAlumno = new RepoAlumno(); 
+        $repoCiclo = new RepoCiclo();
+        $repoAlumCiclo = new RepoAlumCiclo();
+        
+        $cicloObj = $repoCiclo->findByNameAndFamily($ciclo, $familia); 
+        $estudio = new AlumCursadoCiclo();
+        $estudio->setCicloId($cicloObj->getId());
+        $estudio->setFechaInicio($hoy);
+        
+        foreach($alumnosNoExisten as $alumno){
+            $id = $repoAlumno->save($alumno); 
+            $estudio->setAlumnoId($id);
+            $repoAlumCiclo->save($estudio);
+        }
+        
+        echo json_encode($correos_existentes);
+    } else {
+        // Manejar caso sin MOCK
+        http_response_code(400);
+        echo json_encode(['error' => 'MOCK header required']);
     }
-    
 }
 
 /**
@@ -188,7 +217,7 @@ function manejarPost(){
  * {
     *   "id": 3,
     *   "nombre": "María López",
-    *   "email": "maria.lopez@example.com",
+    *   "correo": "maria.lopez@example.com",
     *   "rol": 1,
     *   "direccion": "Calle Sol 22",
     *   "foto": "maria.jpg",

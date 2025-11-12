@@ -1,5 +1,7 @@
 <?=$this->layout('Admin/AdminLayout',['page'=>$page])?>
 <?= $this->push('js')?>
+<script src="./assets/js/alumno.js"></script>
+<script src="./assets/js/validador.js"></script>
 <script src="./assets/js/tabla.js"></script>
 <script src="./assets/js/select.js"></script>
 <script src="./assets/js/modal.js"></script>

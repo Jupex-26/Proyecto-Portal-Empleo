@@ -252,7 +252,7 @@ class RepoUser implements RepoMethods {
 
         // Consulta SQL
         $sql = "SELECT correo FROM user WHERE correo IN ($placeholders)";
-        $stmt = $this->db->prepare($sql);
+        $stmt = $this->conn->prepare($sql);
 
         // Ejecutar la consulta pasando el array de correos
         $stmt->execute($correos);

@@ -81,15 +81,16 @@ HTMLTableRowElement.prototype.editar=function(){
 HTMLTableElement.prototype.editar=function(){
     /* añadir celdas */
     this.editada=true;
-    let trs=this.rows;
+    let tbody=this.querySelector('.request');
+    let tr_thead=this.querySelector('thead').querySelector('tr');
+    let trs=Array.from(tbody.rows);
     let size=trs.length;
+    let th=document.createElement("th");
+    th.classList="edit";
+    th.innerHTML='Editar';
+    tr_thead.appendChild(th);
     for (let i=0;i<size;i++){
-        
-        if (trs[i].parentElement.nodeName.toUpperCase()=="THEAD"){
-            let th=document.createElement("th");
-            th.classList="edit";
-            trs[i].appendChild(th);
-        }else if(trs[i].parentElement.nodeName.toUpperCase()=="TBODY"){
+        if(!trs[i].classList.contains('seccion-header')){
             let td=trs[i].insertCell();
             td.classList="edit";
             let btnCancel=document.createElement("span");
@@ -205,6 +206,15 @@ HTMLTableElement.prototype.desplegar = function() {
     let desplegar = tbody.querySelector('.seccion-header');
     
     desplegar.onclick = function() {
+        let span=desplegar.querySelector('span');
+        if (span.classList.contains("row-up")){
+            
+            span.classList.remove("row-up");
+            span.classList.add("row-down");
+        }else if (span.classList.contains("row-down")){
+            span.classList.add("row-up");
+            span.classList.remove("row-down");
+        }
         Array.from(tbody.children).forEach((fila) => {
             if (fila !== desplegar) {
                 fila.classList.toggle('oculto');
@@ -217,14 +227,29 @@ HTMLTableElement.prototype.obtenerSeleccionados=function(){
     let tbody = this.querySelector('.request');
     let checkboxes=tbody.querySelectorAll('input[type="checkbox"]:checked');
     if (checkboxes.length>0){
-        let seleccionados=Array.from(checkboxes).filter(checkbox=>{
-            let fila=checkbox.parentElement.parentElement;
-            return !fila.classList.contains('duplicado');
-        });
+        let seleccionados = Array.from(checkboxes)
+            .map(checkbox => checkbox.parentElement.parentElement)
+            .filter(fila => !fila.classList.contains('duplicado'));
+        
         return seleccionados;
+        
     }else{
         return[];
     }
     
 
+}
+
+
+HTMLTableElement.prototype.moveSubidos=function(datos, datosSubidos){
+    let response=this.querySelector('.response');
+    let trs=Array.from(datosSubidos);
+    trs.reverse().forEach((tr)=>{
+        if (datos.includes(tr.querySelector('.correo').innerHTML)){
+            tr.classList.add('duplicado');
+        }else if(!tr.classList.contains('duplicado')){
+            tr.querySelector('input[type="checkbox"]').disabled = true;
+            response.appendChild(tr);
+        }
+    })
 }

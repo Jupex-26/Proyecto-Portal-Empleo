@@ -94,7 +94,7 @@ DROP TABLE IF EXISTS `empleo`.`alumno` ;
 CREATE TABLE IF NOT EXISTS `empleo`.`alumno` (
   `id` INT NOT NULL,
   `ap1` VARCHAR(45) NOT NULL,
-  `ap2` VARCHAR(45) NOT NULL,
+  `ap2` VARCHAR(45) NULL,
   `cv` VARCHAR(45) NULL,
   `fecha_nacimiento` DATETIME NOT NULL,
   `descripcion` VARCHAR(500) NULL,

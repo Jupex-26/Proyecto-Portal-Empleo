@@ -11,33 +11,33 @@ window.addEventListener('load', function () {
                     ordenarTablas();
                 });
         })
-    
+
 })
 
-window.addEventListener('load', function(){
-    
-    let btnMasivo=document.querySelector(".carga-masiva");
-    btnMasivo.onclick=function(){
-        let select=document.querySelector("#familia");
+window.addEventListener('load', function () {
+
+    let btnMasivo = document.querySelector(".carga-masiva");
+    btnMasivo.onclick = function () {
+        let select = document.querySelector("#familia");
         select.loadFromApi("../api/apiAlumno.php?menu=familias");
-        select.addEventListener('change',(e)=>document.querySelector("#ciclo").loadFromApi("../api/apiAlumno.php?menu=ciclos&id="+e.target.selectedOptions[0].className));
+        select.addEventListener('change', (e) => document.querySelector("#ciclo").loadFromApi("../api/apiAlumno.php?menu=ciclos&id=" + e.target.selectedOptions[0].className));
         let modalDiv = document.querySelector(".modal");
         let modal = new Modal(modalDiv, document.querySelector(".velo"));
         modal.open();
-        let btnCarga=document.querySelector(".cargas");
+        let btnCarga = document.querySelector(".cargas");
         let botones = modalDiv.querySelectorAll(".botones");
         botones[0].classList.remove("hidden");
         eliminarElementosMenosElementos(modalDiv, botones);
-        document.querySelector(".back").onclick=cerrarModal(modal);
+        document.querySelector(".back").onclick = cerrarModal(modal);
         manejarCarga(btnCarga, modalDiv);
-        let borrar=document.querySelector(".borrar");
-        borrar.onclick=function(){
+        let borrar = document.querySelector(".borrar");
+        borrar.onclick = function () {
             let botones = modalDiv.querySelectorAll(".botones");
             eliminarElementosMenosElementos(modalDiv, botones);
         }
     }
-    let btnAlumno=document.querySelector(".carga-alumno");
-    btnAlumno.onclick=function(){
+    let btnAlumno = document.querySelector(".carga-alumno");
+    btnAlumno.onclick = function () {
         /* Inscribir un alumno */
     }
 })
@@ -53,105 +53,109 @@ function manejarCarga(boton, modalDiv) {
             read.onload = () => {
                 let datos = parseCSVToArray(read.result);
                 editTable();
-                
+
                 fetch("./assets/plates/preenvio.html")
                     .then((x) => (x.text()))
                     .then((plantilla) => {
                         pintarTabla(plantilla, datos, modalDiv);
-                        let tabla=modalDiv.querySelector("table");
+                        let tabla = modalDiv.querySelector("table");
                         tabla.comprobarDuplicados(tabla.querySelector(".correo"));
                         seleccionarTodos(modalDiv);
-                        document.querySelector(".save").onclick = () => preSave();
+                        document.querySelector(".save").onclick = function () {
+                            preSave(tabla);
+                        }
                     })
             }
             read.readAsText(fichero);
-            
+
         }
     }
 }
 
-function seleccionarTodos(div){
-    let tabla=div.querySelector(".editable");
-    $primera=false;
-    tabla.querySelector(".seleccion_total").onclick=function(){
-            tabla.querySelectorAll(".seleccion input").forEach((checkbox)=>{
-                if (tabla.seleccion){
-                    checkbox.checked=false;
-                }else{
-                    checkbox.checked=true;
-                }
+function seleccionarTodos(div) {
+    let tabla = div.querySelector(".editable");
+    $primera = false;
+    tabla.querySelector(".seleccion_total").onclick = function () {
+        tabla.querySelectorAll(".seleccion input").forEach((checkbox) => {
+            if (tabla.seleccion) {
+                checkbox.checked = false;
+            } else {
+                checkbox.checked = true;
+            }
         })
         tabla.changeSeleccion();
-        
-        
+
+
     }
 }
-function editTable(){
+function editTable() {
     let botonEditar = document.querySelector(".editar");
     botonEditar.onclick = () => {
-        let tabla=document.querySelector("table.editable");
-        if (!tabla.editada){
-            botonEditar.innerHTML="Cancelar Edición"
+        let tabla = document.querySelector("table.editable");
+        if (!tabla.editada) {
+            botonEditar.innerHTML = "Cancelar Edición"
             tabla.editar();
-        }else{
-            botonEditar.innerHTML="Editar";
+        } else {
+            botonEditar.innerHTML = "Editar";
             tabla.quitarEdicion();
         }
     }
 }
-function cerrarModal(modal){
-    return function(){
-        let selects=document.querySelectorAll("select");
-        selects.forEach((element)=>element.toDefault())
-        let botonEditar=document.querySelector(".editar");
+function cerrarModal(modal) {
+    return function () {
+        let selects = document.querySelectorAll("select");
+        selects.forEach((element) => element.toDefault())
+        let botonEditar = document.querySelector(".editar");
         document.querySelector(".botones").classList.add("hidden");
-        if (botonEditar.innerHTML!='Editar'){
-            botonEditar.innerHTML='Editar';
+        if (botonEditar.innerHTML != 'Editar') {
+            botonEditar.innerHTML = 'Editar';
         }
         modal.close();
     }
-    
-    
-    
+
+
+
 }
 
 
-function preSave(){
-    let modalDiv = document.querySelector(".modal");
-    let tabla=modalDiv.querySelector("table");
+function preSave(tabla) {
     let botonEditar = document.querySelector(".editar");
-    botonEditar.innerHTML="Editar";  
+    botonEditar.innerHTML = "Editar";
     tabla.quitarEdicion();
-              
-    if (!tabla.comprobarDuplicados(tabla.querySelector(".correo"))){
+    /* Validar datos y una vez validados hacer lo siguiente: */
+    let familia = document.querySelector('#familia').value;
+    let ciclo = document.querySelector('#ciclo').value;
+    let array = tabla.obtenerSeleccionados();
+    let filasValidas = array.filter(fila => !fila.classList.contains('seccion-header'));
+    let alumnos = filasValidas.map(fila => {
+        console.log(fila);
+        let nombre = fila.querySelector('.nombre').innerHTML;
+        let ap1 = fila.querySelector('.ap1').innerHTML;
+        let ap2 = fila.querySelector('.ap2').innerHTML;
+        let correo = fila.querySelector('.correo').innerHTML;
+        let fechaNacimiento = fila.querySelector('.fechaNacimiento').innerHTML;
+        let direccion = fila.querySelector('.direccion').innerHTML;
+        return new Alumno(nombre, ap1, ap2, correo, fechaNacimiento, direccion, familia, ciclo);
+    })
+    let json = JSON.stringify({ familia, ciclo, alumnos });
+    fetch('../api/apiAlumno.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'MOCK': true,
+            'AUTHORIZATION': 'bearer '
+        },
+        body: json
+    })
+        .then((res) => res.json())
+        .then((datos) => {
+            tabla.moveSubidos(datos, filasValidas);
+            tabla.desplegar();
 
-        /* Validar datos y una vez validados hacer lo siguiente: */
-        let familia=document.querySelector('#familia').value;
-        let ciclo=document.querySelector('#ciclo').value;
-        let array=tabla.obtenerSeleccionados();
-        let alumnos=array.map(fila=>{
-            let nombre=fila.querySelector('.nombre').innerHTML;
-            let ap1=fila.querySelector('.ap1').innerHTML;
-            let ap2=fila.querySelector('.ap2').innerHTML;
-            let correo=fila.querySelector('.correo').innerHTML;
-            let fechaNacimiento=fila.querySelector('.fechaNacimiento').innerHTML;
-            let direccion=fila.querySelector('.direccion').innerHTML;
-            return new Alumno(nombre,ap1,ap2,correo,fechaNacimiento,direccion,familia,ciclo);
         })
-        let json=JSON.stringify(alumnos);
-        fetch('../api/apiAlumno.php',{
-            method:'POST',
-            headers:{
-                'Content-Type': 'application/json',
-                'MOCK':true,
-                'AUTHORIZATION': 'bearer '
-            },
-            body:json
-        })
-        .then((res)=>JSON.parse(res))
-        
-        tabla.desplegar(); /* para cuando se inserte en el tbody de abajo hacer q sea un desplegable de campos */
-    }
+
+    tabla.desplegar(); /* para cuando se inserte en el tbody de abajo hacer q sea un desplegable de campos */
+
 }
 
 function enviarDatos(datos) {
@@ -178,7 +182,7 @@ function pintarTabla(plantilla, datos, elemento) {
     console.log(contenedor);
     let padreInfo = contenedor.querySelector(".nombre").parentElement;
     let abueloInfo = padreInfo.parentElement;
-    
+
     let size = datos.length;
     for (let i = 0; i < size; i++) {
         let nuevo = padreInfo.cloneNode(true);
@@ -186,8 +190,8 @@ function pintarTabla(plantilla, datos, elemento) {
         nuevo.querySelector(".ap1").innerHTML = datos[i].ap1;
         nuevo.querySelector(".ap2").innerHTML = datos[i].ap2;
         nuevo.querySelector(".correo").innerHTML = datos[i].correo;
-        nuevo.querySelector(".fechaNacimiento").innerHTML=datos[i].fechaNacimiento;
-        nuevo.querySelector(".direccion").innerHTML=datos[i].direccion;
+        nuevo.querySelector(".fechaNacimiento").innerHTML = datos[i].fechaNacimiento;
+        nuevo.querySelector(".direccion").innerHTML = datos[i].direccion;
         abueloInfo.appendChild(nuevo);
     }
     padreInfo.remove();
@@ -231,8 +235,8 @@ function modalAlumno() {
     eliminarElementosMenosElementos(modalDiv, botones);
     let modal = new Modal(modalDiv, document.querySelector(".velo"));
     modal.open();
-    let back=document.querySelector(".back");
-    back.addEventListener('click',cerrarModal(modal));
+    let back = document.querySelector(".back");
+    back.addEventListener('click', cerrarModal(modal));
     fetch("./assets/plates/datosAlumno.html")
         .then((x) => (x.text()))
         .then((plantilla) => {
@@ -265,7 +269,7 @@ function pintarAlumno(plantilla, datos, elemento) {
 
 function eliminarElementosMenosElementos(div, elementos) {
     let array = Array.from(div.children);
-    let elementosPermitidos=Array.from(elementos);
+    let elementosPermitidos = Array.from(elementos);
     array.forEach((x) => {
         if (!elementosPermitidos.includes(x)) {
             x.remove();

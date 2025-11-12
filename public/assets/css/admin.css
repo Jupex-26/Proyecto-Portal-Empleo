@@ -411,6 +411,9 @@ table.editable .seleccion {
     width: 80px;
 }
 
+td.seccion-header:hover{
+    cursor: pointer;
+}
 /* ==========================
    ICONOS Y BOTONES DE ACCIÓN
 ========================== */
