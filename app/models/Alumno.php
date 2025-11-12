@@ -19,7 +19,7 @@ class Alumno extends User {
     public function __construct(
         ?int $id = null,
         string $nombre = '',
-        string $email = '',
+        string $correo = '',
         int $rol = 3,
         string $direccion = '',
         string $passwd = '',
@@ -36,7 +36,7 @@ class Alumno extends User {
         parent::__construct(
             $id,
             $nombre,
-            $email,
+            $correo,
             $rol,
             $direccion,
             $passwd,
@@ -123,7 +123,7 @@ class Alumno extends User {
         $data = [
             'id' => $this->getId(),
             'nombre' => $this->getNombre(),
-            'email' => $this->getEmail(),
+            'correo' => $this->getcorreo(),
             'rol' => $this->getRol(),
             'direccion' => $this->getDireccion(),
             'foto' => $this->getFoto(),

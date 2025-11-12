@@ -46,7 +46,7 @@ public function findAll(): array {
         $empresas[] = new Empresa(
             id: (int)$row['id'],
             nombre: $row['nombre'],
-            email: $row['correo'],
+            correo: $row['correo'],
             rol: (int)$row['rol_id'],
             direccion: $row['direccion'],
             foto: $row['foto'] ?? '',
@@ -100,7 +100,7 @@ public function findById(int $id): ?Empresa {
     return new Empresa(
         id: (int)$row['id'],
         nombre: $row['nombre'],
-        email: $row['correo'],
+        correo: $row['correo'],
         rol: (int)$row['rol_id'],
         direccion: $row['direccion'],
         foto: $row['foto'] ?? '',
@@ -130,7 +130,7 @@ public function findById(int $id): ?Empresa {
             $stmtUser = $this->conn->prepare($sqlUser);
             $stmtUser->execute([
                 'nombre' => $entity->getNombre(),
-                'correo' => $entity->getEmail(),
+                'correo' => $entity->getCorreo(),
                 'passwd' => $entity->getPassword(),
                 'rol' => $entity->getRol(),
                 'direccion' => $entity->getDireccion(),
@@ -202,7 +202,7 @@ public function findById(int $id): ?Empresa {
             $stmtUser->execute([
                 'id' => $entity->getId(),
                 'nombre' => $entity->getNombre(),
-                'correo' => $entity->getEmail(),
+                'correo' => $entity->getCorreo(),
                 'passwd' => $entity->getPassword(),
                 'rol' => $entity->getRol(),
                 'direccion' => $entity->getDireccion(),
@@ -307,7 +307,7 @@ public function findById(int $id): ?Empresa {
         $empresas[] = new Empresa(
             id: (int)$row['id'],
             nombre: $row['nombre'],
-            email: $row['correo'],
+            correo: $row['correo'],
             rol: (int)$row['rol_id'],
             direccion: $row['direccion'],
             foto: $row['foto'] ?? '',

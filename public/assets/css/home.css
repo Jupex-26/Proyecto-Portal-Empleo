@@ -136,6 +136,9 @@ button.btn {
 .aprobado {
     color: var(--correcto);
 }
+.oculto{
+    display: none;
+}
 
 /* ==========================
    HEADER / NAVBAR

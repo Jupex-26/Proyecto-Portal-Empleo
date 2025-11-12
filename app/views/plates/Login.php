@@ -10,8 +10,8 @@ $this->start('main'); ?>
                 <h2>Iniciar Sesión</h2>
 
                 <form class="login-form" method="POST" action="?page=login">
-                    <input type="email" name="email" placeholder="Correo electrónico" required >
-                    <input type="password" name="passwd" placeholder="Contraseña" required>
+                    <input type="email" name="correo_login" placeholder="Correo electrónico" required >
+                    <input type="password" name="passwd_login" placeholder="Contraseña" required>
                     <button type="submit" name="enviar" class="btn login-btn">Ingresar</button>
                 </form>
 

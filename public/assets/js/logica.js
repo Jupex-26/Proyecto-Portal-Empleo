@@ -59,7 +59,7 @@ function manejarCarga(boton, modalDiv) {
                     .then((plantilla) => {
                         pintarTabla(plantilla, datos, modalDiv);
                         let tabla=modalDiv.querySelector("table");
-                        tabla.comprobarDuplicados(tabla.querySelector(".correo"));
+                        tabla.comprobarDuplicados(tabla.querySelector(".email"));
                         seleccionarTodos(modalDiv);
                         document.querySelector(".save").onclick = () => preSave();
                     })
@@ -120,8 +120,33 @@ function preSave(){
     let modalDiv = document.querySelector(".modal");
     let tabla=modalDiv.querySelector("table");
                         
-    if (!tabla.comprobarDuplicados(tabla.querySelector(".correo"))){
-        alert("Datos correctos, procediendo a guardar");
+    if (!tabla.comprobarDuplicados(tabla.querySelector(".email"))){
+
+        /* Validar datos y una vez validados hacer lo siguiente: */
+        let familia=document.querySelector('#familia').value;
+        let ciclo=document.querySelector('#ciclo').value;
+        let array=tabla.obtenerSeleccionados();
+        let alumnos=array.map(fila=>{
+            let nombre=fila.querySelector('.nombre').innerHTML;
+            let ap1=fila.querySelector('.ap1').innerHTML;
+            let ap2=fila.querySelector('.ap2').innerHTML;
+            let email=fila.querySelector('.email').innerHTML;
+            let fechaNacimiento=fila.querySelector('.fechaNacimiento').innerHTML;
+            let direccion=fila.querySelector('.direccion').innerHTML;
+            return new Alumno(nombre,ap1,ap2,email,fechaNacimiento,direccion,familia,ciclo);
+        })
+        let json=JSON.stringify(alumnos);
+        fetch('../api/apiAlumno.php',{
+            method:'POST',
+            headers:{
+                MOCK:true,
+                AUTHORIZATION: 'bearer '
+            },
+            body:json
+        })
+        .then((res)=>JSON.parse(res))
+        
+        tabla.desplegar(); /* para cuando se inserte en el tbody de abajo hacer q sea un desplegable de campos */
     }
 }
 
@@ -194,16 +219,17 @@ function pintarTabla(plantilla, datos, elemento) {
     eliminarElementosMenosElementos(elemento, botones);
     let contenedor = document.createElement("div");
     contenedor.innerHTML = plantilla;
+    console.log(contenedor);
     let padreInfo = contenedor.querySelector(".nombre").parentElement;
     let abueloInfo = padreInfo.parentElement;
     
     let size = datos.length;
     for (let i = 0; i < size; i++) {
         let nuevo = padreInfo.cloneNode(true);
-        nuevo.querySelector(".nombre").innerHTML = datos[i].Nombre;
-        nuevo.querySelector(".ap1").innerHTML = datos[i].Ap1;
-        nuevo.querySelector(".ap2").innerHTML = datos[i].Ap2;
-        nuevo.querySelector(".correo").innerHTML = datos[i].correo;
+        nuevo.querySelector(".nombre").innerHTML = datos[i].nombre;
+        nuevo.querySelector(".ap1").innerHTML = datos[i].ap1;
+        nuevo.querySelector(".ap2").innerHTML = datos[i].ap2;
+        nuevo.querySelector(".email").innerHTML = datos[i].email;
         nuevo.querySelector(".fechaNacimiento").innerHTML=datos[i].fechaNacimiento;
         nuevo.querySelector(".direccion").innerHTML=datos[i].direccion;
         abueloInfo.appendChild(nuevo);
@@ -216,21 +242,6 @@ function pintarTabla(plantilla, datos, elemento) {
 
 }
 
-/* function comprobarDuplicados(tbody) {
-    let filas = Array.from(tbody.children);
-    let nombres = new Set();
-    let valido = false;
-    filas.forEach((fila) => {
-        let nombre = fila.querySelector(".correo").innerHTML;
-        if (nombres.has(nombre)) {
-            fila.classList.add("duplicado");
-            valido = true;
-        } else {
-            nombres.add(nombre);
-        }
-    });
-    return valido;
-} */
 
 function pintarDatos(plantilla, datos, elemento) {
     let botones = elemento.querySelectorAll(".botones");
@@ -246,7 +257,7 @@ function pintarDatos(plantilla, datos, elemento) {
         nuevo.querySelector(".nombre").innerHTML = datos[i].nombre;
         nuevo.querySelector(".ap1").innerHTML = datos[i].ap1;
         nuevo.querySelector(".ap2").innerHTML = datos[i].ap2;
-        nuevo.querySelector(".correo").innerHTML = datos[i].email;
+        nuevo.querySelector(".email").innerHTML = datos[i].email;
         nuevo.onclick = () => modalAlumno();
         abueloInfo.appendChild(nuevo);
     }
@@ -287,7 +298,7 @@ function pintarAlumno(plantilla, datos, elemento) {
     contenedor.querySelector("#nombre").value = datos.Nombre;
     contenedor.querySelector("#ap1").value = datos.Ap1;
     contenedor.querySelector("#ap2").value = datos.Ap2;
-    contenedor.querySelector("#correo").value = datos.correo;
+    contenedor.querySelector("#email").value = datos.email;
     contenedor.querySelector("#direccion").value = datos.direccion;
     while (contenedor.children.length > 0) {
 

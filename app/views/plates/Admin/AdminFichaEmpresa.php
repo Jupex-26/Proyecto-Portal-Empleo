@@ -10,7 +10,7 @@
     <div class="bottom-section">
         <div class="empresa-group">
                 <label>Correo:</label>
-                <p><?= $empresa->getEmail() ?></p>
+                <p><?= $empresa->getCorreo() ?></p>
         </div>
         <div class="empresa-group">
             <label>Dirección:</label>

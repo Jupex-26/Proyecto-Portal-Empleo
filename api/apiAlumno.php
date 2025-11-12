@@ -7,6 +7,7 @@ require PROJECT_ROOT . 'vendor/autoload.php';
 
 use app\repositories\RepoAlumno;
 use app\repositories\RepoFamilia;
+use app\repositories\RepoUser;
 use app\repositories\RepoCiclo;
 use app\helpers\Converter;
 use app\helpers\Validator;
@@ -126,20 +127,9 @@ ini_set('display_startup_errors', 1);
     *   "email": "maria.lopez@example.com",
     *   "rol": 1,
     *   "direccion": "Calle Sol 22",
-    *   "foto": "maria.jpg",
-    *   "ciclos": [
-    *   {
-    *   "ciclo": "2023",
-    *   "inicio": "2023-01-10",
-    *   "fin": "2023-06-20"
-    *   },
-    *   {
-    *   "ciclo": "2024",
-    *   "inicio": "2024-01-15",
-    *   "fin": "2024-06-25"
-    *   }
-    *   ],
-    *   "cv": "cv_maria.pdf",
+    *   "familia":"familia";
+    *   "ciclo":"ciclo";
+    *   
     *   "fechaNacimiento": "2000-05-20"
  *  }
  *
@@ -150,10 +140,25 @@ function manejarPost(){
     $validator=new Validator();
     $mock=$_SERVER['HTTP_MOCK']??false;
     if ($mock){
-        list($nombre,$ap1,$ap2,$correo,$direccion,$fecha)=$data;
-        $validator->validarNombre($nombre);
-        $validator->validarNombre($ap1);
-        $validator->validarNombre($ap2);
+        $json = file_get_contents('php://input');
+        $array=json_decode($json,true);
+        $familia=$array['familia'];
+        $ciclo=$array['ciclo'];
+        /* Añadir el validator y pasarle los strings, para la fecha hacer uso de:
+            $fecha = DateTime::createFromFormat('d/m/Y', fecha);
+         */
+        $alumnos=array_map(fn($array)=>new Alumno(
+            nombre:$array['nombre'],
+            ap1: $array['ap1'],
+            ap2: $array['ap2'],
+            email: $array['email'], 
+            fechaNacimiento: new DateTime($array['fechaNacimiento']),
+            direccion: $array['direccion']),
+        $array);
+        $correos=array_map(fn($alumno)=>$alumno->getEmail(),$alumnos);
+        $repoUser=new RepoUser();
+        $correos_existentes=$repo->existenCorreos($correos);
+        
     }else{
         
     }

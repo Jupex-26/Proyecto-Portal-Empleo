@@ -371,13 +371,14 @@ table tbody tr {
     transition: background-color 0.2s ease;
 }
 
-table tbody tr:nth-child(even) {
+table tbody tr:nth-child(even):not(.duplicado) {
     background-color: var(--fondo);
 }
 
 table tbody tr:hover {
     background-color: var(--fondo-header);
 }
+
 
 table td {
     color: var(--color-principal);

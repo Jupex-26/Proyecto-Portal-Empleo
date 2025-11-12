@@ -180,7 +180,10 @@ HTMLTableElement.prototype.changeSeleccion=function(){
 HTMLTableElement.prototype.comprobarDuplicados=function(campo){
     let tbody=campo.parentElement.parentElement;
     let clase="."+campo.classList[0];
-    let filas = Array.from(tbody.children);
+    /* Paso un filtro para no comprobar los tr con la clase seccion-header */
+    let filas = Array.from(tbody.children).filter(child => 
+        child.tagName === 'TR' && !child.classList.contains('seccion-header')
+    );
     let nombres = new Set();
     let valido = false;
     filas.forEach((fila) => {
@@ -193,4 +196,33 @@ HTMLTableElement.prototype.comprobarDuplicados=function(campo){
         }
     });
     return valido;
+}
+
+HTMLTableElement.prototype.desplegar = function() {
+    let tbody = this.querySelector('.response');
+    let desplegar = tbody.querySelector('.seccion-header');
+    
+    desplegar.onclick = function() {
+        Array.from(tbody.children).forEach((fila) => {
+            if (fila !== desplegar) {
+                fila.classList.toggle('oculto');
+            }
+        });
+    }
+}
+
+HTMLTableElement.prototype.obtenerSeleccionados=function(){
+    let tbody = this.querySelector('.request');
+    let checkboxes=tbody.querySelectorAll('input[type="checkbox"]:checked');
+    if (checkboxes.length>0){
+        let seleccionados=Array.from(checkboxes).filter(checkbox=>{
+            let fila=checkbox.parentElement.parentElement;
+            return !fila.classList.contains('duplicado');
+        });
+        return seleccionados;
+    }else{
+        return[];
+    }
+    
+
 }

@@ -41,7 +41,7 @@ class RepoUser implements RepoMethods {
             $usuarios[] = new User(
                 id: (int)$row['id'],
                 nombre: $row['nombre'],
-                email: $row['correo'],
+                correo: $row['correo'],
                 rol: (int)$row['rol_id'],
                 direccion: $row['direccion'],
                 passwd: $row['passwd'],
@@ -85,7 +85,7 @@ class RepoUser implements RepoMethods {
         return new User(
             id: (int)$row['id'],
             nombre: $row['nombre'],
-            email: $row['correo'],
+            correo: $row['correo'],
             rol: (int)$row['rol_id'],
             direccion: $row['direccion'],
             passwd: $row['passwd'],
@@ -111,7 +111,7 @@ class RepoUser implements RepoMethods {
             $stmt = $this->conn->prepare($sql);
             $stmt->execute([
                 ':nombre'     => $user->getNombre(),
-                ':correo'     => $user->getEmail(),
+                ':correo'     => $user->getCorreo(),
                 ':passwd'     => $user->getPassword(),
                 ':rol'        => $user->getRol(),
                 ':direccion'  => $user->getDireccion(),
@@ -148,7 +148,7 @@ class RepoUser implements RepoMethods {
             $stmt->execute([
                 ':id'         => $user->getId(),
                 ':nombre'     => $user->getNombre(),
-                ':correo'     => $user->getEmail(),
+                ':correo'     => $user->getCorreo(),
                 ':passwd'     => $user->getPassword(),
                 ':rol'        => $user->getRol(),
                 ':direccion'  => $user->getDireccion(),
@@ -182,7 +182,7 @@ class RepoUser implements RepoMethods {
     /**
      * Busca un usuario por email y contraseña (verificación segura).
      */
-    public function findUser(string $email, string $pass): ?User {
+    public function findUser(string $correo, string $pass): ?User {
         $sql = "
             SELECT 
                 u.id,
@@ -194,11 +194,11 @@ class RepoUser implements RepoMethods {
                 u.foto,
                 u.token_id
             FROM user u
-            WHERE u.correo = :email and u.passwd = :passwd
+            WHERE u.correo = :correo and u.passwd = :passwd
         ";
 
         $stmt = $this->conn->prepare($sql);
-        $stmt->bindParam(':email', $email, PDO::PARAM_STR);
+        $stmt->bindParam(':correo', $correo, PDO::PARAM_STR);
         $stmt->bindParam(':passwd', $pass, PDO::PARAM_STR);
         $stmt->execute();
 
@@ -210,7 +210,7 @@ class RepoUser implements RepoMethods {
         return new User(
             id: (int)$row['id'],
             nombre: $row['nombre'],
-            email: $row['correo'],
+            correo: $row['correo'],
             rol: (int)$row['rol_id'],
             direccion: $row['direccion'],
             passwd: $row['passwd'],
@@ -227,14 +227,38 @@ class RepoUser implements RepoMethods {
      * @param  mixed $correo
      * @return bool
      */
-    public function correoExiste(string $correo): bool
-{
-    $sql = "SELECT COUNT(*) FROM user WHERE correo = :correo";
-    $stmt = $this->conn->prepare($sql);
-    $stmt->execute(['correo' => $correo]);
-    $count = $stmt->fetchColumn();
+    public function correoExiste(string $correo): bool{
+        $sql = "SELECT COUNT(*) FROM user WHERE correo = :correo";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute(['correo' => $correo]);
+        $count = $stmt->fetchColumn();
 
-    return $count > 0;
-}
+        return $count > 0;
+    }
+
+
+    /**
+     * Devuelve un array con los emails que ya existen en la base de datos
+     * @param array $correos
+     * @return array
+     */
+    public function existenCorreos(array $correos): array {
+        if (empty($correos)) {
+            return [];
+        }
+
+        // Crear placeholders para la consulta (ej. ?, ?, ?)
+        $placeholders = implode(',', array_fill(0, count($correos), '?'));
+
+        // Consulta SQL
+        $sql = "SELECT correo FROM user WHERE correo IN ($placeholders)";
+        $stmt = $this->db->prepare($sql);
+
+        // Ejecutar la consulta pasando el array de correos
+        $stmt->execute($correos);
+
+        // Devolver solo los emails que existen
+        return $stmt->fetchAll(PDO::FETCH_COLUMN);
+    }
 }
 ?>

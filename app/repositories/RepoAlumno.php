@@ -47,7 +47,7 @@ class RepoAlumno implements RepoMethods {
             $alumnos[] = new Alumno(
                 id: (int)$row['id'],
                 nombre: $row['nombre'],
-                email: $row['correo'],
+                correo: $row['correo'],
                 rol: (int)$row['rol_id'],
                 direccion: $row['direccion'],
                 foto: $row['foto'] ?? '',
@@ -103,7 +103,7 @@ class RepoAlumno implements RepoMethods {
         return new Alumno(
             id: (int)$row['id'],
             nombre: $row['nombre'],
-            email: $row['correo'],
+            correo: $row['correo'],
             rol: (int)$row['rol_id'],
             direccion: $row['direccion'],
             foto: $row['foto'] ?? '',
@@ -137,7 +137,7 @@ class RepoAlumno implements RepoMethods {
             $stmtUser = $this->conn->prepare($sqlUser);
             $stmtUser->execute([
                 ':nombre'     => $alumno->getNombre(),
-                ':correo'     => $alumno->getEmail(),
+                ':correo'     => $alumno->getCorreo(),
                 ':passwd'     => $alumno->getPassword(),
                 ':rol'        => $alumno->getRol(),
                 ':direccion'  => $alumno->getDireccion(),
@@ -192,7 +192,7 @@ class RepoAlumno implements RepoMethods {
             $stmtUser->execute([
                 ':id'         => $alumno->getId(),
                 ':nombre'     => $alumno->getNombre(),
-                ':correo'     => $alumno->getEmail(),
+                ':correo'     => $alumno->getCorreo(),
                 ':passwd'   => $alumno->getPassword(),
                 ':rol'        => $alumno->getRol(),
                 ':direccion'  => $alumno->getDireccion(),
@@ -250,7 +250,7 @@ class RepoAlumno implements RepoMethods {
         }
     }
 
-    public function findUser(string $email,string $pass){
+    public function findUser(string $correo,string $pass){
         $sql = "
         SELECT 
             u.id,
@@ -268,12 +268,12 @@ class RepoAlumno implements RepoMethods {
             a.descripcion
         FROM user u
         INNER JOIN alumno a ON u.id = a.id
-        WHERE u.correo = :email
+        WHERE u.correo = :correo
           AND u.passwd = :pass
     ";
 
     $stmt = $this->conn->prepare($sql);
-    $stmt->bindParam(':email', $email, PDO::PARAM_STR);
+    $stmt->bindParam(':correo', $correo, PDO::PARAM_STR);
     $stmt->bindParam(':pass', $pass, PDO::PARAM_STR);
     $stmt->execute();
 
@@ -285,7 +285,7 @@ class RepoAlumno implements RepoMethods {
     return new Alumno(
         id: (int)$row['id'],
         nombre: $row['nombre'],
-        email: $row['correo'],
+        correo: $row['correo'],
         rol: (int)$row['rol_id'],
         direccion: $row['direccion'],
         passwd: $row['passwd'],

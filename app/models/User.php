@@ -3,7 +3,7 @@ namespace app\models;
 class User{
     private ?int $id;
     private string $nombre;
-    private string $email;
+    private string $correo;
     private int $rol;
     private string $direccion;
     private string $passwd;
@@ -12,12 +12,12 @@ class User{
 
     /**
         * Se necesita indicar la propiedad a la hora de instanciar el objeto, Ejemplo:
-        * $user=new User(nombre:$nombre,email:$email)
+        * $user=new User(nombre:$nombre,correo:$correo)
     */
     public function __construct(
         ?int $id=null,
         string $nombre='',
-        string $email='',
+        string $correo='',
         int $rol=1,
         string $direccion='',
         string $passwd='',
@@ -26,7 +26,7 @@ class User{
     ) {
         $this->id = $id;
         $this->nombre = $nombre;
-        $this->email = $email;
+        $this->correo = $correo;
         $this->rol = $rol;
         $this->direccion = $direccion;
         $this->passwd = $passwd;
@@ -43,8 +43,8 @@ class User{
         return $this->nombre;
     }
 
-    public function getEmail(): string {
-        return $this->email;
+    public function getCorreo(): string {
+        return $this->correo;
     }
 
     public function getRol(): int {
@@ -78,8 +78,8 @@ class User{
         $this->nombre = $nombre;
     }
 
-    public function setEmail(string $email): void {
-        $this->email = $email;
+    public function setCorreo(string $correo): void {
+        $this->correo = $correo;
     }
 
     public function setRol(int $rol): void {

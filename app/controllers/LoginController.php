@@ -25,17 +25,17 @@ class LoginController {
         print_r($usuario); */
         
         if ($_POST){
-            $email=$_POST['email'];
-            $pass=$_POST['passwd'];
+            $correo=$_POST['correo_login'];
+            $pass=$_POST['passwd_login'];
             $validator=new Validator();
-            $validator->validarEmail('email', $_POST);
+            $validator->validarCorreo('correo_login', $_POST);
             $bool=$validator->ValidacionPasada();
             
             /* $pass_hash=Converter::passwdToHash($pass); */ // TO-DO
             if ($bool){
                 echo $bool;
                 $repo=new RepoUser();
-                $user=$repo->findUser($email,$pass);
+                $user=$repo->findUser($correo,$pass);
                 if ($user){
                     echo "españa va bien";
                     $user=$this->getUser($user);
@@ -49,8 +49,8 @@ class LoginController {
                  
                 /* Generar Token */
             }else{
-                echo "not work";
-                $validator->ImprimirError($email);
+                echo "not work".$correo;
+                $validator->imprimirError('correo');
                 echo $this->templates->render('login');
             }
             

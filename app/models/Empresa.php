@@ -10,12 +10,12 @@ class Empresa extends User{
 
     /**
         * Se necesita indicar la propiedad a la hora de instanciar el objeto, Ejemplo:
-        * $empresa=new Empresa(nombre:$nombre,email:$email)
+        * $empresa=new Empresa(nombre:$nombre,correo:$correo)
     */
     public function __construct(
         ?int $id=null,
         string $nombre='',
-        string $email='',
+        string $correo='',
         int $rol=2,
         string $direccion='',
         string $passwd='',
@@ -32,7 +32,7 @@ class Empresa extends User{
         parent::__construct(
             $id,
             $nombre,
-            $email,
+            $correo,
             $rol,
             $direccion,
             $passwd,

@@ -60,15 +60,15 @@ class Validator{
     }
 }
     /**
-* Comprueba si el campo es un email válido (versión estricta con DNS)
+* Comprueba si el campo es un Correo válido (versión estricta con DNS)
 * @param string $nombreCampo El nombre del campo (para la clave del error).
-* @param string $valor El valor a validar (el email).
+* @param string $valor El valor a validar (el Correo).
 * @return boolean
 */
-public function validarEmail (string $nombreCampo, array $array): bool {
+public function validarCorreo (string $nombreCampo, array $array): bool {
     // 1. Verificación de valor vacío
     if (empty($array[$nombreCampo])) {
-        $this->errores[$nombreCampo] = "El email no debe estar vacío";
+        $this->errores[$nombreCampo] = "El Correo no debe estar vacío";
         return false;
     }
 
@@ -76,14 +76,14 @@ public function validarEmail (string $nombreCampo, array $array): bool {
 
     // 2. Primero, verifica el formato estándar
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $this->errores[$nombreCampo] = "El email tiene un formato incorrecto.";
+        $this->errores[$nombreCampo] = "El Correo tiene un formato incorrecto.";
         return false;
     }
 
     // 3. Verificación de DNS (ESTRICTO)
     list(, $dominio) = explode('@', $email);
     if (!checkdnsrr($dominio, 'MX') && !checkdnsrr($dominio, 'A')) {
-        $this->errores[$nombreCampo] = "El dominio del email no parece existir.";
+        $this->errores[$nombreCampo] = "El dominio del Correo no parece existir.";
         return false;
     }
 

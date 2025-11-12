@@ -21,7 +21,7 @@
         </div>
         <div class="form-group">
           <label for="correo">Correo:</label>
-          <input type="email" id="correo" name="correo" placeholder="Ingresa tu correo" required value="<?= $empresa->getEmail()?>">
+          <input type="email" id="correo" name="correo" placeholder="Ingresa tu correo" required value="<?= $empresa->getCorreo()?>">
           <?= $validator->imprimirError('correo');?>
         </div>
       </div>

@@ -11,13 +11,25 @@ use app\helpers\Validator;
 use app\models\User;
 use app\models\Empresa;
 
+/**
+ * Controlador encargado de gestionar las operaciones CRUD y vistas relacionadas con las empresas.
+ * 
+ * @package app\controllers
+ */
 class EmpresaController {
-    private $templates; // Motor de templates Plates
-    private $user;      // Usuario logueado
-    private $page;      // Página actual (sanitizada desde GET)
+    /** @var Engine Motor de plantillas Plates */
+    private $templates;
+
+    /** @var User Usuario actualmente logueado */
+    private $user;
+
+    /** @var string Página actual (obtenida desde GET) */
+    private $page;
 
     /**
-     * Constructor: inicializa plates, usuario y página actual
+     * Constructor: inicializa el motor de plantillas, la sesión del usuario y la página actual.
+     * 
+     * @param string $platePath Ruta a las plantillas de Plates
      */
     public function __construct($platePath) {
         $this->templates = new Engine($platePath);
@@ -26,7 +38,10 @@ class EmpresaController {
     }
 
     /**
-     * Método principal: decide acción a ejecutar según GET['accion']
+     * Método principal del controlador: determina qué acción ejecutar según el parámetro GET['accion'].
+     * Redirige si el usuario no tiene permisos.
+     * 
+     * @return void
      */
     public function index() {
         if (Login::isLogin() && $this->user->getRol() == 1) {
@@ -57,7 +72,10 @@ class EmpresaController {
     // =====================================================
 
     /**
-     * Listado de empresas activas
+     * Muestra el listado de empresas activas o procesa acciones POST sobre ellas.
+     * 
+     * @param string $accion Acción actual
+     * @return void
      */
     private function manejarListado($accion) {
         $repo = new RepoEmpresa();
@@ -71,7 +89,10 @@ class EmpresaController {
     }
 
     /**
-     * Maneja solicitudes de empresas (aprobación)
+     * Muestra y gestiona las solicitudes de empresas (pendientes de aprobación).
+     * 
+     * @param string $accion Acción actual
+     * @return void
      */
     private function manejarSolicitudes($accion) {
         $repo = new RepoEmpresa();
@@ -88,7 +109,13 @@ class EmpresaController {
     }
 
     /**
-     * Valida y guarda una nueva empresa.
+     * Procesa y valida los datos de una nueva empresa antes de guardarla.
+     * 
+     * @param Empresa $empresa Objeto empresa a procesar
+     * @param Validator $validator Instancia del validador
+     * @param array $postData Datos enviados por formulario
+     * @param array|null $fileData Datos del archivo subido
+     * @return void
      */
     private function procesarNuevaEmpresa(Empresa $empresa, Validator $validator, array $postData, ?array $fileData): void {
         $validator->requiredFile('foto');
@@ -104,7 +131,12 @@ class EmpresaController {
     }
 
     /**
-     * Renderiza el formulario para nueva empresa.
+     * Renderiza el formulario de creación o edición de una empresa.
+     * 
+     * @param Empresa $empresa Empresa actual
+     * @param Validator $validator Validador de campos
+     * @param string $accion Acción actual
+     * @return void
      */
     private function renderFormularioEmpresa(Empresa $empresa, Validator $validator, string $accion): void {
         echo $this->templates->render('Admin/AdminFormEmpresa', [
@@ -117,7 +149,10 @@ class EmpresaController {
     }
 
     /**
-     * Maneja la lógica completa de creación de empresa.
+     * Controla la lógica completa de registro de una nueva empresa.
+     * 
+     * @param string $accion Acción actual
+     * @return void
      */
     private function manejarNewEmpresa(string $accion) {
         $validator = new Validator();
@@ -132,11 +167,19 @@ class EmpresaController {
         echo $this->renderFormularioEmpresa($empresa, $validator, $accion);
     }
 
-
     // =====================================================
     // MÉTODOS AUXILIARES DE ACCIÓN (EDITAR, ELIMINAR, VER, GUARDAR)
     // =====================================================
 
+    /**
+     * Edita una empresa existente.
+     * 
+     * @param RepoEmpresa $repo Repositorio de empresas
+     * @param string $pageAccion Página actual
+     * @param array $postData Datos del formulario
+     * @param string $accion Acción actual
+     * @return void
+     */
     private function editarEmpresa($repo, $pageAccion, $postData, $accion) {
         $id = filter_var($postData['id'] ?? null, FILTER_VALIDATE_INT);
         $empresa = $repo->findById($id);
@@ -162,6 +205,14 @@ class EmpresaController {
         ]);
     }
 
+    /**
+     * Muestra la vista de confirmación o elimina una empresa.
+     * 
+     * @param RepoEmpresa $repo Repositorio de empresas
+     * @param string $pageAccion Página actual
+     * @param array $postData Datos del formulario
+     * @return void
+     */
     private function eliminarEmpresa($repo, $pageAccion, $postData) {
         $id = filter_var($postData['id'] ?? null, FILTER_VALIDATE_INT);
 
@@ -183,6 +234,14 @@ class EmpresaController {
         }
     }
 
+    /**
+     * Muestra los detalles de una empresa seleccionada.
+     * 
+     * @param RepoEmpresa $repo Repositorio de empresas
+     * @param string $pageAccion Página actual
+     * @param array $postData Datos del formulario
+     * @return void
+     */
     private function verEmpresa($repo, $pageAccion, $postData) {
         if (isset($postData['action']) && $postData['action'] === 'cancelar') {
             header("location:?page=".$this->page."&accion=".$pageAccion);
@@ -198,9 +257,19 @@ class EmpresaController {
         }
     }
 
+    /**
+     * Guarda los cambios realizados sobre una empresa validando los datos.
+     * 
+     * @param Empresa $empresa Empresa a modificar
+     * @param Validator $validator Validador de campos
+     * @param RepoEmpresa $repo Repositorio de empresas
+     * @param array $postData Datos del formulario
+     * @param array|null $fileData Archivo subido
+     * @return void
+     */
     private function manejarGuardar($empresa, $validator, $repo, $postData, $fileData) {
         $this->validarEmpresa($validator, $postData, $fileData);
-        if ($empresa->getEmail() == ($postData['correo'] ?? '')) {
+        if ($empresa->getCorreo() == ($postData['correo'] ?? '')) {
             $validator->remove('correo');
         }
         $this->actualizarEmpresa($empresa, $postData, $fileData);
@@ -214,9 +283,17 @@ class EmpresaController {
     // MÉTODOS DE VALIDACIÓN Y ACTUALIZACIÓN
     // =====================================================
 
+    /**
+     * Valida los campos de una empresa.
+     * 
+     * @param Validator $validator Instancia del validador
+     * @param array $data Datos del formulario
+     * @param array|null $fileData Archivo subido
+     * @return void
+     */
     private function validarEmpresa($validator, $data, $fileData) {
-        $validator->validarEmail('correo', $data);
-        $validator->validarEmail('correo_contacto', $data);
+        $validator->validarCorreo('correo', $data);
+        $validator->validarCorreo('correo_contacto', $data);
         $validator->validarTelefono('telefono_contacto', $data);
         $validator->validarNombre('nombre', $data);
         $validator->required('direccion', $data);
@@ -232,10 +309,18 @@ class EmpresaController {
         }
     }
 
+    /**
+     * Actualiza los datos de una empresa con los valores recibidos.
+     * 
+     * @param Empresa $empresa Objeto empresa a actualizar
+     * @param array $data Datos del formulario
+     * @param array|null $fileData Archivo subido
+     * @return void
+     */
     private function actualizarEmpresa($empresa, $data, $fileData) {
         $foto_url = $this->guardarFoto($empresa, $fileData);
         $empresa->setNombre($data['nombre'] ?? $empresa->getNombre());
-        $empresa->setEmail($data['correo'] ?? $empresa->getEmail());
+        $empresa->setCorreo($data['correo'] ?? $empresa->getCorreo());
         $empresa->setCorreoContacto($data['correo_contacto'] ?? $empresa->getCorreoContacto());
         $empresa->setTelefonoContacto($data['telefono_contacto'] ?? $empresa->getTelefonoContacto());
         $empresa->setDireccion($data['direccion'] ?? $empresa->getDireccion());
@@ -248,12 +333,16 @@ class EmpresaController {
     // =====================================================
 
     /**
-     * Guarda la foto subida en carpeta assets/img
+     * Guarda la imagen subida en la carpeta de assets.
+     * 
+     * @param Empresa $empresa Empresa relacionada con la imagen
+     * @param array|null $fileData Datos del archivo subido
+     * @return string Nombre final del archivo guardado
      */
     private function guardarFoto($empresa, $fileData) {
         $directorio = "./assets/img/";
         $validator = new Validator();
-        $nombreFinal = $empresa->getFoto(); // Mantener nombre anterior por defecto
+        $nombreFinal = $empresa->getFoto();
 
         if ($fileData && $fileData['error'] === UPLOAD_ERR_OK) {
             $nombreTemp = $fileData['tmp_name'];
@@ -269,9 +358,13 @@ class EmpresaController {
     }
 
     /**
-     * Obtiene los datos paginados de empresas.
+     * Obtiene las empresas paginadas según estado (activas o no).
+     * 
+     * @param bool $activo Define si se buscan empresas activas
+     * @param RepoEmpresa $repo Repositorio de empresas
+     * @return array Datos paginados con empresas y metainformación
      */
-    private function obtenerEmpresasPaginadas(bool $activo, $repo) {
+    private function obtenerEmpresasPaginadas(bool $activo, $repo, $accion) {
         $total = $repo->getCount($activo);
         $page = filter_input(INPUT_GET, 'pagina', FILTER_VALIDATE_INT, [
             'options' => ['default' => 1, 'min_range' => 1]
@@ -285,19 +378,21 @@ class EmpresaController {
         if ($page > $pages) $page--;
 
         $empresas = $repo->findAllLimitWActive($index, $size, $activo);
-        $paginator = Paginator::renderPagination($page, $size, $pages, $this->page);
+        $paginator = Paginator::renderPagination($page, $size, $pages, $accion, $this->page);
 
         return [
             'empresas' => $empresas,
-            'paginator' => $paginator,
-            'page' => $page,
-            'size' => $size,
-            'pages' => $pages,
+            'paginator' => $paginator
         ];
     }
 
     /**
-     * Renderiza la vista de listado de empresas.
+     * Renderiza la vista del listado de empresas.
+     * 
+     * @param array $datos Datos de las empresas y paginación
+     * @param bool $activo Indica si se muestran activas
+     * @param string $accion Acción actual
+     * @return void
      */
     private function mostrarListadoEmpresas(array $datos, bool $activo, string $accion) {
         echo $this->templates->render('Admin/AdminListado', [
@@ -310,15 +405,25 @@ class EmpresaController {
     }
 
     /**
-     * Orquesta la paginación y el renderizado.
+     * Combina la obtención de empresas paginadas y su renderizado.
+     * 
+     * @param bool $activo Si las empresas deben ser activas
+     * @param RepoEmpresa $repo Repositorio de empresas
+     * @param string $accion Acción actual
+     * @return void
      */
     private function paginacionListadoEmpresas(bool $activo, $repo, $accion) {
-        $datos = $this->obtenerEmpresasPaginadas($activo, $repo);
+        $datos = $this->obtenerEmpresasPaginadas($activo, $repo, $accion);
         $this->mostrarListadoEmpresas($datos, $activo, $accion);
     }
 
     /**
-     * Determina acción según POST['accion']
+     * Determina qué acción ejecutar según el valor POST['accion'].
+     * 
+     * @param RepoEmpresa $repo Repositorio de empresas
+     * @param string $pageAccion Página actual
+     * @param array $postData Datos del formulario
+     * @return void
      */
     private function chooseAction($repo, $pageAccion, $postData) {
         $accion = $postData['accion'] ?? '';
@@ -336,7 +441,12 @@ class EmpresaController {
     }
 
     /**
-     * Activa una empresa
+     * Activa una empresa pendiente de aprobación.
+     * 
+     * @param RepoEmpresa $repo Repositorio de empresas
+     * @param string $pageAccion Página actual
+     * @param array $postData Datos del formulario
+     * @return void
      */
     private function activateEmpresa($repo, $pageAccion, $postData) {
         $id = filter_var($postData['id'] ?? null, FILTER_VALIDATE_INT);

@@ -24,7 +24,7 @@
             <div class="listado-empresa">
                 <p><?= $empresa->getId(); ?></p>
                 <p><?= $empresa->getNombre(); ?></p>
-                <p><?= $empresa->getEmail(); ?></p>
+                <p><?= $empresa->getCorreo(); ?></p>
                 <form action="?page=<?=$page?>&accion=<?=$accion?>" method="POST">
                     <button name="accion" class="editar" value="editar"><img src="./assets/img/editar.png" alt="editar"></button>
                     <button name="accion" class="ver" value="ver"><img src="./assets/img/ver.png" alt="ver"></button>
