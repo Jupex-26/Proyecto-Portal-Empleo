@@ -163,7 +163,9 @@ HTMLTableRowElement.prototype.cancelar=function(){
 
 HTMLTableElement.prototype.quitarEdicion=function(){
     this.editada=false;
-        let array=document.querySelectorAll(".edit");
+    let trs=Array.from(this.querySelector('.request').children);
+    trs.map((tr)=>tr.cancelar());
+    let array=document.querySelectorAll(".edit");
         array.forEach(element => {
             element.remove();
         });

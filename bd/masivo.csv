@@ -1,0 +1,21 @@
+id;nombre;ap1;ap2;correo;fechaNacimiento;direccion
+1;Carlos;Gómez;López;carlos.gomez1@gmail.com;1990-05-12;Calle Falsa 123, Madrid
+2;María;Pérez;Ruiz;maria.perez2@gmail.com;1992-08-23;Avenida del Sol 45, Barcelona
+3;José;Martínez;Santos;jose.martinez3@gmail.com;1988-11-03;Calle Mayor 12, Valencia
+4;Lucía;Hernández;García;lucia.hernandez4@gmail.com;1995-02-19;Plaza Nueva 7, Sevilla
+5;Andrés;Ramírez;Torres;andres.ramirez5@gmail.com;1991-07-08;Calle Real 34, Bilbao
+6;Elena;Morales;Fernández;elena.morales6@gmail.com;1993-09-14;Avenida de la Paz 56, Málaga
+7;Javier;Castro;Ortega;javier.castro7@gmail.com;1989-12-22;Calle Luna 9, Zaragoza
+8;Sofía;Navarro;Delgado;sofia.navarro8@gmail.com;1994-06-30;Paseo del Prado 21, Granada
+9;Raúl;Flores;Mendoza;raul.flores9@gmail.com;1990-03-15;Calle Victoria 17, Murcia
+10;Ana;Serrano;Reyes;ana.serrano10@gmail.com;1992-10-05;Avenida Constitución 3, Salamanca
+11;Miguel;Vargas;Campos;miguel.vargas11@gmail.com;1987-01-28;Calle Jardín 8, Toledo
+12;Laura;Silva;Carrillo;laura.silva12@gmail.com;1991-04-19;Plaza Mayor 11, Valladolid
+13;David;Cruz;Romero;david.cruz13@gmail.com;1993-07-02;Calle Gran Vía 14, León
+14;Paula;Iglesias;Rojas;paula.iglesias14@gmail.com;1990-09-21;Avenida Libertad 5, Cádiz
+15;Alberto;Fuentes;Vega;alberto.fuentes15@gmail.com;1988-11-17;Calle Olivo 27, Salamanca
+16;Isabel;Cortés;Soto;isabel.cortes16@gmail.com;1995-01-03;Paseo de las Flores 42, Girona
+17;Daniel;Núñez;León;daniel.nunez17@gmail.com;1992-05-28;Calle del Sol 19, Pamplona
+18;Patricia;Ramos;Moreno;patricia.ramos18@gmail.com;1991-12-11;Avenida de Europa 33, Santander
+19;Sergio;Lara;Campos;laura.silva12@gmail.com;1990-08-07;Calle Río 16, Logroño
+20;Natalia;Molina;Pérez;natalia.molina20@gmail.com;1993-03-25;Plaza de la Cruz 6, Oviedo

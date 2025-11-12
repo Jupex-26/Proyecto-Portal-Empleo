@@ -51,7 +51,7 @@ function manejarCarga(boton, modalDiv) {
         if (fichero) {
             let read = new FileReader();
             read.onload = () => {
-                let datos = JSON.parse(read.result);
+                let datos = parseCSVToArray(read.result);
                 editTable();
                 
                 fetch("./assets/plates/preenvio.html")
@@ -59,7 +59,7 @@ function manejarCarga(boton, modalDiv) {
                     .then((plantilla) => {
                         pintarTabla(plantilla, datos, modalDiv);
                         let tabla=modalDiv.querySelector("table");
-                        tabla.comprobarDuplicados(tabla.querySelector(".email"));
+                        tabla.comprobarDuplicados(tabla.querySelector(".correo"));
                         seleccionarTodos(modalDiv);
                         document.querySelector(".save").onclick = () => preSave();
                     })
@@ -119,8 +119,11 @@ function cerrarModal(modal){
 function preSave(){
     let modalDiv = document.querySelector(".modal");
     let tabla=modalDiv.querySelector("table");
-                        
-    if (!tabla.comprobarDuplicados(tabla.querySelector(".email"))){
+    let botonEditar = document.querySelector(".editar");
+    botonEditar.innerHTML="Editar";  
+    tabla.quitarEdicion();
+              
+    if (!tabla.comprobarDuplicados(tabla.querySelector(".correo"))){
 
         /* Validar datos y una vez validados hacer lo siguiente: */
         let familia=document.querySelector('#familia').value;
@@ -130,17 +133,18 @@ function preSave(){
             let nombre=fila.querySelector('.nombre').innerHTML;
             let ap1=fila.querySelector('.ap1').innerHTML;
             let ap2=fila.querySelector('.ap2').innerHTML;
-            let email=fila.querySelector('.email').innerHTML;
+            let correo=fila.querySelector('.correo').innerHTML;
             let fechaNacimiento=fila.querySelector('.fechaNacimiento').innerHTML;
             let direccion=fila.querySelector('.direccion').innerHTML;
-            return new Alumno(nombre,ap1,ap2,email,fechaNacimiento,direccion,familia,ciclo);
+            return new Alumno(nombre,ap1,ap2,correo,fechaNacimiento,direccion,familia,ciclo);
         })
         let json=JSON.stringify(alumnos);
         fetch('../api/apiAlumno.php',{
             method:'POST',
             headers:{
-                MOCK:true,
-                AUTHORIZATION: 'bearer '
+                'Content-Type': 'application/json',
+                'MOCK':true,
+                'AUTHORIZATION': 'bearer '
             },
             body:json
         })
@@ -150,54 +154,6 @@ function preSave(){
     }
 }
 
-/* function connvertirInputsEnTd(modalDiv){
-    modalDiv.querySelectorAll(".duplicado").forEach((fila)=>{
-            fila.querySelectorAll("input").forEach((input)=>{
-                let td=input.parentElement;
-                td.innerHTML=input.value;
-            });
-            fila.classList.remove("duplicado");
-        });
-    
-} */
-
-/* function mostrarDuplicados() {
-    let modalDiv = document.querySelector(".modal");
-    let duplicado = comprobarDuplicados(modalDiv.querySelector("tbody"));
-    if (duplicado) {
-        modalDiv.querySelectorAll(".duplicado").forEach((fila) => {
-        let array=Array.from(fila.children);
-        array.forEach((td)=>{
-            let clase=td.className;
-            let input=document.createElement("input");
-            input.value=td.innerHTML;
-            td.innerHTML="";
-            input.className=clase;
-            input.name=clase;
-            td.appendChild(input);
-        })
-    });
-    }
-    return duplicado;
-} */
-
-/* function insertarEnTobdy(array){
-    let tbody=document.querySelector("tbody");
-    let size=array.length;
-    for (let i=0;i<size;i++){
-        let tr=document.createElement("tr");
-        tr.onclick=function(){
-            let modal=new Modal(document.querySelector(".modal"),document.querySelector(".velo"));
-            modal.open();
-        };
-        for (let valor of Object.values(array[i])) {
-            let td = document.createElement("td");
-            td.textContent = valor;
-            tr.appendChild(td);
-        }
-        tbody.appendChild(tr);
-    }
-}  */
 function enviarDatos(datos) {
     fetch("datos/insertarAlumnos.json", {
         method: "POST",
@@ -229,7 +185,7 @@ function pintarTabla(plantilla, datos, elemento) {
         nuevo.querySelector(".nombre").innerHTML = datos[i].nombre;
         nuevo.querySelector(".ap1").innerHTML = datos[i].ap1;
         nuevo.querySelector(".ap2").innerHTML = datos[i].ap2;
-        nuevo.querySelector(".email").innerHTML = datos[i].email;
+        nuevo.querySelector(".correo").innerHTML = datos[i].correo;
         nuevo.querySelector(".fechaNacimiento").innerHTML=datos[i].fechaNacimiento;
         nuevo.querySelector(".direccion").innerHTML=datos[i].direccion;
         abueloInfo.appendChild(nuevo);
@@ -257,7 +213,7 @@ function pintarDatos(plantilla, datos, elemento) {
         nuevo.querySelector(".nombre").innerHTML = datos[i].nombre;
         nuevo.querySelector(".ap1").innerHTML = datos[i].ap1;
         nuevo.querySelector(".ap2").innerHTML = datos[i].ap2;
-        nuevo.querySelector(".email").innerHTML = datos[i].email;
+        nuevo.querySelector(".correo").innerHTML = datos[i].correo;
         nuevo.onclick = () => modalAlumno();
         abueloInfo.appendChild(nuevo);
     }
@@ -298,7 +254,7 @@ function pintarAlumno(plantilla, datos, elemento) {
     contenedor.querySelector("#nombre").value = datos.Nombre;
     contenedor.querySelector("#ap1").value = datos.Ap1;
     contenedor.querySelector("#ap2").value = datos.Ap2;
-    contenedor.querySelector("#email").value = datos.email;
+    contenedor.querySelector("#correo").value = datos.correo;
     contenedor.querySelector("#direccion").value = datos.direccion;
     while (contenedor.children.length > 0) {
 
@@ -318,3 +274,31 @@ function eliminarElementosMenosElementos(div, elementos) {
     });
 
 }
+
+
+/**
+ * Convierte un CSV en un array de objetos
+ * @param {string} csvText - Contenido del CSV (read.result)
+ * @param {string} separator - Separador de columnas, por defecto ";"
+ * @returns {Array<Object>} Array de objetos con propiedades según la cabecera
+ */
+function parseCSVToArray(csvText, separator = ';') {
+    // Separar filas
+    const rows = csvText.trim().split('\n');
+
+    // Obtener cabeceras
+    const headers = rows.shift().split(separator).map(h => h.trim());
+
+    // Convertir cada fila en objeto
+    const data = rows.map(row => {
+        const values = row.split(separator).map(v => v.trim());
+        const obj = {};
+        headers.forEach((header, index) => {
+            obj[header] = values[index] || null; // null si no hay valor
+        });
+        return obj;
+    });
+
+    return data;
+}
+

@@ -158,7 +158,16 @@ function manejarPost(){
         $correos=array_map(fn($alumno)=>$alumno->getEmail(),$alumnos);
         $repoUser=new RepoUser();
         $correos_existentes=$repo->existenCorreos($correos);
-        
+        $alumnosNoExisten=array_filter($alumnos, fn($alumno)=>!in_array($alumno->getCorreo(),$correos_existentes));
+        $repoUser=new RepoAlumno();
+        $repoCiclo=new RepoCiclo();
+        $repoCiclo->findByNameAndFamily($ciclo,$familia);
+        foreach($alumnosNoExisten as $alumno){
+            $id=$repoUser->save($alumno);
+            
+        }
+
+        echo json_encode($correos_existentes);
     }else{
         
     }
