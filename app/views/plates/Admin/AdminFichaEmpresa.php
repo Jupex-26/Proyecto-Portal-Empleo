@@ -2,7 +2,7 @@
 
 <?= $this->start('card-content')?>
 <div class="container">
-    <div class="top-section">
+    <div class="top-section ficha">
             <img id="preview" src="./assets/img/<?= $empresa->getFoto() ?>" alt="Foto de perfil">
             <h2><?= $empresa->getNombre() ?></h2>
     </div>
@@ -27,7 +27,7 @@
             <label>Teléfono de contacto:</label>
             <p><?= $empresa->getTelefonoContacto() ?></p>
         </div>
-        <div class="empresa-group last-dato-empresa">
+        <div class="empresa-group two-col">
             <label>Descripción de la Empresa:</label>
             <p><?= $empresa->getDescripcion() ?></p>
         </div>

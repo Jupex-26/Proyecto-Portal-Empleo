@@ -145,7 +145,7 @@ HTMLTableRowElement.prototype.editar = function() {
 HTMLTableRowElement.prototype.guardar = function() {
     let inputs = this.querySelectorAll("input[type=text]");
     let size = inputs.length;
-    
+    this.classList.remove('duplicado');
     for (let i = 0; i < size; i++) {
         // Reemplazar input por su valor
         inputs[i].parentElement.innerHTML = inputs[i].value;
@@ -371,7 +371,10 @@ HTMLTableElement.prototype.comprobarDuplicados = function(campo) {
 HTMLTableElement.prototype.moveSubidos = function(datos, datosSubidos) {
     let response = this.querySelector('.response');
     let trs = Array.from(datosSubidos);
-    
+    let total_subidos=datosSubidos.length-datos.length;
+    let header=response.querySelector('.seccion-header');
+    let conteo=header.querySelector('.conteo');
+    conteo.innerHTML="("+total_subidos+")";
     // Procesar en orden inverso para mantener el orden visual correcto
     trs.reverse().forEach((tr) => {
         let correo = tr.querySelector('.correo');

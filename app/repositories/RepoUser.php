@@ -182,7 +182,7 @@ class RepoUser implements RepoMethods {
     /**
      * Busca un usuario por email y contraseña (verificación segura).
      */
-    public function findUser(string $correo, string $pass): ?User {
+    public function findUser(string $correo): ?User {
         $sql = "
             SELECT 
                 u.id,
@@ -194,12 +194,11 @@ class RepoUser implements RepoMethods {
                 u.foto,
                 u.token_id
             FROM user u
-            WHERE u.correo = :correo and u.passwd = :passwd
+            WHERE u.correo = :correo 
         ";
 
         $stmt = $this->conn->prepare($sql);
         $stmt->bindParam(':correo', $correo, PDO::PARAM_STR);
-        $stmt->bindParam(':passwd', $pass, PDO::PARAM_STR);
         $stmt->execute();
 
         $row = $stmt->fetch(PDO::FETCH_ASSOC);

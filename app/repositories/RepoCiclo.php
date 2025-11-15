@@ -117,11 +117,65 @@ class RepoCiclo implements RepoMethods {
             return false;
         }
     }
+
+
     public function findByFamily(int $familia_id){
         $ciclos = [];
         $sql = "SELECT id, nivel, nombre, familia_id FROM ciclo where familia_id = :familia_id";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindValue(':familia_id', $familia_id);
+        $stmt->execute();
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($rows as $row) {
+            $ciclos[] = new Ciclo(
+                $row['id'],
+                NivelEnum::from($row['nivel']),
+                $row['nombre'],
+                $row['familia_id']
+            );
+        }
+        return $ciclos;
+    }
+
+    /**
+     * Obtiene los niveles distintos de ciclos formativos para una familia profesional específica.
+     *
+     * @param int $familia_id Identificador de la familia profesional
+     * @return array Array de objetos NivelEnum con los niveles disponibles ordenados
+     */
+    public function findNivelByFamily(int $familia_id) {
+        $niveles = [];
+        $sql = "SELECT DISTINCT nivel FROM ciclo WHERE familia_id = :familia_id ORDER BY nivel";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(':familia_id', $familia_id);
+        $stmt->execute();
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($rows as $row) {
+            $nivelEnum = NivelEnum::from($row['nivel']);
+    
+            $niveles[] = new Ciclo(
+                null,                 
+                $nivelEnum,           
+                $nivelEnum->name,     
+                $familia_id                     
+            );
+        }
+        return $niveles;
+    }
+
+    /**
+     * Busca ciclos formativos filtrados por familia profesional y nivel educativo.
+     *
+     * @param int $familia_id Identificador de la familia profesional
+     * @param string $nivel Nivel del ciclo formativo (BASICO, MEDIO, SUPERIOR, ESPECIALIZACION)
+     * @return array Array de objetos Ciclo que cumplen los criterios de búsqueda, ordenados por nombre
+     */
+    public function findByNivelFamily(int $familia_id, string $nivel) {
+        $ciclos = [];
+        $sql = "SELECT id, nivel, nombre, familia_id FROM ciclo WHERE familia_id = :familia_id AND nivel = :nivel ORDER BY nombre";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(':familia_id', $familia_id);
+        $stmt->bindValue(':nivel', $nivel);
         $stmt->execute();
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
         foreach ($rows as $row) {

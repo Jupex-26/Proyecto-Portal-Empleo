@@ -56,6 +56,10 @@ class Router{
                 $controller=new StatController($platePath);
                 $controller->index();
                 break;
+            case'logout':
+                Session::closeSession();
+                header('location: ?page=home');
+                break;
             default:
                 echo "404 Not Found";
                 break;

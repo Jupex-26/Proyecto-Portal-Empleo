@@ -18,7 +18,7 @@ class HomeController {
         echo $generator->generateDescription('cvs/curriculum.pdf');  */  
          
        if (Login::isLogin()){
-            $rol=$_SESSION['user']->getRol();
+            $rol=$this->user->getRol();
             switch($rol){
                 case 1:
                     echo $this->templates->render('Admin/AdminHome',['page'=>$_GET['page']??'home']);

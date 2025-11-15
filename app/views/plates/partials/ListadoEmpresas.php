@@ -13,13 +13,13 @@
                 <p><?= $empresa->getNombre(); ?></p>
                 <p><?= $empresa->getCorreo(); ?></p>
                 <form action="?page=<?=$page?>&accion=<?=$accion?>" method="POST">
-                    <button name="accion" class="editar" value="editar"><img src="./assets/img/editar.png" alt="editar"></button>
-                    <button name="accion" class="ver" value="ver"><img src="./assets/img/ver.png" alt="ver"></button>
-                    <button name="accion" class="remove" value="eliminar"><img src="./assets/img/borrar.png" alt="eliminar"></button>
+                    <button name="btn-accion" class="editar" value="editar"><img src="./assets/img/editar.png" alt="editar"></button>
+                    <button name="btn-accion" class="ver" value="ver"><img src="./assets/img/ver.png" alt="ver"></button>
+                    <button name="btn-accion" class="remove" value="eliminar"><img src="./assets/img/borrar.png" alt="eliminar"></button>
                     <input type="hidden" name="id" value="<?= $empresa->getId()?>">
                 
                 <?php if(!$activo){?>
-                    <button name="accion" class="aceptar" value="aceptar"><img src="./assets/img/aceptar.png" alt="aceptar"></button>
+                    <button name="btn-accion" class="aceptar" value="aceptar"><img src="./assets/img/aceptar.png" alt="aceptar"></button>
                 <?php } ?>
                 </form>
                 

@@ -1,15 +1,16 @@
 <?php
 namespace app\models;
+use DateTime;
 class Oferta{
     private ?int $id;
     private string $nombre;
     private string $descripcion;
     private int $empresaId;
-    private DateTime $fechaInicio;
-    private DateTime $fechaFin;
+    private ?DateTime $fechaInicio;
+    private ?DateTime $fechaFin;
     private array $solicitudes = [];
 
-    public function __construct(?int $id=null, string $nombre='', string $descripcion='', int $empresaId=0, DateTime $fechaInicio=null, DateTime $fechaFin=null, array $solicitudes=[]){
+    public function __construct(?int $id=null, string $nombre='', string $descripcion='', int $empresaId=0, ?DateTime $fechaInicio=null, ?DateTime $fechaFin=null, array $solicitudes=[]){
         $this->id = $id;
         $this->nombre = $nombre;
         $this->descripcion = $descripcion;

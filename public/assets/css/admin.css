@@ -63,82 +63,15 @@ a#link-size {
     padding-left: 2em;
 }
 
-/* ==========================
-   CARDS
-========================== */
-.card {
-    display: flex;
-    justify-content: space-around;
-    border-radius: 5px;
-    margin-bottom: 2em;
-    padding: 1em;
-    width: 100%;
-}
 
-.card-content {
-    border: 1px solid var(--color-principal);
-    background-color: white;
-    box-shadow: 0.2em 0.2em var(--color-principal);
-    border-radius: 5px;
-    margin-bottom: 2em;
-    padding: 1em;
-    width: 100%;
-}
 
-.card-content > h1 {
-    text-align: center;
-}
 
-/* ==========================
-   GRIDS Y SECCIONES
-========================== */
-div > .top-section {
-    display: grid;
-    grid-template-columns: repeat(2, 3fr);
-    gap: 4em;
-    place-items: center;
-}
 
-.card-content form > .top-section {
-    display: grid;
-    grid-template-columns: 2fr 3fr;
-    gap: 4em;
-    place-items: center;
-}
 
-.bottom-section {
-    display: grid;
-    grid-template-columns: repeat(2, 2fr);
-    gap: 2em;
-    text-align: center;
-    margin: 2em;
-}
-
-.form-contacto {
-    display: grid;
-    grid-template-columns: repeat(2, 2fr);
-    gap: 5em;
-    text-align: center;
-}
-
-/* Elementos que ocupan 2 columnas */
-.aprobado,
-form > .bottom-section > div,
-.back-action,
-.last-dato-empresa,
-.btn-actions {
-    grid-column: 1 / 3;
-}
 
 /* ==========================
    IMÁGENES
 ========================== */
-.top-section img,
-.left img {
-    width: 9em;
-    height: 9em;
-    border: none;
-}
 
 .listado img,
 .listado button {
@@ -164,51 +97,9 @@ form.alumno {
     gap: 20px 40px;
 }
 
-form .form-group {
-    display: flex;
-    flex-direction: column;
-    margin: 1em 0;
-}
-
-form label {
-    margin-bottom: 5px;
-}
-
-form input {
-    padding: 8px 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 14px;
-    box-sizing: border-box;
-}
 
 
-form button {
-    background-color: transparent;
-}
 
-.buttons-form {
-    display: flex;
-    justify-content: space-around;
-    margin: 1em 0;
-}
-
-/* Contenedores de formulario */
-.container {
-    margin: 1em;
-}
-
-.left {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-left:2em;
-}
-
-.right {
-    padding-top: 1em;
-    width: 80%;
-}
 
 /* ==========================
    MODALES
@@ -270,10 +161,7 @@ form button {
     background-color: var(--duplicado);
 }
 
-.util-btns .btn,
-.cargas.btn {
-    width: auto;
-}
+
 
 .charge,
 .util-btns {
@@ -471,23 +359,3 @@ td.seccion-header:hover{
     opacity: 0.7;
 }
 
-/* ==========================
-   RESPONSIVE
-========================== */
-@media (max-width: 600px) {
-    form.alumno {
-        grid-template-columns: 1fr;
-    }
-
-    .charge,
-    .util-btns {
-        grid-template-columns: 1fr;
-        gap: 2em;
-    }
-
-    div > .top-section,
-    .bottom-section,
-    .form-contacto {
-        grid-template-columns: 1fr;
-    }
-}

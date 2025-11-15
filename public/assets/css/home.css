@@ -3,7 +3,9 @@
 ========================== */
 :root {
     --color-principal: #1E4D7B;
+    --color-principal-90: #1E4D7BE6;
     --color-secundario: #4e81d2;
+    --color-selects: #5888d5;
     --fondo: #f5f7fa;
     --fondo-card: #dcd3d3;
     --fondo-header: #e0ecf7;
@@ -13,7 +15,9 @@
     --correcto-hover: rgb(48, 227, 48);
     --eliminar-hover: rgb(226, 28, 28);
     --duplicado: #ffcccc;
+    --shadow: 0px 4px 24px rgba(0, 0, 0, 0.2);
 }
+
 
 * {
     margin: 0;
@@ -80,6 +84,7 @@ button:hover {
     cursor: pointer;
 }
 
+
 /* ==========================
    SISTEMA DE BOTONES
 ========================== */
@@ -89,10 +94,16 @@ button:hover {
     border: 0;
     font-size: 0.85em;
     padding: 0.919em;
+    text-align: center;
+    place-self: center;
+    width: 15em;
+    height: auto;
 }
-a.btn{
-    padding-left: 2.9901em;
-    padding-right: 2.9901em;
+
+select.btn{
+    background-color: var(--color-selects);
+    color: var(--fondo);
+    width: auto;
 }
 
 .btn:hover {
@@ -105,10 +116,6 @@ a.btn{
     color: white;
 }
 
-button.btn {
-    width: 9.9em;
-    height: auto;
-}
 
 .btn.disabled {
     pointer-events: none;
@@ -146,8 +153,55 @@ button.btn {
 .oculto{
     display: none;
 }
+
 .buscador{
     margin: 2em 0;
+    justify-items: center;
+}
+
+
+.sticky{
+    position: sticky;
+    top: 0;
+    z-index: 20;
+}
+
+p.error{
+    margin-top: 1.2em;
+    background-color: #ffcccc;
+    text-align: center;
+}
+
+
+.parallax { 
+    /* Propiedad clave para el efecto */
+    background-attachment: fixed; 
+    
+    /* Configuración del fondo */
+    background-image: url("../img/fondo-main.png");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    
+    /* Altura de la sección */
+    min-height: 500px; 
+}
+
+
+
+/* ==========================
+   POSICIONAMIENTO GRID/FLEX
+========================== */
+/* Elementos que ocupan 2 columnas */
+
+
+
+ .last, .two-col {
+    grid-column: 1 / 3;
+}
+
+form .form-group {
+    margin: 1em 0;
 }
 .buscador form{
     display: flex;
@@ -155,25 +209,39 @@ button.btn {
     gap:2em;
 }
 
+.ficha{
+    display: grid;
+    grid-template-columns: repeat(2,2fr);
+    place-items: center;
+}
+
+.flex-col{
+    display: flex;
+    flex-direction: column;
+}
+
+.activate-empresa{
+    display: flex;
+}
+
 /* ==========================
    HEADER / NAVBAR
 ========================== */
 header.navbar {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
     align-items: center;
     background-color: var(--fondo-header);
+    box-shadow: var(--shadow);
     padding: 1em 6em;
-    position: sticky;
-    top: 0;
-    z-index: 20;
     width: 100%;
     height: 6em;
     color: var(--color-secundario);
 }
 
-header.navbar img {
+header .logo img{
     height: 8em;
+    width: auto;
 }
 
 header.navbar ul {
@@ -187,7 +255,7 @@ header.navbar a {
     font-size: 1em;
 }
 
-header img {
+header .perfil img {
     height: 3.5em;
     width: auto;
 }
@@ -207,6 +275,11 @@ footer {
     justify-content: space-between;
     margin-bottom: 2em;
     height: 8em;
+}
+
+.footer-top img{
+    width: auto;
+    height: auto;
 }
 
 footer ul {
@@ -229,7 +302,7 @@ footer p {
 }
 
 /* ==========================
-   PÁGINA HOME
+   PÁGINA HOME 
 ========================== */
 .bienvenida {
     text-align: center;
@@ -237,12 +310,19 @@ footer p {
 }
 
 .bienvenida h1 {
+    background: var(--color-principal-90);
     margin-bottom: 1.5em;
+    border-radius: 15px;
+    color: white;
+    padding: 0.8em;
 }
 
 .bienvenida p {
     text-align: justify;
     margin-bottom: 2em;
+    background: #ffffffe3;
+    border-radius: 15px;
+    padding: 2em;
 }
 
 /* ==========================
@@ -277,42 +357,20 @@ footer p {
 /* ==========================
     OFERTAS
 ========================== */
-.oferta {
+
+
+.new-oferta{
+    margin: 3em;
+}
+
+.save-offer{
+    margin:3em 0;
     display: flex;
-    justify-content: center;
-    margin: 60px 0;
+    justify-content: space-between;
+    
 }
 
-.oferta-card {
-    display: grid;
-    grid-template-columns: 20% 77%;
-    align-items: center;
-    background: white;
-    border-radius: 10px;
-    padding: 1.5em 2em;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    max-width: 70em;
-    gap: 1em;
-}
 
-.oferta-card img {
-    width: 10em;
-    grid-row: 1 / 5;
-}
-
-.oferta-card div {
-    display: flex;
-    justify-content: end;
-}
-
-.oferta-card button {
-    color: white;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-    width: 10em;
-}
 
 /* ==========================
    PÁGINA HOME - CONTACTO
@@ -330,7 +388,7 @@ footer p {
     margin-top: 20px;
 }
 
-.contacto-card button {
+.contacto-card button{
     margin-top: 15px;
     color: white;
     border: none;
@@ -382,31 +440,15 @@ footer p {
     font-size: 14px;
 }
 
-.contacto-form input,
-.contacto-form textarea {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 14px;
-    box-sizing: border-box;
-}
 
-.contacto-form input:focus,
-.contacto-form textarea:focus {
-    border: 2px solid var(--color-secundario);
-    outline: none;
-}
+
 
 .contacto-form .apellidos {
     display: flex;
     justify-content: space-between;
-    gap: 10px;
+    gap: 5px;
 }
 
-.contacto-form .apellidos input {
-    width: 100%;
-}
 
 .contacto-form .btn-enviar {
     border: none;
@@ -431,32 +473,26 @@ footer p {
 }
 
 .login-card {
-    display: flex;
-    flex-direction: column;
     background-color: white;
     padding: 3em;
     border-radius: 15px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow);
     align-items: center;
     width: 380px;
 }
 
 .login-logo {
     width: 150px;
+    height: auto;
 }
 
 .login-form {
     margin: 3em 0;
+    gap:1.5em;
+    width: 100%;
 }
 
-.login-form input {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 2em;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 1rem;
-}
+
 
 button.login-btn {
     width: 100%;
@@ -468,7 +504,7 @@ button.login-btn {
     text-align: center;
 }
 
-.login-buttons {
+.login-buttons form{
     display: flex;
     flex-direction: column;
     gap: 2em;
@@ -492,13 +528,132 @@ button.login-btn {
     width: 100%;
 }
 
+
 /* ==========================
-   ESTILOS GENERALES DE INPUTS
+   PÁGINA LOGIN - REGISTRO
 ========================== */
-input:focus {
+div.registro-empresa{
+    margin: 3em;
+    width: 70%;
+    place-self: center;
+}
+/* Imagenes */
+.top-section img,
+.left img {
+    width: 9em;
+    height: 9em;
+    border: none;
+}
+/* Contenedores de formulario */
+.container {
+    margin: 1em;
+}
+
+.left {
+    align-items: center;
+    margin-left:2em;
+}
+
+.right {
+    padding-top: 1em;
+    width: 80%;
+}
+
+.card-content form > .top-section {
+    display: grid;
+    grid-template-columns: 2fr 3fr;
+    gap: 4em;
+    place-items: center;
+    margin: 2em 0;
+}
+
+.bottom-section,.form-contacto, .fechas {
+    display: grid;
+    grid-template-columns: repeat(2, 2fr);
+    gap: 2em;
+    text-align: center;
+}
+
+.registro-empresa > p{
+    margin: 1em 0 2em 0;
+}
+
+
+/* ==========================
+   ESTILOS GENERALES DE INPUTS Y FORM
+========================== */
+form .form-group {
+    display: flex;
+    flex-direction: column;
+    margin: 1em 0;
+}
+
+
+form button {
+    background-color: transparent;
+}
+
+.buttons-form {
+    display: flex;
+    justify-content: space-around;
+    margin: 1em 0;
+}
+
+input,
+textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--fondo-card);
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+input:focus, textarea:focus {
     border: 2px solid var(--color-secundario);
     outline: none;
 }
+
+/* form > div > input{
+    width: auto;
+    margin-left: 0.4em;
+    height: auto;
+} */
+
+
+
+/* ==========================
+   CARDS
+========================== */
+.card{
+    padding: 2em;
+    border-radius: 5px;
+    box-shadow: var(--shadow);
+}
+.card-options {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 2em;
+    width: 100%;
+}
+
+.card-content {
+    
+    background-color: white;
+    margin-bottom: 2em;
+    width: 100%;
+    transition: 0.4s;
+    
+}
+
+.card-content:hover{
+    translate: 0 -3px;
+    box-shadow: 0 0.3em 1.3em var(--color-principal);
+}
+
+.card-content > h1 {
+    text-align: center;
+}
+
 
 /* ==========================
    RESPONSIVE - MOBILE
@@ -531,6 +686,23 @@ input:focus {
     .contacto-form .apellidos {
         flex-direction: column;
         gap: 0;
+    }
+}
+@media (max-width: 600px) {
+    form.alumno {
+        grid-template-columns: 1fr;
+    }
+
+    .charge,
+    .util-btns {
+        grid-template-columns: 1fr;
+        gap: 2em;
+    }
+
+    div > .top-section,
+    .bottom-section,
+    .form-contacto {
+        grid-template-columns: 1fr;
     }
 }
 

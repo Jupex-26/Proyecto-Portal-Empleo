@@ -1,4 +1,4 @@
-<header class="navbar">
+<header class="navbar sticky">
     <div class="logo">
       <a href="?page=home"><img src="./assets/img/logo.png" alt="EmpleNow Logo"></a>
     </div>
@@ -11,6 +11,6 @@
       </ul>
     </nav>
     <div class="perfil">
-      <a href="?page=login"><img src="./assets/img/usuario.png" alt="Perfil"></a>
+      <a href="?page=login"><img src="./assets/img/usuario.png" alt="Perfil"></a><!-- Cambiar el perfil según si tiene rol o no -->
     </div>
   </header>

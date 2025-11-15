@@ -68,11 +68,17 @@ function manejarGet(){
                     fechaNacimiento:new \DateTime("2003-03-26"));
                 $repo->save($alumno);
             break;
-        case "familias":
-            responseFamilias();
+        case "alumno":
+            responseAlumno();
             break;
         case "ciclos":
             responseCiclos();
+            break;
+        case "familias":
+            responseFamilias();
+            break;
+        case "niveles":
+            responseNiveles();
             break;
     }
 }
@@ -83,21 +89,32 @@ function responseAlumnos(){
     $json=Converter::arrayToJson($alumnos);
     echo $json;
 }
+function responseAlumno(){
+    $id=(int)$_GET['id'];
+    $repo=new RepoAlumno();
+    $alumno=$repo->findById($id);
+    echo $alumno->toJson();
+}
 function responseFamilias(){
     $repo=new RepoFamilia();
     $familias=$repo->findAll();
     $json=Converter::arrayToJson($familias);
     echo $json;
 }
-function responseCiclos(){
-    error_reporting(E_ALL);
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
+function responseNiveles(){
+    $repo=new RepoCiclo();
     $id=$_GET['id']??false;
+    $niveles=$repo->findNivelByFamily($id);
+    $json=Converter::arrayToJson($niveles);
+    echo $json;
+}
+function responseCiclos(){  
+    $id=$_GET['id']??false;
+    $nivel=$_GET['nivel']??false;
     $json;
-    if ($id){
+    if ($id||$nivel){
         $repo=new RepoCiclo();
-        $familias=$repo->findByFamily($id);
+        $familias=$repo->findByNivelFamily($id,$nivel);
         $json=Converter::arrayToJson($familias);
         
     }else{

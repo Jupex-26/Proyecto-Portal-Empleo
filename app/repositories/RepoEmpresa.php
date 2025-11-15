@@ -90,7 +90,8 @@ public function findById(int $id): ?Empresa {
     $stmt = $this->conn->prepare($sql);
     $stmt->bindParam(':id', $id, PDO::PARAM_INT);
     $stmt->execute();
-
+    $repoOferta=new RepoOferta();
+    $ofertas=$repoOferta->findAllByEmpresa($id);
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$row) {
@@ -109,7 +110,7 @@ public function findById(int $id): ?Empresa {
         telefonoContacto: (int)($row['telefonoContacto'] ?? 0),
         activo: (bool)($row['activo'] ?? false),
         descripcion: $row['descripcion'] ?? '',
-        ofertas: [] // si luego haces otra consulta para las ofertas
+        ofertas: $ofertas
     );
 }
 

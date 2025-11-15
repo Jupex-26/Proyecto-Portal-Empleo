@@ -1,7 +1,4 @@
 <?= $this->layout('layout')?>
-<?= $this->push('css') ?>
-<link rel="stylesheet" href="./assets/css/contacto.css">
-<?= $this->end() ?>
 <?= $this->start('header')?>
 <?= $this->insert('partials/header')?>
 <?= $this->stop()?>

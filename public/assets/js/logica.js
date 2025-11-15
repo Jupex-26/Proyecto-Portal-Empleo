@@ -31,39 +31,27 @@ window.addEventListener('load', function () {
 /**
  * Configura los botones de carga masiva y carga individual de alumnos
  */
+
+
 window.addEventListener('load', function () {
 
     // BOTÓN: Carga masiva de alumnos desde CSV
     let btnMasivo = document.querySelector(".carga-masiva");
     btnMasivo.onclick = function () {
-        // Cargar familias profesionales en el select
-        let select = document.querySelector("#familia");
-        select.loadFromApi("../api/apiAlumno.php?menu=familias");
-        
-        // Cargar ciclos cuando se selecciona una familia
-        select.addEventListener('change', (e) => {
-            document.querySelector("#ciclo").loadFromApi(
-                "../api/apiAlumno.php?menu=ciclos&id=" + e.target.selectedOptions[0].className
-            );
-        });
-        
+        configurarSelects();
         // Abrir modal
         let modalDiv = document.querySelector(".modal");
         let modal = new Modal(modalDiv, document.querySelector(".velo"));
         modal.open();
-        
         // Mostrar botones del modal
         let botones = modalDiv.querySelectorAll(".botones");
         botones[0].classList.remove("hidden");
         eliminarElementosMenosElementos(modalDiv, botones);
-        
         // Configurar botón de cerrar
         document.querySelector(".back").onclick = cerrarModal(modal);
-        
         // Configurar carga de archivo CSV
         let btnCarga = document.querySelector(".cargas");
         manejarCarga(btnCarga, modalDiv);
-        
         // Configurar botón de borrar contenido del modal
         let borrar = document.querySelector(".borrar");
         borrar.onclick = function () {
@@ -71,13 +59,18 @@ window.addEventListener('load', function () {
             eliminarElementosMenosElementos(modalDiv, botones);
         }
     }
-    
+})
+
+window.addEventListener('load',function(){
     // BOTÓN: Inscribir un solo alumno (pendiente de implementar)
     let btnAlumno = document.querySelector(".carga-alumno");
     btnAlumno.onclick = function () {
         /* Inscribir un alumno */
     }
 })
+
+
+
 
 // ============================================================================
 // SECCIÓN 3: MANEJO DE CARGA DE ARCHIVOS CSV
@@ -262,25 +255,7 @@ function preSave(tabla) {
     tabla.desplegar();
 }
 
-/**
- * Función legacy para enviar datos (no se usa actualmente)
- * @deprecated Usar preSave() en su lugar
- */
-function enviarDatos(datos) {
-    fetch("datos/insertarAlumnos.json", {
-        method: "POST",
-        body: JSON.stringify(datos)
-    })
-    .then((respuesta) => (respuesta.text()))
-    .then((respuesta) => {
-        let respuestaJSON = JSON.parse(respuesta);
-        if (respuestaJSON.respuesta) {
-            alert("Datos insertados correctamente");
-        } else {
-            alert("Error al insertar los datos");
-        }
-    })
-}
+
 
 // ============================================================================
 // SECCIÓN 7: RENDERIZADO DE DATOS EN HTML
@@ -358,7 +333,7 @@ function pintarDatos(plantilla, datos, elemento) {
         nuevo.querySelector(".correo").innerHTML = datos[i].correo;
         
         // Evento click para abrir modal de detalle del alumno
-        nuevo.onclick = () => modalAlumno();
+        nuevo.onclick = () => modalAlumno(nuevo);
         
         abueloInfo.appendChild(nuevo);
     }
@@ -375,7 +350,7 @@ function pintarDatos(plantilla, datos, elemento) {
 /**
  * Abre un modal con los datos detallados de un alumno
  */
-function modalAlumno() {
+function modalAlumno(tr) {
     const modalDiv = document.querySelector(".modal");
     
     // Limpiar modal
@@ -394,10 +369,12 @@ function modalAlumno() {
     fetch("./assets/plates/datosAlumno.html")
         .then((x) => (x.text()))
         .then((plantilla) => {
-            fetch("datos/alumno12.json")
+            let id=tr.querySelector('.id').innerHTML;
+            fetch("../api/apiAlumno.php?menu=alumno&id="+id)
                 .then((x) => (x.text()))
                 .then((texto) => JSON.parse(texto))
                 .then((datos) => {
+                    console.log(datos);
                     pintarAlumno(plantilla, datos, modalDiv)
                 })
         })
@@ -414,12 +391,13 @@ function pintarAlumno(plantilla, datos, elemento) {
     contenedor.innerHTML = plantilla;
     
     // Rellenar campos del formulario
-    contenedor.querySelector("#id").value = datos.ID;
-    contenedor.querySelector("#nombre").value = datos.Nombre;
-    contenedor.querySelector("#ap1").value = datos.Ap1;
-    contenedor.querySelector("#ap2").value = datos.Ap2;
+    contenedor.querySelector("#id").value = datos.id;
+    contenedor.querySelector("#nombre").value = datos.nombre;
+    contenedor.querySelector("#ap1").value = datos.ap1;
+    contenedor.querySelector("#ap2").value = datos.ap2;
     contenedor.querySelector("#correo").value = datos.correo;
     contenedor.querySelector("#direccion").value = datos.direccion;
+    contenedor.querySelector("#fechaNacimiento").value = datos.fechaNacimiento;
     
     // Insertar formulario en el modal
     while (contenedor.children.length > 0) {

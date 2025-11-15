@@ -1,5 +1,6 @@
 <?php
 namespace app\models;
+use app\helpers\Validator;
 class Empresa extends User{
     private string $correoContacto;
     private int $telefonoContacto;
@@ -96,5 +97,53 @@ class Empresa extends User{
     public function addOferta(Oferta $oferta): void {
         $this->ofertas[] = $oferta;
     }
+
+
+    /**
+     * Actualiza los datos de una empresa con los valores recibidos.
+     * 
+     * @param Empresa $empresa Objeto empresa a actualizar
+     * @param array $data Datos del formulario
+     * @param array|null $fileData Archivo subido
+     * @return void
+     */
+    public function actualizarEmpresa($data, $fileData) {
+        $foto_url =$this->guardarFoto($fileData, $data['foto']);
+        $this->setNombre($data['nombre'] ?? $this->getNombre());
+        $this->setCorreo($data['correo'] ?? $this->getCorreo());
+        $this->setCorreoContacto($data['correo_contacto'] ?? $this->getCorreoContacto());
+        $this->setTelefonoContacto($data['telefono_contacto'] ?? $this->getTelefonoContacto());
+        $this->setDireccion($data['direccion'] ?? $this->getDireccion());
+        $this->setDescripcion($data['descripcion'] ?? $this->getDescripcion());
+        $this->setFoto($foto_url);
+        $this->setPassword($data['passwd']==''?$this->getPassword():$data['passwd']);
+        
+    }
+
+    // =====================================================
+    // MÉTODOS DE UTILIDAD
+    // =====================================================
+
+    /**
+     * Guarda la imagen subida en la carpeta de assets.
+     * 
+     * @param Empresa $empresa Empresa relacionada con la imagen
+     * @param array|null $fileData Datos del archivo subido
+     * @return string Nombre final del archivo guardado
+     */
+    private function guardarFoto($fileData,$foto) {
+        $directorio = "./assets/img/";
+        $validator = new Validator();
+        $nombreFinal = $foto;
+
+        if (isset($fileData['error']) &&
+        $fileData['error'] === UPLOAD_ERR_OK && $validator->isImagen($fileData['tmp_name']) ) {
+            $extension = strtolower(pathinfo($fileData['name'], PATHINFO_EXTENSION));
+            $nombreFinal = "empresa_" . $this->getId() . "." . $extension;
+            move_uploaded_file($fileData['tmp_name'], $directorio . $nombreFinal);
+        }
+
+        return $nombreFinal;
+            }
 }
 ?>

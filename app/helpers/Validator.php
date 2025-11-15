@@ -56,7 +56,7 @@ class Validator{
         $_FILES[$campo]['error'] !== UPLOAD_ERR_OK ||  // ocurrió un error
         empty($_FILES[$campo]['name'])                 // no seleccionaron archivo
     ){
-        $this->errores['imagen'] = "Debe subir un archivo en el campo $campo";
+        $this->errores['foto'] = "Debe subir un archivo en el campo $campo";
     }
 }
     /**

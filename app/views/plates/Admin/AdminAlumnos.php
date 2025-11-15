@@ -3,12 +3,11 @@
 <script src="./assets/js/alumno.js"></script>
 <script src="./assets/js/validador.js"></script>
 <script src="./assets/js/tabla.js"></script>
-<script src="./assets/js/select.js"></script>
 <script src="./assets/js/modal.js"></script>
 <script src="./assets/js/logica.js"></script>
 <?= $this->end() ?>
 <?= $this->start('panel-main')?>
-    <div class="card">
+    <div class="card-options">
         <button class="carga-masiva btn guardar">Carga Masiva</button>
 
         <button class="carga-alumno btn">Introducir Alumno</button>
@@ -24,6 +23,12 @@
                     </select>
                 </div>
                 <div class="choose-ciclo">
+                    <label for="nivel">Nivel</label>
+                    <select name="nivel" id="nivel" disabled>
+                        <option value="nivel" selected disabled>Nivel</option>
+                    </select>
+                </div>
+                <div class="choose-ciclo two-col">
                     <label for="ciclo">Ciclo</label>
                     <select name="ciclo" id="ciclo" disabled>
                         <option value="ciclo" selected disabled>Ciclo</option>
@@ -41,7 +46,7 @@
             <button class="borrar btn eliminar">Borrar</button>
         </div>
     </div>
-    <div class="card-content">
+    <div class="card-content card">
         <div id="listaUsuario"></div>
     </div>
     

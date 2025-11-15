@@ -3,6 +3,7 @@ namespace app\repositories;
 use app\repositories\DB;
 use app\models\Oferta;
 use PDO;
+use DateTime;
 /**
  * RepoOferta
  */
@@ -126,5 +127,46 @@ class RepoOferta  implements RepoMethods {
             return false;
         }
     }
+
+    /**
+ * Obtiene todas las ofertas asociadas a una empresa específica.
+ *
+ * @param int $empresaId ID de la empresa de la cual se quieren obtener las ofertas.
+ * @return array Array de objetos Oferta pertenecientes a la empresa indicada.
+ */
+public function findAllByEmpresa(int $empresaId): array {
+    // Array donde se almacenarán los objetos Oferta creados
+    $ofertas = [];
+
+    // Consulta SQL: selecciona solo las ofertas que pertenecen a la empresa indicada
+    $sql = "SELECT id, nombre, descripcion, empresa_id, fecha_inicio, fecha_fin 
+            FROM oferta 
+            WHERE empresa_id = :empresa_id";
+
+    // Preparar la consulta para evitar inyección SQL
+    $stmt = $this->conn->prepare($sql);
+
+    // Ejecutar la consulta, pasando el parámetro empresa_id de forma segura
+    $stmt->execute(['empresa_id' => $empresaId]);
+
+    // Obtener todas las filas como un array asociativo
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Recorrer cada fila del resultado y crear un objeto Oferta
+    foreach ($rows as $row) {
+        $ofertas[] = new Oferta(
+            (int)$row['id'],                    // ID de la oferta
+            $row['nombre'],                     // Nombre de la oferta
+            $row['descripcion'],                // Descripción
+            (int)$row['empresa_id'],            // ID de la empresa propietaria
+            new DateTime($row['fecha_inicio']), // Fecha de inicio convertida a objeto DateTime
+            new DateTime($row['fecha_fin'])     // Fecha de fin convertida a objeto DateTime
+        );
+    }
+
+    // Retornar el array de ofertas (vacío si la empresa no tiene ninguna)
+    return $ofertas;
+}
+
 
 }

@@ -65,9 +65,9 @@ CREATE TABLE IF NOT EXISTS `empleo`.`user` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `nombre` VARCHAR(45) NOT NULL,
   `correo` VARCHAR(100) NOT NULL UNIQUE,
-  `passwd` VARCHAR(45) NOT NULL,
+  `passwd` VARCHAR(100) NOT NULL,
   `rol_id` INT NOT NULL,
-  `direccion` VARCHAR(45) NULL,
+  `direccion` VARCHAR(100) NULL,
   `foto` VARCHAR(45) NULL,
   `token_id` INT NULL,
   PRIMARY KEY (`id`),
@@ -138,7 +138,7 @@ CREATE TABLE IF NOT EXISTS `empleo`.`oferta` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `empresa_id` INT NOT NULL,
   `nombre` VARCHAR(45) NOT NULL,
-  `descripcion` VARCHAR(100) NOT NULL,
+  `descripcion` VARCHAR(200) NOT NULL,
   `fecha_inicio` DATETIME NOT NULL,
   `fecha_fin` DATETIME NOT NULL,
   PRIMARY KEY (`id`),
@@ -184,7 +184,7 @@ DROP TABLE IF EXISTS `empleo`.`familia` ;
 
 CREATE TABLE IF NOT EXISTS `empleo`.`familia` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `nombre` VARCHAR(45) NOT NULL,
+  `nombre` VARCHAR(100) NOT NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB;
 
@@ -198,7 +198,7 @@ CREATE TABLE IF NOT EXISTS `empleo`.`ciclo` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `familia_id` INT NOT NULL,
   `nivel` ENUM('BASICO', 'MEDIO', 'SUPERIOR', 'ESPECIALIZACION') NOT NULL,
-  `nombre` VARCHAR(100) NOT NULL,
+  `nombre` VARCHAR(200) NOT NULL,
   PRIMARY KEY (`id`),
   INDEX `fk_ciclo_familia1_idx` (`familia_id` ASC) VISIBLE,
   CONSTRAINT `fk_ciclo_familia1`

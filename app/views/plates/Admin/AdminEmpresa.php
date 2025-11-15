@@ -1,9 +1,9 @@
 <?=$this->layout('Admin/AdminLayout',['page'=>$page])?>
 <?= $this->start('panel-main')?>
-<section class="card options">
+<section class="card-options">
 <?= $this->section('card-options')?>
 </section>
-<section class="card-content">
+<section class="card-content card">
 <?= $this->section('card-content') ?>
 </section>
 <?= $this->stop()?>
