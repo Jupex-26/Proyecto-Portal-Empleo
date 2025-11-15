@@ -95,7 +95,7 @@ class Empresa extends User{
 
     // --- MÉTODOS AUXILIARES ---
     public function addOferta(Oferta $oferta): void {
-        $this->ofertas[] = $oferta;
+        array_unshift($this->ofertas, $oferta);
     }
 
 

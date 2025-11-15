@@ -144,22 +144,56 @@ public function validarCorreo (string $nombreCampo, array $array): bool {
      * @return bool
      */
     public function validarTelefono(string $campo, array $array): bool {
-    $telefono = trim($array[$campo]);
+        $telefono = trim($array[$campo]);
 
-    // Verifica que no esté vacío
-    if (empty($telefono)) {
-        $this->errores[$campo] = "El número de teléfono no puede estar vacío";
-        return false;
+        // Verifica que no esté vacío
+        if (empty($telefono)) {
+            $this->errores[$campo] = "El número de teléfono no puede estar vacío";
+            return false;
+        }
+
+        // Validación: exactamente 9 dígitos, sin espacios ni símbolos
+        if (!preg_match("/^[0-9]{9}$/", $telefono)) {
+            $this->errores[$campo] = "El número de teléfono debe contener exactamente 9 dígitos";
+            return false;
+        }
+
+        return true;
     }
 
-    // Validación: exactamente 9 dígitos, sin espacios ni símbolos
-    if (!preg_match("/^[0-9]{9}$/", $telefono)) {
-        $this->errores[$campo] = "El número de teléfono debe contener exactamente 9 dígitos";
-        return false;
-    }
 
-    return true;
-}
+
+
+    /**
+     * validarFecha
+     * Comprueba si el campo del array es una fecha válida (YYYY-MM-DD)
+     * @param string $campo
+     * @param array  $array
+     * @return bool
+     */
+    public function validarFecha(string $campo, array $array): bool {
+        $esValido = true;
+        $valor = $array[$campo] ?? '';
+        $fecha = trim((string)$valor);
+
+        // Comprobar formato correcto mediante regex
+        if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha)) {
+
+            // Comprobar si es una fecha real
+            [$anio, $mes, $dia] = explode('-', $fecha);
+
+            if (!checkdate((int)$mes, (int)$dia, (int)$anio)) {
+                $this->errores[$campo] = "La fecha no es válida";
+                $esValido = false;
+            }
+
+        } else {
+            $this->errores[$campo] = "El formato de fecha debe ser YYYY-MM-DD";
+            $esValido = false;
+        }
+
+        return $esValido;
+    }
 
     
     /**

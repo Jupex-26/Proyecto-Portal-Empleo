@@ -4,7 +4,7 @@ USE empleo;
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- 🧨 Eliminar todas las tablas
-DROP TABLE IF EXISTS `ciclo-tiene-oferta`;
+DROP TABLE IF EXISTS `ciclo_tiene_oferta`;
 DROP TABLE IF EXISTS `alum_cursado_ciclo`;
 DROP TABLE IF EXISTS `solicitud`;
 DROP TABLE IF EXISTS `oferta`;

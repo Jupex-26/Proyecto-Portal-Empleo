@@ -35,7 +35,7 @@
                     </select>
                 </div>
                 <button class="cargas btn">Carga Masiva</button>
-                <input type="file" class="fichero">
+                <input type="file" class="fichero" accept=".csv">
             </div>
         </div>
         

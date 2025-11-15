@@ -138,7 +138,7 @@ CREATE TABLE IF NOT EXISTS `empleo`.`oferta` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `empresa_id` INT NOT NULL,
   `nombre` VARCHAR(45) NOT NULL,
-  `descripcion` VARCHAR(200) NOT NULL,
+  `descripcion` VARCHAR(1000) NOT NULL,
   `fecha_inicio` DATETIME NOT NULL,
   `fecha_fin` DATETIME NOT NULL,
   PRIMARY KEY (`id`),
@@ -239,13 +239,12 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 -- Table `empleo`.`ciclo-tiene-oferta`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `empleo`.`ciclo-tiene-oferta` ;
+DROP TABLE IF EXISTS `empleo`.`ciclo_tiene_oferta` ;
 
-CREATE TABLE IF NOT EXISTS `empleo`.`ciclo-tiene-oferta` (
+CREATE TABLE IF NOT EXISTS `empleo`.`ciclo_tiene_oferta` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `ciclo_id` INT NOT NULL,
   `oferta_id` INT NOT NULL,
-  `requerido` TINYINT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   INDEX `fk_ciclo-tiene-oferta_ciclo1_idx` (`ciclo_id` ASC) VISIBLE,
   INDEX `fk_ciclo-tiene-oferta_oferta1_idx` (`oferta_id` ASC) VISIBLE,

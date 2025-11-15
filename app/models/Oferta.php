@@ -9,14 +9,17 @@ class Oferta{
     private ?DateTime $fechaInicio;
     private ?DateTime $fechaFin;
     private array $solicitudes = [];
+    private array $ciclos=[];
 
-    public function __construct(?int $id=null, string $nombre='', string $descripcion='', int $empresaId=0, ?DateTime $fechaInicio=null, ?DateTime $fechaFin=null, array $solicitudes=[]){
+    public function __construct(?int $id=null, string $nombre='', string $descripcion='', int $empresaId=0, ?DateTime $fechaInicio=null, ?DateTime $fechaFin=null, array $solicitudes=[], array $ciclos=[]){
         $this->id = $id;
         $this->nombre = $nombre;
         $this->descripcion = $descripcion;
         $this->empresaId = $empresaId;
         $this->fechaInicio = $fechaInicio;
         $this->fechaFin = $fechaFin;
+        $this->solicitudes=$solicitudes;
+        $this->ciclos=$ciclos;
     }
 
     public function getId(): ?int {
@@ -35,18 +38,24 @@ class Oferta{
         return $this->empresaId;
     }
 
-    public function getFechaInicio(): DateTime {
+    public function getFechaInicio(): ?DateTime {
         return $this->fechaInicio;
     }
 
-    public function getFechaFin(): DateTime {
+    public function getFechaFin(): ?DateTime {
         return $this->fechaFin;
     }
     public function getSolicitudes(): array {
         return $this->solicitudes;
     }
-    public function setSolicitudes(array $solicitudes): void {
+    public function getCiclos(): array {
+        return $this->ciclos;
+    }
+    public function setCiclos(array $solicitudes): void {
         $this->solicitudes = $solicitudes;
+    }
+    public function addCiclo(Ciclo $ciclo): void {
+        $this->ciclos[] = $ciclo;
     }
     public function addSolicitud(Solicitud $solicitud): void {
         $this->solicitudes[] = $solicitud;
