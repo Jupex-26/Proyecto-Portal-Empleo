@@ -14,10 +14,14 @@ class Generator{
     private Client $client;
 
     public function __construct(){
-        $this->client = new Client('AIzaSyDHwTlNdv5VdHO21rWRpAiNK5nF7ANZ6eo');
+        $config = require PROJECT_ROOT . 'config/config.php';
+        $this->client = new Client($config['token']);
     }
 
-        /**
+    /**
+     * Se usa así:
+     * $generator=new Generator();
+     *  echo $generator->generateDescription('cvs/curriculum.pdf');    
      * Genera un resumen conciso y sin formato de un CV en PDF.
      * * @param string $pdfPath La ruta absoluta al archivo PDF del currículum.
      * @return string El resumen generado por Gemini.

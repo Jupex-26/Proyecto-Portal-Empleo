@@ -14,10 +14,9 @@ class HomeController {
         $this->user=Session::readSession('user');  /* Cuando se haga una instancia de este controlador, creo una propiedad con la instancia de engine para los plates*/
     }
     public function index() {
-        /* $generator=new Generator();
-        echo $generator->generateDescription('cvs/curriculum.pdf');  */  
          
-       if (Login::isLogin()){
+         
+        if (Login::isLogin()){
             $rol=$this->user->getRol();
             switch($rol){
                 case 1:
