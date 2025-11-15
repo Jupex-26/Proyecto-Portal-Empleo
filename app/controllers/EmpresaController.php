@@ -364,8 +364,16 @@ class EmpresaController {
      * @param RepoEmpresa $repo Repositorio de empresas
      * @return array Datos paginados con empresas y metainformación
      */
-    private function obtenerEmpresasPaginadas(bool $activo, $repo, $accion) {
-        $total = $repo->getCount($activo);
+    private function obtenerEmpresasPaginadas(bool $activo, $repo, $accion, $nombre) {
+        $total=0;
+        $filtro=false;
+        if (isset($_GET['filtrado'])&& ($_GET['filtrado'] === 'true') && $nombre!=''){
+            $total=$repo->getCountFiltr($activo,$nombre);
+            $filtro=true;
+        }else{
+            $total = $repo->getCount($activo);
+        }
+        
         $page = filter_input(INPUT_GET, 'pagina', FILTER_VALIDATE_INT, [
             'options' => ['default' => 1, 'min_range' => 1]
         ]);
@@ -376,13 +384,15 @@ class EmpresaController {
         $index = Paginator::getIndex($size, $page);
         $pages = Paginator::getPages($total, $size);
         if ($page > $pages) $page--;
-
-        $empresas = $repo->findAllLimitWActive($index, $size, $activo);
+        $empresas=$filtro
+            ?$repo->findAllLimitWActiveFiltr($index, $size, $activo,$nombre)
+            :$repo->findAllLimitWActive($index, $size, $activo);
         $paginator = Paginator::renderPagination($page, $size, $pages, $accion, $this->page);
 
         return [
             'empresas' => $empresas,
-            'paginator' => $paginator
+            'paginator' => $paginator,
+            'size'=>$size
         ];
     }
 
@@ -394,13 +404,15 @@ class EmpresaController {
      * @param string $accion Acción actual
      * @return void
      */
-    private function mostrarListadoEmpresas(array $datos, bool $activo, string $accion) {
+    private function mostrarListadoEmpresas(array $datos, bool $activo, string $accion, string $nombre) {
         echo $this->templates->render('Admin/AdminListado', [
             'empresas' => $datos['empresas'],
             'paginator' => $datos['paginator'],
             'page' => $this->page,
             'activo' => $activo,
-            'accion' => $accion
+            'accion' => $accion,
+            'nombre'=>$nombre,
+            'size'=>$datos['size']??10
         ]);
     }
 
@@ -413,8 +425,10 @@ class EmpresaController {
      * @return void
      */
     private function paginacionListadoEmpresas(bool $activo, $repo, $accion) {
-        $datos = $this->obtenerEmpresasPaginadas($activo, $repo, $accion);
-        $this->mostrarListadoEmpresas($datos, $activo, $accion);
+        $nombre = trim($_GET['nombre_empresa'] ?? '');
+        $nombre = filter_var($nombre, FILTER_SANITIZE_SPECIAL_CHARS);
+        $datos = $this->obtenerEmpresasPaginadas($activo, $repo, $accion, $nombre);
+        $this->mostrarListadoEmpresas($datos, $activo, $accion, $nombre);
     }
 
     /**

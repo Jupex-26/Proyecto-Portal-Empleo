@@ -1,16 +1,3 @@
-<div class="content-header">
-    <select name="size" id="size">
-    <option value="5" data-size="5">5</option>
-    <option selected value="10" data-size="10">10</option>
-    <option value="15" data-size="15">15</option>
-    <option value="20" data-size="20">20</option>
-    <option value="25" data-size="25">25</option>
-    <option value="30" data-size="30">30</option>
-    <option value="50" data-size="50">50</option>
-</select>
-
-<a id="link-size" href="?page=<?=$page?>&accion=<?=$accion?>&size=10&pagina=1">Actualizar</a>
-</div>
 <div class="content-listado">
     
     <div class="header-listado">

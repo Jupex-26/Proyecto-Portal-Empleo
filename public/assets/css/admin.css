@@ -17,9 +17,7 @@
     height: 8em;
 }
 
-.perfil img {
-    height: 3.5em;
-}
+
 
 main {
     flex: 1;
@@ -152,6 +150,8 @@ form > .bottom-section > div,
 /* ==========================
    FORMULARIOS
 ========================== */
+
+
 form.alumno {
     max-width: 50em;
     margin: 20px 15%;

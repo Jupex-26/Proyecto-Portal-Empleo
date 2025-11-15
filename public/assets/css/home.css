@@ -53,6 +53,12 @@ p {
     color: var(--color-principal);
 }
 
+img{
+    width: 20px;
+    height: 20px;
+}
+
+
 /* ==========================
    ENLACES Y BOTONES BASE
 ========================== */
@@ -67,6 +73,7 @@ a:hover {
 
 button {
     color: white;
+    border: none;
 }
 
 button:hover {
@@ -139,6 +146,14 @@ button.btn {
 .oculto{
     display: none;
 }
+.buscador{
+    margin: 2em 0;
+}
+.buscador form{
+    display: flex;
+    align-items: center;
+    gap:2em;
+}
 
 /* ==========================
    HEADER / NAVBAR
@@ -172,8 +187,9 @@ header.navbar a {
     font-size: 1em;
 }
 
-header .perfil img {
+header img {
     height: 3.5em;
+    width: auto;
 }
 
 /* ==========================

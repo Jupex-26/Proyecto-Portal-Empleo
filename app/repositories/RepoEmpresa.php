@@ -322,6 +322,80 @@ public function findById(int $id): ?Empresa {
 
     return $empresas;
     }
+
+
+
+    /**
+     * findAllLimitWActiveFiltr
+     * 
+     * Obtiene una lista de empresas activas/inactivas filtradas por nombre,
+     * con límite y paginación.
+     *
+     * @param int $index  Índice de inicio (offset)
+     * @param int $size   Número de resultados por página (limit)
+     * @param bool $bool  Estado de la empresa (true = activas, false = inactivas)
+     * @param string $nombre  Texto parcial del nombre de la empresa
+     * @return array  Lista de objetos Empresa
+     */
+    public function findAllLimitWActiveFiltr(int $index, int $size, bool $bool, string $nombre): array {
+        $empresas = [];
+
+        $sql = "
+            SELECT 
+                u.id,
+                u.nombre,
+                u.correo,
+                u.rol_id,
+                u.direccion,
+                u.foto,
+                u.token_id,
+                e.correoContacto,
+                e.telefonoContacto,
+                e.activo,
+                e.descripcion
+            FROM user u
+            INNER JOIN empresa e ON u.id = e.id
+            WHERE e.activo = :activo
+            AND u.nombre LIKE :nombre
+            LIMIT :size OFFSET :index
+        ";
+
+        $stmt = $this->conn->prepare($sql);
+        
+        $stmt->bindParam(':activo', $bool, PDO::PARAM_BOOL);
+
+        // Agregamos los comodines para la búsqueda parcial
+        $likeNombre = '%' . $nombre . '%';
+        $stmt->bindParam(':nombre', $likeNombre, PDO::PARAM_STR);
+
+        // En LIMIT/OFFSET es mejor bindear como int (sin comillas)
+        $stmt->bindParam(':size', $size, PDO::PARAM_INT);
+        $stmt->bindParam(':index', $index, PDO::PARAM_INT);
+
+        $stmt->execute();
+
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($rows as $row) {
+            $empresas[] = new Empresa(
+                id: (int)$row['id'],
+                nombre: $row['nombre'],
+                correo: $row['correo'],
+                rol: (int)$row['rol_id'],
+                direccion: $row['direccion'],
+                foto: $row['foto'] ?? '',
+                token: $row['token_id'] !== null ? (int)$row['token_id'] : null,
+                correoContacto: $row['correoContacto'] ?? '',
+                telefonoContacto: (int)($row['telefonoContacto'] ?? 0),
+                activo: (bool)($row['activo'] ?? false),
+                descripcion: $row['descripcion'] ?? '',
+                ofertas: [] // Se puede completar luego
+            );
+        }
+
+        return $empresas;
+    }
+
     
     /**
      * getCount
@@ -338,6 +412,37 @@ public function findById(int $id): ?Empresa {
         // Obtener el valor del count
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
+        return (int) $result['total'];
+    }
+
+
+    /**
+     * getCountFiltr
+     * Obtener el total de empresas que existen en la base de datos
+     * filtradas por nombre y estado (activo o inactivo)
+     *
+     * @param bool $activo  Estado de la empresa (true = activas, false = inactivas)
+     * @param string $nombre  Parte del nombre de la empresa para filtrar
+     * @return int  Total de empresas que coinciden con el filtro
+     */
+    public function getCountFiltr($activo, $nombre){
+        $sql = "SELECT COUNT(*) AS total 
+                FROM empresa e
+                join user u
+                on e.id=u.id
+                WHERE activo = :activo 
+                AND nombre LIKE :nombre";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':activo', $activo, PDO::PARAM_BOOL);
+        
+        // Usamos comodines para búsqueda parcial
+        $likeNombre = '%' . $nombre . '%';
+        $stmt->bindParam(':nombre', $likeNombre, PDO::PARAM_STR);
+        
+        $stmt->execute();
+
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return (int) $result['total'];
     }
 
