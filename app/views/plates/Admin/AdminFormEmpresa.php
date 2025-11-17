@@ -1,4 +1,4 @@
-<?= $this->layout('Admin/AdminEmpresa',['page'=>$page])?>
+<?= $this->layout('Admin/AdminEmpresa',['page'=>$page,'user'=>$user])?>
 
 <?= $this->start('card-options')?>
 <h1><?=$btnAction=='editar'?'Editar Empresa':'Inscribir Empresa'?></h1>

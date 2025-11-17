@@ -78,7 +78,7 @@ class RepoSolicitud implements RepoMethods {
      * @param  mixed $solicitud
      * @return bool
      */
-    public function update(Solicitud $solicitud): bool {
+    public function update(object $solicitud): bool {
         $sql = "UPDATE solicitud SET alumno_id = :alumno_id, oferta_id = :oferta_id, estado = :estado WHERE id = :id";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindValue(':alumno_id', $solicitud->getAlumnoId());
@@ -99,5 +99,72 @@ class RepoSolicitud implements RepoMethods {
         $stmt->bindValue(':id', $id, PDO::PARAM_INT);
         return $stmt->execute();
     }
+
+    /**
+     * Obtiene todas las solicitudes de un alumno específico.
+     *
+     * @param int $alumnoId ID del alumno.
+     * @return array Array de objetos Solicitud.
+     */
+    public function findByAlumno(int $alumnoId): array {
+        $solicitudes = [];
+        
+        $sql = "SELECT id, alumno_id, oferta_id, estado 
+                FROM solicitud 
+                WHERE alumno_id = :alumno_id
+                ORDER BY id DESC";
+        
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute(['alumno_id' => $alumnoId]);
+        
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        foreach ($rows as $row) {
+            $solicitudes[] = new Solicitud(
+                id: (int)$row['id'],
+                alumnoId: (int)$row['alumno_id'],
+                ofertaId: (int)$row['oferta_id'],
+                estado: EstadoSolicitud::from($row['estado'])
+            );
+        }
+        
+        return $solicitudes;
+    }
+
+    /**
+     * Obtiene la solicitud de un alumno para una oferta específica.
+     *
+     * @param int $alumnoId ID del alumno.
+     * @param int $ofertaId ID de la oferta.
+     * @return array Array con un objeto Solicitud si existe, array vacío si no.
+     */
+    public function findByAlumnoAndOferta(int $alumnoId, int $ofertaId): array {
+        $sql = "SELECT id, alumno_id, oferta_id, estado 
+                FROM solicitud 
+                WHERE alumno_id = :alumno_id AND oferta_id = :oferta_id
+                LIMIT 1";
+        
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([
+            'alumno_id' => $alumnoId,
+            'oferta_id' => $ofertaId
+        ]);
+        
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($row) {
+            return [new Solicitud(
+                id: (int)$row['id'],
+                alumnoId: (int)$row['alumno_id'],
+                ofertaId: (int)$row['oferta_id'],
+                estado: EstadoSolicitud::from($row['estado'])
+            )];
+        }
+        
+        return [];
+    }
+
+    
+
 }
 ?>

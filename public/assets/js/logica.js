@@ -1,4 +1,16 @@
 // ============================================================================
+// SECCIÓN 0: UTILIDAD PARA OBTENER TOKEN
+// ============================================================================
+
+/**
+ * Obtiene el token desde sessionStorage
+ * @returns {string|null} Token de autorización
+ */
+function obtenerToken() {
+    return sessionStorage.getItem('token');
+}
+
+// ============================================================================
 // SECCIÓN 1: INICIALIZACIÓN Y CARGA DE DATOS
 // ============================================================================
 
@@ -8,13 +20,18 @@
  */
 window.addEventListener('load', function () {
     const listaUsuario = document.querySelector('#listaUsuario');
+    const token = obtenerToken();
     
     // Cargar plantilla HTML de la tabla
     fetch("./assets/plates/tabla.html")
         .then((x) => (x.text()))
         .then((plantilla) => {
             // Obtener listado de alumnos desde la API
-            fetch("../api/apiAlumno.php?menu=listadoAlumnos")
+            fetch("../api/apiAlumno.php?menu=listadoAlumnos", {
+                headers: {
+                    'AUTH': token
+                }
+            })
                 .then((x) => x.text())
                 .then((texto) => (JSON.parse(texto)))
                 .then((datos) => {
@@ -233,6 +250,7 @@ function preSave(tabla) {
     
     // Preparar JSON para envío
     let json = JSON.stringify({ familia, ciclo, alumnos });
+    const token = obtenerToken();
     
     // Enviar datos al servidor
     fetch('../api/apiAlumno.php', {
@@ -240,7 +258,7 @@ function preSave(tabla) {
         headers: {
             'Content-Type': 'application/json',
             'MOCK': true,
-            'AUTHORIZATION': 'bearer '
+            'AUTH': token
         },
         body: json
     })
@@ -352,6 +370,7 @@ function pintarDatos(plantilla, datos, elemento) {
  */
 function modalAlumno(tr) {
     const modalDiv = document.querySelector(".modal");
+    const token = obtenerToken();
     
     // Limpiar modal
     let botones = modalDiv.querySelectorAll(".botones");
@@ -369,8 +388,12 @@ function modalAlumno(tr) {
     fetch("./assets/plates/datosAlumno.html")
         .then((x) => (x.text()))
         .then((plantilla) => {
-            let id=tr.querySelector('.id').innerHTML;
-            fetch("../api/apiAlumno.php?menu=alumno&id="+id)
+            let id = tr.querySelector('.id').innerHTML;
+            fetch("../api/apiAlumno.php?menu=alumno&id=" + id, {
+                headers: {
+                    'AUTH': token
+                }
+            })
                 .then((x) => (x.text()))
                 .then((texto) => JSON.parse(texto))
                 .then((datos) => {

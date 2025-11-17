@@ -149,7 +149,8 @@ class EmpresaController {
             'validator' => $validator,
             'page' => $this->page,
             'accion' => $accion,
-            'btnAction'=>''
+            'btnAction'=>'',
+            'user'=>$this->user
         ]);
     }
 
@@ -170,7 +171,7 @@ class EmpresaController {
             $this->procesarNuevaEmpresa($empresa, $validator, $postData, $fileData);
         }
 
-        echo $this->renderFormularioEmpresa($empresa, $validator, $accion);
+        $this->renderFormularioEmpresa($empresa, $validator, $accion);
     }
 
     // =====================================================
@@ -207,7 +208,8 @@ class EmpresaController {
             'validator' => $validator,
             'page' => $this->page,
             'accion' => $pageAccion,
-            'btnAction' => $btnAction
+            'btnAction' => $btnAction,
+            'user'=>$this->user
         ]);
         
     }
@@ -238,7 +240,8 @@ class EmpresaController {
                 'empresa' => $empresa,
                 'page' => $this->page,
                 'accion' => $pageAccion,
-                'btnAction'=>$btnAction
+                'btnAction'=>$btnAction,
+                'user'=>$this->user
             ]);
         }
     }
@@ -261,7 +264,8 @@ class EmpresaController {
             echo $this->templates->render('Admin/AdminVerEmpresa', [
                 'empresa' => $empresa,
                 'page' => $this->page,
-                'accion' => $pageAccion
+                'accion' => $pageAccion,
+                'user'=>$this->user
             ]);
         }
     }
@@ -350,7 +354,8 @@ class EmpresaController {
             'activo' => $activo,
             'accion' => $accion,
             'nombre'=>$nombre,
-            'size'=>$datos['size']??10
+            'size'=>$datos['size']??10,
+            'user'=>$this->user
         ]);
     }
 

@@ -1,4 +1,4 @@
-<?= $this->layout('Admin/AdminEmpresa', ['page'=>$page])?>
+<?= $this->layout('Admin/AdminEmpresa', ['page'=>$page, 'user'=>$user])?>
 <?= $this->push('js')?>
 <?= $this->end() ?>
 <?= $this->start('card-options')?>

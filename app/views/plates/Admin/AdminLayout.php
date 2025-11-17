@@ -3,7 +3,7 @@
 <link rel="stylesheet" href="./assets/css/admin.css">
 <?= $this->end() ?>
 <?= $this->start('header')?>
-<?= $this->insert('partials/HeaderAdmin')?>
+<?= $this->insert('partials/HeaderAdmin', ['user'=>$user])?>
 <?= $this->stop()?>
 <?= $this->start('main')?>
 <div class="panel">

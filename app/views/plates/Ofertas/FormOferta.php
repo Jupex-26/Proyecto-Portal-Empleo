@@ -1,11 +1,11 @@
 <?= $this->layout('layout');?>
 <?= $this->start('header')?>
-<?= $this->insert('partials/header')?>
+<?= $this->insert('partials/header', ['user'=>$user])?>
 <?= $this->stop()?>
 <?= $this->start('main') ?>
 <main>
     <div class=" new-oferta">
-        <form action="?page=oferta&accion=newOffer" method='POST' class="card-content card">
+        <form action="?page=oferta&accion=<?=$accion?>&id=<?=$oferta->getId()?>" method='POST' class="card-content card">
             <div class="form-group">
                 <label for="nombre">Nombre:<span class="error">*</span></label>
                 <input type="text" name="nombre" id="nombre" value="<?= $oferta->getNombre()??''?>" placeholder="Inserte el título de la oferta">
@@ -56,9 +56,19 @@
                 <?= $validator->imprimirError('ciclos')?>
             </div>
             
-            <div class="save-offer">
+            <div class="btns-form">
                 <a href="?page=oferta" class="btn">Volver</a>
-                <button class="btn guardar" name="accion" value="crear">Crear Oferta</button>
+                <?php switch($accion):
+                    case 'newOffer':?>
+                    <button class="btn guardar" name="accion" value="crear">Crear Oferta</button>
+                        <?php break;?>
+                    <?php case 'editar':?>
+                        <button class="btn guardar" name="accion" value="editar">Editar Oferta</button>
+                        <?php break;?>
+                    <?php endswitch;?>
+
+
+                    
             </div>
             
         </form>

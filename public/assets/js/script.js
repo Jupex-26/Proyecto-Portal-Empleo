@@ -1,29 +1,23 @@
 window.addEventListener('load',function(){
-    configurarSelects();
-    const add_ciclo=document.querySelector(".add-ciclo");
-    const total_ciclos=document.querySelector(".total-ciclos");
-    if (add_ciclo){
-        configurarBtnEliminar(total_ciclos);
-        add_ciclo.onclick=function(e){
-        e.preventDefault();
-        document.querySelector('p.error')?.remove(); /* esto hace que se elimine si exite se llama encadenamiento opcional, sirve para acceder a una propiedad o método solo si el objeto existe*/
-        const ciclo=document.querySelector('#ciclo');
-        if (ciclo.disabled==false && ciclo.selectedOptions[0].disabled==false){
-            let texto=ciclo.selectedOptions[0].value;
-            let id=ciclo.selectedOptions[0].className;
-            insertarEnDiv(texto,id,total_ciclos);
-            console.log(ciclo.selectedOptions[0]);
-        }else{
-            let p=document.createElement('p');
-            p.className="error";
-            p.innerHTML="Tiene que elegir un ciclo";
-            add_ciclo.insertAdjacentElement("afterend",p);
-        }
-    }
-    }
-    
+    activarSelects();
 })
 
+window.addEventListener('load',function(){
+
+    const userIcon = document.getElementById("userIcon");
+    const dropdownMenu = document.getElementById("dropdownMenu");
+    if (userIcon){
+        userIcon.addEventListener("click", () => {
+        dropdownMenu.classList.toggle("show");
+    });
+
+    document.addEventListener("click", (e) => {
+        if (!userIcon.contains(e.target) && !dropdownMenu.contains(e.target)) {
+            dropdownMenu.classList.remove("show");
+        }
+    });
+    }
+})
 
 
 function configurarBtnEliminar(div){
@@ -78,3 +72,31 @@ function comprobarExistencia(id,div){
     }
     return bool;
 }
+
+
+function activarSelects(){
+    configurarSelects();
+    const add_ciclo=document.querySelector(".add-ciclo");
+    const total_ciclos=document.querySelector(".total-ciclos");
+    if (add_ciclo){
+        configurarBtnEliminar(total_ciclos);
+        add_ciclo.onclick=function(e){
+        e.preventDefault();
+        document.querySelector('p.error')?.remove(); /* esto hace que se elimine si exite se llama encadenamiento opcional, sirve para acceder a una propiedad o método solo si el objeto existe*/
+        const ciclo=document.querySelector('#ciclo');
+        if (ciclo.disabled==false && ciclo.selectedOptions[0].disabled==false){
+            let texto=ciclo.selectedOptions[0].textContent;
+            let id=ciclo.selectedOptions[0].className;
+            insertarEnDiv(texto,id,total_ciclos);
+            console.log(ciclo.selectedOptions[0]);
+        }else{
+            let p=document.createElement('p');
+            p.className="error";
+            p.innerHTML="Tiene que elegir un ciclo";
+            add_ciclo.insertAdjacentElement("afterend",p);
+        }
+    }
+    }
+    
+}
+

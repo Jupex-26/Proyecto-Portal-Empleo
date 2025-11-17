@@ -2,7 +2,7 @@
 namespace app\helpers;
 use app\models\Ciclo;
 class Converter{
-    public static function arrayToJson(array $items): string {
+    public static function arrayToJson(array $items): array {
         $jsonStrings = [];
 
         foreach ($items as $item) {
@@ -12,7 +12,7 @@ class Converter{
         }
 
         // Concatenamos todos los JSON individuales en un JSON
-        return '[' . implode(',', $jsonStrings) . ']';
+        return $jsonStrings;
     }
 
     public static function passwdToHash(string $passwd):string{

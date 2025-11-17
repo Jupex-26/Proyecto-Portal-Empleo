@@ -13,7 +13,7 @@ class SolicitudController{
     }
     public function index(){
         if (Login::isLogin()){
-            echo "Esto es un index";
+            echo $this->templates->render('Solicitud/Solicitud',['user'=>$this->user]);
         }else{
             header("location:?page=login");
         }

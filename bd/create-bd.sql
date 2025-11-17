@@ -51,7 +51,7 @@ DROP TABLE IF EXISTS `empleo`.`token` ;
 CREATE TABLE IF NOT EXISTS `empleo`.`token` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `codigo` VARCHAR(45) NOT NULL,
-  `fecha_caducidad` VARCHAR(45) NOT NULL,
+  `expires_at` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB;
 

@@ -111,12 +111,12 @@ class RepoCicloOferta implements RepoMethods {
     /**
      * Elimina una relación específica por ciclo_id y oferta_id
      * 
-     * @param int $id ID del ciclo (se eliminan todas sus relaciones)
+     * @param int $id ID de la oferta (se eliminan todas sus relaciones)
      * @return bool
      */
     public function delete(int $id): bool {
         try {
-            $sql = "DELETE FROM ciclo_tiene_oferta WHERE ciclo_id = :id";
+            $sql = "DELETE FROM ciclo_tiene_oferta WHERE oferta_id = :id";
             $stmt = $this->conn->prepare($sql);
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);
             return $stmt->execute();
@@ -181,5 +181,90 @@ class RepoCicloOferta implements RepoMethods {
         }
         
         return $ciclos;
+    }
+    /**
+     * Actualiza las relaciones de ciclos para una oferta
+     * Elimina las relaciones que ya no existen e inserta las nuevas
+     *
+     * @param int $ofertaId ID de la oferta
+     * @param array $ciclosNuevos Array de objetos Ciclo nuevos
+     * @return bool
+     */
+    public function updateRelacion(int $ofertaId, array $ciclosNuevos): bool {
+        try {
+            $this->conn->beginTransaction();
+            
+            // Obtener los ciclos actuales de la oferta
+            $ciclosActuales = $this->findCiclosByOferta($ofertaId);
+            
+            // Crear arrays de IDs para comparar
+            $idsActuales = array_map(fn($ciclo) => $ciclo->getId(), $ciclosActuales);
+            $idsNuevos = array_map(fn($ciclo) => $ciclo->getId(), $ciclosNuevos);
+            
+            // Determinar qué ciclos eliminar (están en actuales pero no en nuevos)
+            $idsAEliminar = array_diff($idsActuales, $idsNuevos);
+            
+            // Determinar qué ciclos insertar (están en nuevos pero no en actuales)
+            $idsAInsertar = array_diff($idsNuevos, $idsActuales);
+            
+            // Eliminar las relaciones que ya no existen
+            foreach ($idsAEliminar as $cicloId) {
+                $this->eliminarAsociacion($cicloId, $ofertaId);
+            }
+            
+            // Insertar las nuevas relaciones
+            foreach ($idsAInsertar as $cicloId) {
+                $this->asociarCicloOferta($cicloId, $ofertaId);
+            }
+            
+            $this->conn->commit();
+            return true;
+        } catch (PDOException $e) {
+            $this->conn->rollBack();
+            error_log("Error al actualizar ciclos de oferta: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Asocia un ciclo con una oferta
+     *
+     * @param int $cicloId
+     * @param int $ofertaId
+     * @return bool
+     */
+    private function asociarCicloOferta(int $cicloId, int $ofertaId): bool {
+        try {
+            $sql = "INSERT INTO ciclo_tiene_oferta (ciclo_id, oferta_id) 
+                    VALUES (:ciclo_id, :oferta_id)";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindParam(':ciclo_id', $cicloId, PDO::PARAM_INT);
+            $stmt->bindParam(':oferta_id', $ofertaId, PDO::PARAM_INT);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            error_log("Error al asociar ciclo con oferta: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Elimina la asociación entre un ciclo y una oferta
+     *
+     * @param int $cicloId
+     * @param int $ofertaId
+     * @return bool
+     */
+    private function eliminarAsociacion(int $cicloId, int $ofertaId): bool {
+        try {
+            $sql = "DELETE FROM ciclo_tiene_oferta 
+                    WHERE ciclo_id = :ciclo_id AND oferta_id = :oferta_id";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindParam(':ciclo_id', $cicloId, PDO::PARAM_INT);
+            $stmt->bindParam(':oferta_id', $ofertaId, PDO::PARAM_INT);
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            error_log("Error al eliminar asociación: " . $e->getMessage());
+            return false;
+        }
     }
 }

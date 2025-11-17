@@ -10,8 +10,12 @@ use app\repositories\RepoAlumCiclo;
 use app\repositories\RepoFamilia;
 use app\repositories\RepoUser;
 use app\repositories\RepoCiclo;
+use app\repositories\RepoSolicitud;
+use app\repositories\RepoOferta;
+use app\repositories\RepoToken;
 use app\helpers\Converter;
 use app\helpers\Validator;
+use app\helpers\Security;
 use app\models\Alumno;
 use app\models\AlumCursadoCiclo;
 use DateTime;
@@ -19,14 +23,61 @@ use DateTime;
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
-/* Comprobar si tiene token y si pertene a administrador */
-$auth=$_SERVER['HTTP_AUTHORIZATION']??'';
+
+/* Comprobar si tiene token y si pertenece a administrador */
+
+/**
+ * Valida el token de la petición
+ * @return object|false Retorna el objeto Token si es válido, false si no lo es
+ */
+function validarToken() {
+    $mock = $_SERVER['HTTP_MOCK'] ?? false;
+    
+    // Si es POST sin MOCK (registro), no validar token
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$mock) {
+        return true;
+    }
+    
+    $auth = $_SERVER['HTTP_AUTH'] ?? '';
+
+    if (empty($auth)) {
+        http_response_code(401);
+        echo json_encode(['success' => false, 'message' => 'Token no proporcionado']);
+        return false;
+    }
+    
+    $tokenString = $auth;
+    if (preg_match('/Bearer\s+(\S+)/', $auth, $matches)) {
+        $tokenString = $matches[1];
+    }
+
+    $repoToken = new RepoToken();
+    $tokenObj = $repoToken->findByCodigo($tokenString);
+    
+    if (!$tokenObj || !Security::validateToken($tokenString, $tokenObj->getCodigo())) {
+        http_response_code(401);
+        echo json_encode(['success' => false, 'message' => 'Token inválido']);
+        return false;
+    }
+    
+    if (new DateTime() > $tokenObj->getExpiresAt()) {
+        http_response_code(401);
+        echo json_encode(['success' => false, 'message' => 'Token expirado']);
+        return false;
+    }
+    
+    return $tokenObj;
+}
+
+$tokenData = validarToken();
+
+// Si el token no es válido, detener la ejecución
+if ($tokenData === false) {
+    exit;
+}
+
+// Token válido, continuar con el router
 router();
-/* if ($auth!=''){
-    
-}else{
-    
-} */
 
 function router(){
     $req=$_SERVER['REQUEST_METHOD'];
@@ -44,7 +95,6 @@ function router(){
         case "DELETE": /* Eliminar */
             manejarDelete();
             break;
-            /* put y delete */
     }
 }
 
@@ -55,18 +105,17 @@ function manejarGet(){
     switch($accion){
         case "listadoAlumnos":
             responseAlumnos();
-            
             break;
         case "prueba":
-                $repo=new RepoAlumno();
-                $alumno=new Alumno(
-                    nombre:"Juan Pedro",
-                    ap1:"Exposito",
-                    ap2:"Pozuelo", 
-                    correo:"jexppoz579@g.educaand.es",
-                    direccion:"Calle True 123, Andújar",
-                    fechaNacimiento:new \DateTime("2003-03-26"));
-                $repo->save($alumno);
+            $repo=new RepoAlumno();
+            $alumno=new Alumno(
+                nombre:"Juan Pedro",
+                ap1:"Exposito",
+                ap2:"Pozuelo", 
+                correo:"jexppoz579@g.educaand.es",
+                direccion:"Calle True 123, Andújar",
+                fechaNacimiento:new \DateTime("2003-03-26"));
+            $repo->save($alumno);
             break;
         case "alumno":
             responseAlumno();
@@ -80,6 +129,15 @@ function manejarGet(){
         case "niveles":
             responseNiveles();
             break;
+        case "solicitudes":
+            responseSolicitudes();
+            break;
+        case 'ofertas':
+            responseOfertas();
+            break;
+        case 'solicitudesOferta':
+            responseSolicitudesOferta();
+            break;
     }
 }
 
@@ -89,25 +147,29 @@ function responseAlumnos(){
     $json=Converter::arrayToJson($alumnos);
     echo $json;
 }
+
 function responseAlumno(){
     $id=(int)$_GET['id'];
     $repo=new RepoAlumno();
     $alumno=$repo->findById($id);
-    echo $alumno->toJson();
+    echo json_encode($alumno->toJson(), JSON_UNESCAPED_UNICODE);
 }
+
 function responseFamilias(){
     $repo=new RepoFamilia();
     $familias=$repo->findAll();
     $json=Converter::arrayToJson($familias);
-    echo $json;
+    echo json_encode($json);
 }
+
 function responseNiveles(){
     $repo=new RepoCiclo();
     $id=$_GET['id']??false;
     $niveles=$repo->findNivelByFamily($id);
     $json=Converter::arrayToJson($niveles);
-    echo $json;
+    echo json_encode($json);
 }
+
 function responseCiclos(){  
     $id=$_GET['id']??false;
     $nivel=$_GET['nivel']??false;
@@ -120,7 +182,169 @@ function responseCiclos(){
     }else{
         $json = ['response'=>false];
     }
-    echo $json;
+    echo json_encode($json);
+}
+
+/**
+ * responseSolicitudes
+ * 
+ * Obtiene todas las ofertas solicitadas por un alumno específico
+ * Requiere el parámetro 'id' en la URL con el ID del alumno
+ * 
+ * Devuelve un array de objetos con:
+ * - Información completa de la oferta
+ * - Estado de la solicitud
+ * - ID de la solicitud
+ * 
+ * Ejemplo de uso:
+ * GET /api/apiAlumno.php?menu=solicitudes&id=5
+ * 
+ * @return void Imprime un JSON con el array de ofertas y sus estados
+ */
+function responseSolicitudes(){
+    $alumnoId = (int)($_GET['id'] ?? 0);
+    
+    if ($alumnoId === 0) {
+        echo json_encode([
+            'success' => false, 
+            'message' => 'ID de alumno no proporcionado o inválido'
+        ]);
+        return;
+    }
+    
+    try {
+        $repoSolicitud = new RepoSolicitud();
+        $repoOferta = new RepoOferta();
+        
+        // Obtener todas las solicitudes del alumno
+        $solicitudes = $repoSolicitud->findByAlumno($alumnoId);
+        
+        // Construir array con ofertas completas y estado de solicitud
+        $resultado = [];
+        foreach ($solicitudes as $solicitud) {
+            $oferta = $repoOferta->findById($solicitud->getOfertaId());
+            if ($oferta) {
+                $resultado[] = [
+                    'solicitud_id' => $solicitud->getId(),
+                    'estado' => $solicitud->getEstado()->value,
+                    'oferta' => $oferta->toJson()
+                ];
+            }
+        }
+        
+        echo json_encode($resultado);
+    } catch (Exception $e) {
+        echo json_encode([
+            'success' => false, 
+            'message' => 'Error al obtener solicitudes: ' . $e->getMessage()
+        ]);
+    }
+}
+
+/**
+ * responseOfertas
+ * 
+ * Obtiene todas las ofertas publicadas por una empresa específica
+ * Requiere el parámetro 'id' en la URL con el ID de la empresa
+ * 
+ * Devuelve un array de ofertas de la empresa
+ * 
+ * Ejemplo de uso:
+ * GET /api/apiAlumno.php?menu=ofertas&id=5
+ * 
+ * @return void Imprime un JSON con el array de ofertas
+ */
+function responseOfertas(){
+    $empresaId = (int)($_GET['id'] ?? 0);
+    
+    if ($empresaId === 0) {
+        echo json_encode([
+            'success' => false, 
+            'message' => 'ID de empresa no proporcionado o inválido'
+        ]);
+        return;
+    }
+    
+    try {
+        $repoOferta = new RepoOferta();
+        
+        // Obtener todas las ofertas de la empresa
+        $ofertas = $repoOferta->findAllByEmpresa($empresaId);
+        
+        // Convertir a JSON
+        $json = Converter::arrayToJson($ofertas);
+        echo json_encode($json);
+        
+    } catch (Exception $e) {
+        echo json_encode([
+            'success' => false, 
+            'message' => 'Error al obtener ofertas: ' . $e->getMessage()
+        ]);
+    }
+}
+
+/**
+ * responseSolicitudesOferta
+ *
+ * Obtiene todos los alumnos que han solicitado una oferta específica.
+ * Devuelve un JSON con éxito o error.
+ *
+ * Espera el parámetro GET:
+ *  - ofertaId: ID de la oferta para filtrar los alumnos
+ *
+ * JSON de respuesta (success = true):
+ * {
+ *   "success": true,
+ *   "alumnos": [
+ *       {
+ *           "id": 3,
+ *           "nombre": "Laura",
+ *           "ap1": "Martínez",
+ *           "ap2": "Díaz",
+ *           "correo": "laura@mail.com",
+ *           "direccion": "Calle Sol 22",
+ *           "foto": "laura.jpg",
+ *           "ciclos": [...],
+ *           "solicitudes": [...],
+ *           "cv": "",
+ *           "descripcion": "",
+ *           "fechaNacimiento": "2004-02-11"
+ *       },
+ *       ...
+ *   ]
+ * }
+ *
+ * JSON de error (success = false):
+ * {
+ *   "success": false,
+ *   "message": "Falta parámetro ofertaId"
+ * }
+ *
+ * @return void Imprime directamente JSON
+ */
+function responseSolicitudesOferta(){
+
+    // Validar parámetro ofertaId
+    if (!isset($_GET['id'])) {
+        http_response_code(400);
+        echo json_encode([
+            "success" => false,
+            "message" => "Falta parámetro ofertaId"
+        ]);
+        return;
+    }
+
+    $ofertaId = intval($_GET['id']);
+
+    // Llamamos al repositorio de alumnos
+    $repoAlumno = new RepoAlumno();
+    $alumnos = Converter::arrayToJson($repoAlumno->findAllByOferta($ofertaId));
+    
+    // Respuesta
+    echo json_encode([
+        "success" => true,
+        "alumnos" => $alumnos
+    ]);
 }
 
 /**
@@ -200,9 +424,9 @@ function manejarPost(){
         $repoAlumno = new RepoAlumno(); 
         $repoCiclo = new RepoCiclo();
         $repoAlumCiclo = new RepoAlumCiclo();
-        
-        $cicloObj = $repoCiclo->findByNameAndFamily($ciclo, $familia); 
+        $cicloObj = $repoCiclo->findById($ciclo); 
         $estudio = new AlumCursadoCiclo();
+        
         $estudio->setCicloId($cicloObj->getId());
         $estudio->setFechaInicio($hoy);
         
@@ -214,9 +438,69 @@ function manejarPost(){
         
         echo json_encode($correos_existentes);
     } else {
-        // Manejar caso sin MOCK
-        http_response_code(400);
-        echo json_encode(['error' => 'MOCK header required']);
+        insertarAlumno();
+    }
+}
+
+
+function insertarAlumno(){
+    try {
+        $nombre = $_POST['nombre'] ?? '';
+        $ap1 = $_POST['ap1'] ?? '';
+        $ap2 = $_POST['ap2'] ?? '';
+        $correo = $_POST['correo'] ?? '';
+        $direccion = $_POST['direccion'] ?? '';
+        $passwd = $_POST['passwd'] ?? '';
+        $fechaNacimiento = $_POST['fecha_nacimiento'] ?? '';
+
+        // Validar campos requeridos
+        if (empty($nombre) || empty($ap1) || empty($correo) || empty($direccion) || empty($passwd) || empty($fechaNacimiento)) {
+            echo json_encode(['success' => false, 'message' => 'Faltan campos obligatorios']);
+            return;
+        }
+
+        // Verificar si el correo ya existe
+        $repoUser = new RepoUser();
+        $correoExiste = $repoUser->existenCorreos([$correo]);
+
+        if (!empty($correoExiste)) {
+            echo json_encode(['success' => false, 'message' => 'El correo ya está registrado']);
+            return;
+        }
+
+        // Crear el objeto Alumno
+        $alumno = new Alumno(
+            nombre: $nombre,
+            ap1: $ap1,
+            ap2: $ap2,
+            correo: $correo,
+            fechaNacimiento: new DateTime($fechaNacimiento),
+            direccion: $direccion,
+            rol: 3,
+            passwd: password_hash($passwd, PASSWORD_DEFAULT)
+        );
+
+        // Guardar el alumno
+        $repoAlumno = new RepoAlumno();
+        $alumnoId = $repoAlumno->save($alumno);
+
+        if (!$alumnoId) {
+            echo json_encode(['success' => false, 'message' => 'Error al guardar el alumno']);
+            return;
+        }
+
+        // Respuesta exitosa
+        echo json_encode([
+            'success' => true,
+            'message' => 'Alumno registrado correctamente',
+            'alumno_id' => $alumnoId
+        ]);
+
+    } catch (Exception $e) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Error del servidor: ' . $e->getMessage()
+        ]);
     }
 }
 
@@ -267,13 +551,53 @@ function manejarPut(){
 }
 /**
  * manejarDelete
- *  Devuelve un json con true o false si se ha eliminado el alumno o no
+ *  Elimina un registro según el header ACCION
  * @return void
  */
-function manejarDelete(){
-    $data=json_decode(file_get_contents('php://input'),true);
-    $repo=new RepoAlumno();
-    $bool=$repo->delete($data["id"]);
-    echo json_encode(["success"=>$bool]);
+function manejarDelete() {
+    $data = json_decode(file_get_contents('php://input'), true);
+    $accion = $_SERVER['HTTP_ACCION'] ?? '';
+
+    switch ($accion) {
+        case 'solicitud':
+            manejarDeleteSolicitud($data);
+            break;
+        case 'alumno':
+            manejarDeleteAlumno($data);
+            break;
+        default:
+            respuestaAccionInvalida();
+            break;
+    }
 }
+
+/**
+ * Maneja eliminación de solicitud
+ */
+function manejarDeleteSolicitud(array $data) {
+    $repo = new RepoSolicitud();
+    $bool = $repo->delete($data["id"]);
+    echo json_encode(["success" => $bool]);
+}
+
+/**
+ * Maneja eliminación de alumno
+ */
+function manejarDeleteAlumno(array $data) {
+    $repo = new RepoAlumno();
+    $bool = $repo->delete($data["id"]);
+    echo json_encode(["success" => $bool]);
+}
+
+/**
+ * Respuesta para acción inválida
+ */
+function respuestaAccionInvalida() {
+    http_response_code(400);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Acción no válida'
+    ]);
+}
+
 ?>

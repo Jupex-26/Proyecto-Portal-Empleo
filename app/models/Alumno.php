@@ -1,7 +1,7 @@
 <?php
 
 namespace app\models;
-
+use app\helpers\Converter;
 class Alumno extends User {
     // --- PROPIEDADES ---
     private array $ciclos = [];
@@ -117,25 +117,52 @@ class Alumno extends User {
     public function addSolicitud(object $solicitud): void {
         $this->solicitudes[] = $solicitud;
     }
+    /**
+     * Obtiene la solicitud del alumno para una oferta específica.
+     *
+     * @param int $oferta_id ID de la oferta.
+     * @return Solicitud|null Objeto Solicitud si existe, null si no.
+     */
+    public function getSolicitudByOfertaId(int $oferta_id): ?Solicitud {
+        $solicitudes = array_filter(
+            $this->solicitudes, 
+            fn($solicitud) => $solicitud->getOfertaId() === $oferta_id
+        );
+        
+        return reset($solicitudes) ?: null;
+    }
+    /**
+     * Elimina una solicitud del array de solicitudes del alumno.
+     *
+     * @param Solicitud $solicitudAEliminar Objeto Solicitud a eliminar.
+     * @return void
+     */
+    public function deleteSolicitud(Solicitud $solicitudAEliminar): void {
+        $indice = array_search($solicitudAEliminar, $this->solicitudes, true);
+        if ($indice !== false) {
+            unset($this->solicitudes[$indice]);
+        }
+    }
 
     // --- SERIALIZACIÓN A JSON ---
-    public function toJson(): string {
+    public function toJson(): array {
         $data = [
             'id' => $this->getId(),
             'nombre' => $this->getNombre(),
             'correo' => $this->getcorreo(),
             'rol' => $this->getRol(),
             'direccion' => $this->getDireccion(),
+            'descripcion' => $this->getDescripcion(),
             'foto' => $this->getFoto(),
             'ap1' => $this->getAp1(),
             'ap2' => $this->getAp2(),
-            'ciclos' => $this->getCiclos(),
+            'ciclos' => Converter::arrayToJson($this->getCiclos()),
             'cv' => $this->getCv(),
-            'solicitudes' => $this->getSolicitudes(),
+            'solicitudes' => Converter::arrayToJson($this->getSolicitudes()),
             'fechaNacimiento' => $this->getFechaNac()?->format('d-m-Y')
         ];
 
-        return json_encode($data, JSON_UNESCAPED_UNICODE); // mantiene acentos y caracteres especiales
+        return $data; // mantiene acentos y caracteres especiales
     }
 }
 ?>

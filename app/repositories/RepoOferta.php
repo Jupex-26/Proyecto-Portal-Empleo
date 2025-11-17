@@ -1,6 +1,7 @@
 <?php
 namespace app\repositories;
 use app\repositories\DB;
+use app\repositories\RepoCicloOferta;
 use app\models\Oferta;
 use PDO;
 use DateTime;
@@ -35,30 +36,42 @@ class RepoOferta  implements RepoMethods {
         }
         return $ofertas;
     }    
-    /**
-     * findById
-     *
-     * @param  int $id
-     * @return Oferta
-     */
-    public function findById(int $id): ?Oferta {
-        $sql = "SELECT id, nombre, descripcion, empresa_id, fecha_inicio, fecha_fin FROM oferta WHERE id = :id";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        $stmt->execute();
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        if ($row) {
-            return new Oferta(
-                (int)$row['id'],
-                $row['nombre'],
-                $row['descripcion'],
-                (int)$row['empresa_id'],
-                new DateTime($row['fecha_inicio']),
-                new DateTime($row['fecha_fin'])
-            );
-        }
-        return null;
-    }    
+/**
+ * findById
+ *
+ * @param  int $id
+ * @return Oferta
+ */
+public function findById(int $id): ?Oferta {
+    $sql = "SELECT o.id, o.nombre, o.descripcion, o.empresa_id, o.fecha_inicio, o.fecha_fin, u.foto 
+            FROM oferta o 
+            JOIN user u ON o.empresa_id = u.id 
+            WHERE o.id = :id";
+    
+    $stmt = $this->conn->prepare($sql);
+    $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+    $stmt->execute();
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    if ($row) {
+        // Obtener los ciclos asociados a la oferta
+        $repoCicloOferta = new RepoCicloOferta();
+        $ciclos = $repoCicloOferta->findCiclosByOferta($id);
+        
+        return new Oferta(
+            id: (int)$row['id'],
+            nombre: $row['nombre'],
+            descripcion: $row['descripcion'],
+            empresaId: (int)$row['empresa_id'],
+            fechaInicio: new DateTime($row['fecha_inicio']),
+            fechaFin: new DateTime($row['fecha_fin']),
+            ciclos: $ciclos,
+            foto: $row['foto']
+        );
+    }
+    
+    return null;
+}   
     /**
      * save
      *
@@ -137,8 +150,8 @@ class RepoOferta  implements RepoMethods {
     public function findAllByEmpresa(int $empresaId): array {
         $ofertas = [];
 
-        $sql = "SELECT id, nombre, descripcion, empresa_id, fecha_inicio, fecha_fin 
-                FROM oferta 
+        $sql = "SELECT o.id, o.nombre, o.descripcion, o.empresa_id, o.fecha_inicio, o.fecha_fin ,u.foto
+                FROM oferta o join user u on o.empresa_id=u.id
                 WHERE empresa_id = :empresa_id 
                 order by id desc";
 
@@ -156,11 +169,206 @@ class RepoOferta  implements RepoMethods {
                 fechaInicio:new DateTime($row['fecha_inicio']), 
                 fechaFin: new DateTime($row['fecha_fin']),
                 solicitudes:[],
+                foto:$row['foto'],
                 ciclos:$repo->findCiclosByOferta((int)$row['id'])
             );
         }
 
         // Retornar el array de ofertas (vacío si la empresa no tiene ninguna)
+        return $ofertas;
+    }
+
+
+    /**
+     * Obtiene todas las ofertas de una empresa según su estado.
+     *
+     * @param int $empresaId ID de la empresa.
+     * @param string $estado Estado de la oferta: 'activos' o 'finalizados'.
+     * @return array Array de objetos Oferta que cumplen con el estado especificado.
+     */
+    public function findByEstado(int $empresaId, string $estado): array {
+        $ofertas = [];
+
+        // Determinar la condición de estado
+        $condicionEstado = match($estado) {
+            'activos' => 'AND CURDATE() BETWEEN fecha_inicio AND fecha_fin',
+            'finalizados' => 'AND fecha_fin < CURDATE()',
+            default => '' // Sin filtro si no es válido
+        };
+
+        $sql = "SELECT id, nombre, descripcion, empresa_id, fecha_inicio, fecha_fin 
+                FROM oferta 
+                WHERE empresa_id = :empresa_id
+                {$condicionEstado}
+                ORDER BY id DESC";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute(['empresa_id' => $empresaId]);
+
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $repo = new RepoCicloOferta();
+        
+        foreach ($rows as $row) {
+            $ofertas[] = new Oferta(
+                id: (int)$row['id'],
+                nombre: $row['nombre'],
+                descripcion: $row['descripcion'],
+                empresaId: (int)$row['empresa_id'],
+                fechaInicio: new DateTime($row['fecha_inicio']),
+                fechaFin: new DateTime($row['fecha_fin']),
+                solicitudes: [],
+                ciclos: $repo->findCiclosByOferta((int)$row['id'])
+            );
+        }
+
+        return $ofertas;
+    }
+
+
+    /**
+     * Obtiene todas las ofertas de una empresa que tienen ciclos de una familia específica y están en un estado determinado.
+     *
+     * @param int $empresaId ID de la empresa.
+     * @param int $familiaId ID de la familia de ciclos.
+     * @param string $estado Estado de la oferta: 'activos' o 'finalizados'.
+     * @return array Array de objetos Oferta que cumplen ambos criterios.
+     */
+    public function findByFamiliaAndEstado(int $empresaId, int $familiaId, string $estado): array {
+        $ofertas = [];
+
+        // Determinar la condición de estado
+        $condicionEstado = match($estado) {
+            'activos' => 'AND CURDATE() BETWEEN o.fecha_inicio AND o.fecha_fin',
+            'finalizados' => 'AND o.fecha_fin < CURDATE()',
+            default => '' // Sin filtro de estado si no es válido
+        };
+
+        $sql = "SELECT DISTINCT o.id, o.nombre, o.descripcion, o.empresa_id, o.fecha_inicio, o.fecha_fin 
+                FROM oferta o
+                INNER JOIN ciclo_tiene_oferta cto ON o.id = cto.oferta_id
+                INNER JOIN ciclo c ON cto.ciclo_id = c.id
+                WHERE o.empresa_id = :empresa_id
+                AND c.familia_id = :familia_id
+                {$condicionEstado}
+                ORDER BY o.id DESC";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([
+            'empresa_id' => $empresaId,
+            'familia_id' => $familiaId
+        ]);
+
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $repo = new RepoCicloOferta();
+        
+        foreach ($rows as $row) {
+            $ofertas[] = new Oferta(
+                id: (int)$row['id'],
+                nombre: $row['nombre'],
+                descripcion: $row['descripcion'],
+                empresaId: (int)$row['empresa_id'],
+                fechaInicio: new DateTime($row['fecha_inicio']),
+                fechaFin: new DateTime($row['fecha_fin']),
+                solicitudes: [],
+                ciclos: $repo->findCiclosByOferta((int)$row['id'])
+            );
+        }
+
+        return $ofertas;
+    }
+
+
+
+    /**
+     * Obtiene todas las ofertas activas que tienen ciclos de una familia específica.
+     *
+     * @param int $familiaId ID de la familia de ciclos.
+     * @return array Array de objetos Oferta que tienen ciclos de esa familia.
+     */
+    public function findByFamilia(int $familiaId): array {
+        $ofertas = [];
+
+        $sql = "SELECT DISTINCT o.id, o.nombre, o.descripcion, o.empresa_id, o.fecha_inicio, o.fecha_fin, e.foto
+                FROM oferta o
+                INNER JOIN ciclo_tiene_oferta cto ON o.id = cto.oferta_id
+                INNER JOIN ciclo c ON cto.ciclo_id = c.id
+                INNER JOIN user e ON o.empresa_id = e.id
+                WHERE c.familia_id = :familia_id
+                AND CURDATE() BETWEEN o.fecha_inicio AND o.fecha_fin
+                ORDER BY o.id DESC";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute(['familia_id' => $familiaId]);
+
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $repo = new RepoCicloOferta();
+        
+        foreach ($rows as $row) {
+            $ofertas[] = new Oferta(
+                id: (int)$row['id'],
+                nombre: $row['nombre'],
+                descripcion: $row['descripcion'],
+                empresaId: (int)$row['empresa_id'],
+                fechaInicio: new DateTime($row['fecha_inicio']),
+                fechaFin: new DateTime($row['fecha_fin']),
+                solicitudes: [],
+                ciclos: $repo->findCiclosByOferta((int)$row['id']),
+                foto: $row['foto'] ?? ''
+            );
+        }
+
+        return $ofertas;
+    }
+
+
+    /**
+     * Obtiene todas las ofertas que tienen alguno de los ciclos especificados.
+     *
+     * @param array $ciclos Array de objetos Ciclo del alumno.
+     * @return array Array de objetos Oferta que tienen al menos uno de esos ciclos.
+     */
+    public function findByCiclos(array $ciclos): array {
+        $ofertas = [];
+        
+        // Si no hay ciclos, retornar vacío
+        if (empty($ciclos)) {
+            return $ofertas;
+        }
+        
+        // Extraer los IDs de los ciclos
+        $cicloIds = array_map(fn($ciclo) => $ciclo->getId(), $ciclos);
+        
+        // Crear placeholders para la consulta preparada
+        $placeholders = implode(',', array_fill(0, count($cicloIds), '?'));
+        
+        $sql = "SELECT DISTINCT o.id, o.nombre, o.descripcion, o.empresa_id, o.fecha_inicio, o.fecha_fin, e.foto
+                FROM oferta o
+                INNER JOIN ciclo_tiene_oferta cto ON o.id = cto.oferta_id
+                INNER JOIN user e ON o.empresa_id = e.id
+                WHERE cto.ciclo_id IN ({$placeholders})
+                AND CURDATE() BETWEEN o.fecha_inicio AND o.fecha_fin
+                ORDER BY o.id DESC";
+        
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute($cicloIds);
+        
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $repo = new RepoCicloOferta();
+        
+        foreach ($rows as $row) {
+            $ofertas[] = new Oferta(
+                id: (int)$row['id'],
+                nombre: $row['nombre'],
+                descripcion: $row['descripcion'],
+                empresaId: (int)$row['empresa_id'],
+                fechaInicio: new DateTime($row['fecha_inicio']),
+                fechaFin: new DateTime($row['fecha_fin']),
+                solicitudes: [],
+                ciclos: $repo->findCiclosByOferta((int)$row['id']),
+                foto: $row['foto'] ?? ''
+            );
+        }
+        
         return $ofertas;
     }
 

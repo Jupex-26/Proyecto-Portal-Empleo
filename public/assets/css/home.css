@@ -62,6 +62,20 @@ img{
     height: 20px;
 }
 
+/* ==========================
+   IMÁGENES
+========================== */
+
+.listado img,
+.listado button, .car-btns > .icono {
+    width: 20px;
+    height: 20px;
+    border: none;
+}
+.car-btns > .icono:hover{
+    cursor: pointer;
+}
+
 
 /* ==========================
    ENLACES Y BOTONES BASE
@@ -78,6 +92,7 @@ a:hover {
 button {
     color: white;
     border: none;
+    background-color: rgba(255, 255, 255, 0);
 }
 
 button:hover {
@@ -187,6 +202,82 @@ p.error{
 }
 
 
+.carousel-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    width: 150%;
+    margin-left: -25%;
+    z-index: 9;
+}
+
+.carousel {
+    display: flex;
+    overflow-x: auto;
+    gap: 2em;
+    scroll-behavior: smooth;
+    padding: 1.5em 1.5em 0.5em;
+    flex: 1;
+    
+}
+
+.carousel-item {
+    max-width: 300px;
+    flex: 0 0 auto;
+    gap:2em;
+}
+.carousel-item > div > img{
+    width: 5em;
+    height: auto;
+}
+.carousel-item >div{
+    display: flex;
+}
+.car-btns{
+    justify-content: space-around;
+}
+
+.carousel-btn {
+    width: 3em;
+}
+
+
+
+
+/* ==========================
+   MODALES
+========================== */
+.velo {
+    position: fixed;
+    inset: 0;
+    background: rgba(200, 200, 200, 0.8);
+    z-index: 98;
+}
+
+.modal {
+    position: fixed;
+    top: 5%;
+    left: 5%;
+    width: 90%;
+    height: 90vh;
+    background: white;
+    z-index: 99;
+    overflow-y: auto;
+    border-radius: 5px;
+    padding: 2em;
+    align-items: center;
+}
+
+.hidden {
+    display: none;
+}
+
+.activo {
+    display: flex;
+    flex-direction: column;
+}
+
 
 /* ==========================
    POSICIONAMIENTO GRID/FLEX
@@ -247,7 +338,7 @@ header .logo img{
     width: auto;
 }
 
-header.navbar ul {
+header nav ul {
     list-style: none;
     display: flex;
     gap: 3em;
@@ -262,6 +353,71 @@ header .perfil img {
     height: 3.5em;
     width: auto;
 }
+
+/* ---- MENÚ DESPLEGABLE PERFIL ---- */
+
+.user-menu {
+    position: relative;
+}
+
+.user-menu img {
+    cursor: pointer;
+}
+
+/* Caja del menú */
+.user-menu .dropdown {
+    display: active;
+    list-style: none;
+    position: absolute;
+    top: 4.5em; /* debajo del icono */
+    right: 0;
+    background: white;
+    width: 160px;
+    padding: 0.5em 0;
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    /* Inicialmente oculto */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+}
+.dropdown.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.user-menu .dropdown li a {
+    width: 100%;
+    position: relative;
+    display: inline-block;   /* ← IMPORTANTE */
+    padding: 0.7em 1em;
+    color: var(--color-principal);
+    text-decoration: none;
+}
+
+.user-menu .dropdown li a:hover {
+    background: var(--fondo-header);
+}
+/* línea inicial invisible */
+.dropdown li a::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 4px;        /* ajustable */
+    width: 0;
+    height: 2px;
+    background: var(--color-principal);
+    transform: translateX(-50%);
+    transition: width 0.5s ease;
+}
+
+/* al hacer hover, la línea se expande desde el centro */
+.dropdown li a:hover::after {
+    width: 100%;
+}
+
 
 /* ==========================
    FOOTER
@@ -362,9 +518,12 @@ footer p {
 ========================== */
 
 .ofertas{
-    width: 50%;
+    width: 60%;
     justify-self: center;
     margin:5em;
+}
+.ofertas .card-content{
+    height: 450px;
 }
 
 .ofertas img{
@@ -373,7 +532,7 @@ footer p {
     grid-area: logo;
     margin: 0 1em;
 }
-.ofertas ul {grid-area: ciclos;}
+.ofertas ul {grid-area: ciclos; list-style:square;}
 .ofertas-fechas > p{grid-area: fechas; font-size: small;}
 .ofertas h2{ grid-area: titulo;}
 .ofertas p{ grid-area: texto; text-align: justify;}
@@ -394,7 +553,7 @@ footer p {
     margin: 3em;
 }
 
-.save-offer{
+.btns-form{
     margin:3em 0;
     display: flex;
     justify-content: space-between;
@@ -686,7 +845,7 @@ input:focus, textarea:focus {
 .card-content {
     
     background-color: white;
-    margin-bottom: 2em;
+    margin-bottom: 3em;
     width: 100%;
     transition: 0.4s;
     

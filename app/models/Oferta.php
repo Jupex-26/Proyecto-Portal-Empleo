@@ -1,6 +1,7 @@
 <?php
 namespace app\models;
 use DateTime;
+use app\helpers\Converter;
 class Oferta{
     private ?int $id;
     private string $nombre;
@@ -10,8 +11,9 @@ class Oferta{
     private ?DateTime $fechaFin;
     private array $solicitudes = [];
     private array $ciclos=[];
+    private string $foto;
 
-    public function __construct(?int $id=null, string $nombre='', string $descripcion='', int $empresaId=0, ?DateTime $fechaInicio=null, ?DateTime $fechaFin=null, array $solicitudes=[], array $ciclos=[]){
+    public function __construct(?int $id=null, string $nombre='', string $descripcion='', int $empresaId=0, ?DateTime $fechaInicio=null, ?DateTime $fechaFin=null, array $solicitudes=[], array $ciclos=[], $foto=''){
         $this->id = $id;
         $this->nombre = $nombre;
         $this->descripcion = $descripcion;
@@ -20,6 +22,7 @@ class Oferta{
         $this->fechaFin = $fechaFin;
         $this->solicitudes=$solicitudes;
         $this->ciclos=$ciclos;
+        $this->foto=$foto;
     }
 
     public function getId(): ?int {
@@ -51,8 +54,16 @@ class Oferta{
     public function getCiclos(): array {
         return $this->ciclos;
     }
-    public function setCiclos(array $solicitudes): void {
-        $this->solicitudes = $solicitudes;
+
+    public function getFoto(): string {
+        return $this->foto;
+    }
+
+    public function setFoto(string $foto): void {
+        $this->foto = $foto;
+    }
+    public function setCiclos(array $ciclos): void {
+        $this->ciclos = $ciclos;
     }
     public function addCiclo(Ciclo $ciclo): void {
         $this->ciclos[] = $ciclo;
@@ -78,5 +89,32 @@ class Oferta{
     public function setFechaFin(DateTime $fechaFin): void {
         $this->fechaFin = $fechaFin;
     }
+    /**
+     * actualizarOferta
+     *
+     * @param  mixed $postData
+     * @param  mixed $oferta
+     * @return void
+     */
+    public function actualizarOferta($postData){
+        $this->setNombre($postData['nombre']??$this->getNombre());
+        $this->setDescripcion($postData['descripcion']??$this->getDescripcion());
+        $this->setFechaInicio(new DateTime($postData['fecha_inicio'])??$this->getFechaInicio());
+        $this->setFechaFin(new DateTime($postData['fecha_fin'])??$this->getFechaFin());
+        $this->setCiclos(Converter::postToCiclos($postData));
+    }
+    public function toJson(): array {
+    return ([
+        'id' => $this->id,
+        'nombre' => $this->nombre,
+        'descripcion' => $this->descripcion,
+        'empresaId' => $this->empresaId,
+        'fechaInicio' => $this->fechaInicio ? $this->fechaInicio->format('Y-m-d') : null,
+        'fechaFin' => $this->fechaFin ? $this->fechaFin->format('Y-m-d') : null,
+        'solicitudes' => Converter::arrayToJson($this->solicitudes),
+        'ciclos' => Converter::arrayToJson($this->ciclos),
+        'foto' => $this->foto
+    ]);
+}
 }
 ?>

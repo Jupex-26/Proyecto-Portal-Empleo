@@ -97,6 +97,12 @@ class Empresa extends User{
     public function addOferta(Oferta $oferta): void {
         array_unshift($this->ofertas, $oferta);
     }
+    public function deleteOferta(Oferta $oferta):void{
+        $indice = array_search($oferta, $this->ofertas, true); /* Busca la referencia en memoria al poner el true, si uso falso elimina las que tengan las mismas propiedades, por lo que si se actualiza una oferta no pasará */
+        if ($indice !== false) {
+            unset($this->ofertas[$indice]);
+        }
+    }
 
 
     /**
@@ -144,6 +150,29 @@ class Empresa extends User{
         }
 
         return $nombreFinal;
-            }
+    }
+
+    // --- SERIALIZACIÓN A JSON ---
+public function toJson(): string {
+    $data = [
+        'id' => $this->getId(),
+        'nombre' => $this->getNombre(),
+        'correo' => $this->getCorreo(),
+        'rol' => $this->getRol(),
+        'direccion' => $this->getDireccion(),
+        'foto' => $this->getFoto(),
+        'token' => $this->getToken(),
+        'localidad' => $this->getLocalidad(),
+        'provincia' => $this->getProvincia(),
+        'correoContacto' => $this->getCorreoContacto(),
+        'telefonoContacto' => $this->getTelefonoContacto(),
+        'activo' => $this->isActivo(),
+        'descripcion' => $this->getDescripcion(),
+        'ofertas' => $this->getOfertas()
+    ];
+
+    return $data;
+}
+
 }
 ?>

@@ -1,40 +1,60 @@
-HTMLSelectElement.prototype.loadFromApi=function(ruta){
-    
-    this.disabled=false;
-    let first=this.querySelector("option");
-    this.innerHTML="";
+// ============================================================================
+// UTILIDAD: OBTENER TOKEN
+// ============================================================================
+
+/**
+ * Obtiene el token desde sessionStorage
+ * @returns {string|null} Token de autorización
+ */
+function obtenerToken() {
+    return sessionStorage.getItem('token');
+}
+
+// ============================================================================
+// EXTENSIÓN DE HTMLSelectElement CON AUTENTICACIÓN
+// ============================================================================
+
+HTMLSelectElement.prototype.loadFromApi = function(ruta) {
+    this.disabled = false;
+    let first = this.querySelector("option");
+    this.innerHTML = "";
     if (first) this.appendChild(first);
-    fetch(ruta)
-    .then((res)=>res.text())
-    .then((res)=>JSON.parse(res))
-    .then((texto)=>{
-        texto.forEach(element => {
-            let option=document.createElement("option");
-            option.classList.add(element.id??element.nombre);
-            option.value=element.nombre;
-            option.textContent=element.nombre;
-            this.appendChild(option);
-            
-        });
+    
+    const token = obtenerToken();
+    
+    fetch(ruta, {
+        method: 'GET',
+        headers: {
+            'AUTH': token
+        }
     })
+    .then((res) => res.text())
+    .then((res) => JSON.parse(res))
+    .then((texto) => {
+        texto.forEach(element => {
+            let option = document.createElement("option");
+            option.classList.add(element.id ?? element.nombre);
+            option.value = element.id ?? element.nombre;
+            option.innerHTML = element.nombre + " <input type='hidden' value='" + element.id + "''>";
+            this.appendChild(option);
+        });
+    });
+    
     if (this.dataset.default === "true") return; /* Si alguien está intentando cargar recursos cuando he cancelado toda acción no intento cargar nada */
 }
-HTMLSelectElement.prototype.toDefault=function(){
-    let first=this.querySelector("option");
+
+HTMLSelectElement.prototype.toDefault = function() {
+    let first = this.querySelector("option");
     const copia = first.cloneNode(true); 
-    this.innerHTML="";
+    this.innerHTML = "";
     this.appendChild(copia);
-    this.disabled=true; /* Vuelvo a los valores por defecto */
+    this.disabled = true; /* Vuelvo a los valores por defecto */
     this.dataset.default = "true"; /* Indico una propiedad por si alguien cancela antes de cargar recursos */
 }
 
 /**
  * Configura selects en cascada: Familia -> Nivel -> Ciclo
  */
-
-
-
-
 
 /**
  * Carga las familias profesionales en el select
@@ -43,7 +63,7 @@ HTMLSelectElement.prototype.toDefault=function(){
  */
 function cargarFamilias(selectorId = "#familia") {
     const select = document.querySelector(selectorId);
-    if (!select){
+    if (!select) {
         return null;
     }
     select.loadFromApi("../api/apiAlumno.php?menu=familias");
@@ -100,8 +120,7 @@ function configurarSelects() {
     const selectCiclo = document.querySelector("#ciclo");
     
     // 3. Configurar cascada familia->nivel->ciclo
-    if (selectNivel && selectCiclo){
+    if (selectNivel && selectCiclo) {
         configurarCascadaFamiliaNivel(selectFamilia, selectNivel, selectCiclo);
     }
-    
 }

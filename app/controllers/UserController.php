@@ -15,7 +15,7 @@ class UserController{
         if ((Login::isLogin() && !empty($this->user) && $this->user->getRol()==1)){
             $repo=new RepoAlumno();
             $users=$repo->findAll();
-            print $this->templates->render('Admin/AdminAlumnos',['page'=>$_GET['page']]); 
+            print $this->templates->render('Admin/AdminAlumnos',['page'=>$_GET['page'], 'user'=>$this->user]); 
         }else{
             header('location:?page=home');
         }

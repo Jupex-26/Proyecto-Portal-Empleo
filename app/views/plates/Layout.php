@@ -10,8 +10,12 @@
     <script src="./assets/js/select.js"></script>
     <link rel="icon" type="image/x-icon" href="./assets/img/logo.png"> 
     <?= $this->section('css')?>
-    <?= $this->section('js')?>
+    
+    <script src="./assets/js/validator.js"></script>
+    <script src="./assets/js/modal.js"></script>
+    <script src="./assets/js/select.js"></script>
     <script src="./assets/js/script.js"></script>
+    <?= $this->section('js')?>
 </head>
 <body>
     <?= $this->section('header')?>

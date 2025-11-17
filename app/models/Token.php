@@ -1,6 +1,6 @@
 <?php
 namespace app\models;
-
+use DateTime;
 class Token {
     private ?int $id;
     private string $codigo;

@@ -4,6 +4,8 @@ namespace app\repositories;
 use app\repositories\DB;
 use PDO;
 use PDOException;
+use app\models\Ciclo;
+use app\models\NivelEnum;
 class RepoAlumCiclo implements RepoMethods {
     private $conn;
 
@@ -128,5 +130,36 @@ class RepoAlumCiclo implements RepoMethods {
             error_log("Error al eliminar registro de alum_cursado_ciclo: " . $e->getMessage());
             return false;
         }
+    }
+
+    /**
+     * Obtiene todos los ciclos cursados por un alumno específico.
+     *
+     * @param int $alumnoId ID del alumno.
+     * @return array Array de objetos Ciclo.
+     */
+    public function findByAlumno(int $alumnoId): array {
+        $ciclos = [];
+        
+        $sql = "SELECT c.id, c.nivel, c.nombre, c.familia_id 
+                FROM ciclo c
+                INNER JOIN alum_cursado_ciclo acc ON c.id = acc.ciclo_id
+                WHERE acc.alumno_id = :alumno_id";
+        
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute(['alumno_id' => $alumnoId]);
+        
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        foreach ($rows as $row) {
+            $ciclos[] = new Ciclo(
+                id: (int)$row['id'],
+                nivel: $row['nivel'] ? NivelEnum::from($row['nivel']) : null,
+                nombre: $row['nombre'],
+                familiaId: (int)$row['familia_id']
+            );
+        }
+        
+        return $ciclos;
     }
 }

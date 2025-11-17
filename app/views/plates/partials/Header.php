@@ -10,7 +10,13 @@
         <li><a href="?page=contacto">Contacto</a></li>
       </ul>
     </nav>
+
+    <?php if($user):?>
+    <?=$this->insert('partials/NavLogin',['user'=>$user])?>
+    <?php else:?>
     <div class="perfil">
       <a href="?page=login"><img src="./assets/img/usuario.png" alt="Perfil"></a><!-- Cambiar el perfil según si tiene rol o no -->
     </div>
+    <?php endif?>
+
   </header>

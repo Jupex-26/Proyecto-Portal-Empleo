@@ -10,27 +10,14 @@ class HomeController {
     private $templates;
     private $user;
     public function __construct($platePath){
-        $this->templates=new Engine($platePath);
-        $this->user=Session::readSession('user');  /* Cuando se haga una instancia de este controlador, creo una propiedad con la instancia de engine para los plates*/
+        $this->templates=new Engine($platePath); /* Cuando se haga una instancia de este controlador, creo una propiedad con la instancia de engine para los plates*/
+        $this->user=Session::readSession('user'); 
     }
     public function index() {
-         
-         
-        if (Login::isLogin()){
-            $rol=$this->user->getRol();
-            switch($rol){
-                case 1:
-                    echo $this->templates->render('Admin/AdminHome',['page'=>$_GET['page']??'home']);
-                    break;
-                case 2:
-                    echo $this->templates->render('EmpresaHome');
-                    break;
-                case 3:
-                    echo $this->templates->render('AlumnoHome');
-                    break;
-            }
+        if (Login::isLogin()&&$this->user->getRol()==1){
+            echo $this->templates->render('Admin/AdminHome',['user'=>$this->user,'page'=>$_GET['page']]);
         }else{
-            echo $this->templates->render('home');
+            echo $this->templates->render('home', ['user'=>$this->user]);
         }  
     }
     /* Hacer top 5 de empresas y enseñarlas,

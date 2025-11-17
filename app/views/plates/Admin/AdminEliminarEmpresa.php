@@ -1,4 +1,4 @@
-<?= $this->layout('Admin/AdminFichaEmpresa',['page'=>$page, 'empresa'=>$empresa])?>
+<?= $this->layout('Admin/AdminFichaEmpresa',['page'=>$page, 'empresa'=>$empresa, 'user'=>$user])?>
 <?= $this->start('card-options')?>
 <h1>Eliminar Empresa</h1>
 <?= $this->stop()?>

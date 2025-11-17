@@ -1,4 +1,4 @@
-<?=$this->layout('Admin/AdminLayout',['page'=>$page])?>
+<?=$this->layout('Admin/AdminLayout',['page'=>$page,'user'=>$user])?>
 <?= $this->start('panel-main')?>
 <section class="card-options">
 <?= $this->section('card-options')?>

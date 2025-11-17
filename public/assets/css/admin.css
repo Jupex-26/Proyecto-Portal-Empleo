@@ -69,16 +69,7 @@ a#link-size {
 
 
 
-/* ==========================
-   IMÁGENES
-========================== */
 
-.listado img,
-.listado button {
-    width: 20px;
-    height: 20px;
-    border: none;
-}
 
 /* ==========================
    FORMULARIOS
@@ -101,39 +92,7 @@ form.alumno {
 
 
 
-/* ==========================
-   MODALES
-========================== */
-.velo {
-    position: fixed;
-    inset: 0;
-    background: rgba(200, 200, 200, 0.8);
-    z-index: 98;
-}
 
-.modal {
-    position: fixed;
-    top: 10%;
-    left: 5%;
-    width: 90%;
-    height: 85%;
-    background: white;
-    z-index: 99;
-    overflow-y: auto;
-    border-radius: 5px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.hidden {
-    display: none;
-}
-
-.activo {
-    display: flex;
-    flex-direction: column;
-}
 
 /* ==========================
    UTILIDADES Y CARGA

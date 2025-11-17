@@ -43,4 +43,18 @@ class Solicitud{
     public function setOfertaId(int $ofertaId): void {
         $this->ofertaId = $ofertaId;
     }
+
+    /**
+     * Convierte el objeto Solicitud a un array listo para JSON
+     *
+     * @return array
+     */
+    public function toJson(): array {
+        return [
+            'id' => $this->id,
+            'alumnoId' => $this->alumnoId,
+            'ofertaId' => $this->ofertaId,
+            'estado' => $this->estado->value // suponiendo que EstadoSolicitud es un enum
+        ];
+    }
 }

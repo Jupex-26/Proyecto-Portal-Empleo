@@ -189,42 +189,5 @@ class RepoCiclo implements RepoMethods {
         return $ciclos;
     }
 
-    
-    /**
-     * findByNameAndFamily
-     *
-     * @param  mixed $nombreCiclo
-     * @param  mixed $nombreFamilia
-     * @return Ciclo
-     */
-    public function findByNameAndFamily(string $nombreCiclo, string $nombreFamilia): ?Ciclo{
-        $sql = "
-            SELECT c.id, c.nivel, c.nombre, c.familia_id
-            FROM ciclo c
-            INNER JOIN familia f ON c.familia_id = f.id
-            WHERE c.nombre = :nombre_ciclo
-            AND f.nombre = :nombre_familia
-            LIMIT 1
-        ";
-
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bindValue(':nombre_ciclo', $nombreCiclo);
-        $stmt->bindValue(':nombre_familia', $nombreFamilia);
-        $stmt->execute();
-
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if (!$row) {
-            return null;
-        }
-
-        return new Ciclo(
-            $row['id'],
-            NivelEnum::from($row['nivel']),
-            $row['nombre'],
-            $row['familia_id']
-        );
-    }
-
 }
 ?>

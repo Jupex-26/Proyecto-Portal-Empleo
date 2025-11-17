@@ -29,6 +29,9 @@ class LoginController {
      * Determina qué acción realizar según el valor enviado por POST['accion'].
      */
     public function index() {
+        error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
         $validator = new Validator();
         $repo = new RepoUser();
         $accionPost = filter_input(INPUT_POST, 'accion', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
@@ -61,7 +64,7 @@ class LoginController {
         $validator->validarCorreo('correo_login', $_POST);
         $user = $repo->findUser($correo);
         if ($user  && Security::validatePasswd($pass, $user->getPassword() )) {
-            $user = $this->getUser($user);
+            $user = Security::getUser($user);
             if ($user){
                 Login::login($user);
                 header('location:?page=home');
@@ -104,35 +107,6 @@ class LoginController {
         echo $this->templates->render('Login/RegisterEmpresa',['empresa'=>$empresa,'validator'=>$validator,'page'=>$this->page,'accion'=>$accion]);
     }
 
-    /**
-    * Obtiene un objeto de usuario completo según su rol.
-    * 
-    * Si el usuario es de tipo empresa o alumno, busca sus datos detallados
-    * en el repositorio correspondiente. Si es un administrador, se devuelve tal cual.
-    * 
-    * @param object $user Instancia básica del usuario (con al menos ID y rol)
-    * @return object|null Devuelve el usuario completo según su tipo, o null si el rol no es válido.
-    */
-    private function getUser($user) {
-        // Determina el tipo de usuario según su rol numérico.
-        switch($user->getRol()) {
-            case 1:
-                return $user;
-                break;
-            case 2:
-                $repo = new RepoEmpresa();
-                break;
-            case 3:
-                $repo = new RepoAlumno();
-                break;
-            default: 
-                return null;
-        }
-        $user = $repo->findById($user->getId());
-        if ($user instanceof Empresa && !$user->isActivo()){
-            return null;
-        }
-        return $user;
-    }
+    
 }
 ?>

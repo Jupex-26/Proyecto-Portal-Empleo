@@ -43,9 +43,14 @@ class RepoAlumno implements RepoMethods {
         $stmt->execute();
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+        $repoCiclo = new RepoAlumCiclo();
+        $repoSolicitud = new RepoSolicitud();
+
         foreach ($rows as $row) {
+            $alumnoId = (int)$row['id'];
+            
             $alumnos[] = new Alumno(
-                id: (int)$row['id'],
+                id: $alumnoId,
                 nombre: $row['nombre'],
                 correo: $row['correo'],
                 rol: (int)$row['rol_id'],
@@ -54,19 +59,20 @@ class RepoAlumno implements RepoMethods {
                 token: (int)($row['token_id'] ?? null),
                 ap1: $row['ap1'] ?? '',
                 ap2: $row['ap2'] ?? '',
-                ciclos: [],          
+                ciclos: $repoCiclo->findByAlumno($alumnoId),
                 cv: $row['cv'] ?? '',
-                solicitudes: [],     
+                solicitudes: $repoSolicitud->findByAlumno($alumnoId),
                 fechaNacimiento: !empty($row['fecha_nacimiento'])
                                 ? new \DateTime($row['fecha_nacimiento'])
                                 : null,
-                descripcion:$row['descripcion']      
+                descripcion: $row['descripcion']      
             );
         }
 
         return $alumnos;
     }
-     /**
+
+    /**
      * Encuentra un alumno por su ID.
      * @param int $id
      * @return Alumno|null
@@ -85,7 +91,8 @@ class RepoAlumno implements RepoMethods {
                 a.ap2,
                 a.cv,
                 a.fecha_nacimiento,
-                a.descripcion
+                a.descripcion,
+                u.passwd
             FROM user u
             INNER JOIN alumno a ON u.id = a.id
             WHERE u.id = :id
@@ -100,6 +107,9 @@ class RepoAlumno implements RepoMethods {
             return null;
         }
 
+        $repoCiclo = new RepoAlumCiclo();
+        $repoSolicitud = new RepoSolicitud();
+
         return new Alumno(
             id: (int)$row['id'],
             nombre: $row['nombre'],
@@ -107,18 +117,19 @@ class RepoAlumno implements RepoMethods {
             rol: (int)$row['rol_id'],
             direccion: $row['direccion'],
             foto: $row['foto'] ?? '',
+            passwd:$row['passwd'],
             token: (int)($row['token_id'] ?? null),
             ap1: $row['ap1'] ?? '',
             ap2: $row['ap2'] ?? '',
-            ciclos: [],        
+            ciclos: $repoCiclo->findByAlumno((int)$row['id']),
             cv: $row['cv'] ?? '',
-            solicitudes: [],    
+            solicitudes: $repoSolicitud->findByAlumno((int)$row['id']),
             fechaNacimiento: !empty($row['fecha_nacimiento'])
                                 ? new \DateTime($row['fecha_nacimiento'])
                                 : null,
-            descripcion:$row['descripcion']     
+            descripcion: $row['descripcion']     
         );
-    }
+}
     /**
      * Inserta un nuevo alumno en user + alumno.
      */
@@ -249,58 +260,70 @@ class RepoAlumno implements RepoMethods {
             return false;
         }
     }
+    
+    /**
+     * Devuelve todos los alumnos que han solicitado una oferta específica.
+     *
+     * @param int $ofertaId
+     * @return Alumno[]
+     */
+    public function findAllByOferta(int $ofertaId): array {
+        $alumnos = [];
 
-    public function findUser(string $correo,string $pass){
         $sql = "
-        SELECT 
-            u.id,
-            u.nombre,
-            u.correo,
-            u.passwd,
-            u.rol_id,
-            u.direccion,
-            u.foto,
-            u.token_id,
-            a.ap1,
-            a.ap2,
-            a.cv,
-            a.fecha_nacimiento,
-            a.descripcion
-        FROM user u
-        INNER JOIN alumno a ON u.id = a.id
-        WHERE u.correo = :correo
-          AND u.passwd = :pass
-    ";
+            SELECT 
+                u.id,
+                u.nombre,
+                u.correo,
+                u.rol_id,
+                u.direccion,
+                u.foto,
+                u.token_id,
+                a.ap1,
+                a.ap2,
+                a.cv,
+                a.fecha_nacimiento,
+                a.descripcion
+            FROM solicitud s
+            INNER JOIN user u ON s.alumno_id = u.id
+            INNER JOIN alumno a ON u.id = a.id
+            WHERE s.oferta_id = :oferta_id
+            ORDER BY s.id DESC
+        ";
 
-    $stmt = $this->conn->prepare($sql);
-    $stmt->bindParam(':correo', $correo, PDO::PARAM_STR);
-    $stmt->bindParam(':pass', $pass, PDO::PARAM_STR);
-    $stmt->execute();
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute(['oferta_id' => $ofertaId]);
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    if (!$row) {
-        return null;
+        // Repos auxiliares
+        $repoCiclo = new RepoAlumCiclo();
+        $repoSolicitud = new RepoSolicitud();
+
+        foreach ($rows as $row) {
+            $alumnoId = (int)$row['id'];
+
+            $alumnos[] = new Alumno(
+                id: $alumnoId,
+                nombre: $row['nombre'],
+                correo: $row['correo'],
+                rol: (int)$row['rol_id'],
+                direccion: $row['direccion'],
+                foto: $row['foto'] ?? '',
+                token: (int)($row['token_id'] ?? null),
+                ap1: $row['ap1'] ?? '',
+                ap2: $row['ap2'] ?? '',
+                ciclos: $repoCiclo->findByAlumno($alumnoId),
+                cv: $row['cv'] ?? '',
+                solicitudes: $repoSolicitud->findByAlumnoAndOferta($alumnoId, $ofertaId),
+                fechaNacimiento: !empty($row['fecha_nacimiento'])
+                                ? new \DateTime($row['fecha_nacimiento'])
+                                : null,
+                descripcion: $row['descripcion']
+            );
+        }
+
+        return $alumnos;
     }
 
-    return new Alumno(
-        id: (int)$row['id'],
-        nombre: $row['nombre'],
-        correo: $row['correo'],
-        rol: (int)$row['rol_id'],
-        direccion: $row['direccion'],
-        passwd: $row['passwd'],
-        foto: $row['foto'] ?? '',
-        token: (int)($row['token_id'] ?? null),
-        ap1: $row['ap1'] ?? '',
-        ap2: $row['ap2'] ?? '',
-        ciclos: [],        
-        cv: $row['cv'] ?? '',
-        solicitudes: [],    
-        fechaNacimiento: !empty($row['fecha_nacimiento'])
-                            ? new \DateTime($row['fecha_nacimiento'])
-                            : null,
-        descripcion: $row['descripcion']
-    );
-    }
 }
 ?>

@@ -1,6 +1,6 @@
 <?= $this->layout('layout')?>
 <?= $this->start('header')?>
-<?= $this->insert('partials/header')?>
+<?= $this->insert('partials/header', ['user'=>$user])?>
 <?= $this->stop()?>
 <?= $this->start('main')?>
     <main class="contacto-form">

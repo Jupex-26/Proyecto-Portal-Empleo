@@ -30,13 +30,13 @@ class Familia{
     public function setId(int $id): void {
         $this->id = $id;
     }
-    public function toJson(): string {
+    public function toJson(): array {
         $data = [
             'id' => $this->getId(),
             'nombre' => $this->getNombre()
         ];
 
-        return json_encode($data, JSON_UNESCAPED_UNICODE); // mantiene acentos y caracteres especiales
+        return $data; // mantiene acentos y caracteres especiales
     }
 }
 ?>
