@@ -29,7 +29,7 @@ class Generator{
      */
     public function generateDescription(string $pdfPath): string{
         // 1. Cargar el contenido del archivo
-        $fullPath=  PROJECT_ROOT . $pdfPath;
+        $fullPath=  PROJECT_ROOT . 'cvs/' . $pdfPath;
         $pdfContent = file_get_contents($fullPath);
         
         if ($pdfContent === false) {

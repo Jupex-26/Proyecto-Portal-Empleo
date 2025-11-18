@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email</title>
+    <style>
+        {CSS}
+    </style>
+</head>
+<body>
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+        <tr>
+            <td style="padding: 20px 0;">
+                <table role="presentation" class="email-container" cellspacing="0" cellpadding="0" border="0" width="600" align="center">
+                    
+                    <!-- HEADER -->
+                    <tr>
+                        <td class="email-header">
+                            <a href="#" class="logo">
+                                Emple<span class="logo-accent">Now</span>
+                            </a>
+                        </td>
+                    </tr>
+                    
+                    <!-- CONTENIDO PRINCIPAL -->
+                    <tr>
+                        <td class="email-content">
+                            <p class="greeting">Hola, {NOMBRE}</p>
+                            
+                            <h1 class="title">{TITULO}</h1>
+                            
+                            <p class="message">{MENSAJE}</p>
+                            
+                            <div class="button-container">
+                                <a href="{BOTON_URL}" class="button">{BOTON_TEXTO}</a>
+                            </div>
+                            
+                            <div class="info-box">
+                                <p><strong>Nota:</strong> Si no solicitaste esta acción, puedes ignorar este correo de forma segura.</p>
+                            </div>
+                            
+                            <p class="message">
+                                Si tienes alguna pregunta, no dudes en contactarnos. Estamos aquí para ayudarte.
+                            </p>
+                            
+                            <p class="message">
+                                Saludos cordiales,<br>
+                                <strong>El equipo de EmpleNow</strong>
+                            </p>
+                        </td>
+                    </tr>
+                    
+                    <!-- FOOTER -->
+                    <tr>
+                        <td class="email-footer">
+                            <div class="social-links">
+                                <a href="#">Facebook</a> | 
+                                <a href="#">Twitter</a> | 
+                                <a href="#">LinkedIn</a>
+                            </div>
+                            
+                            <div class="divider"></div>
+                            
+                            <p style="margin: 10px 0;">
+                                © {ANIO} EmpleNow. Todos los derechos reservados.
+                            </p>
+                            
+                            <p style="margin: 10px 0; font-size: 12px; opacity: 0.8;">
+                                Calle Principal 123, Jaén, España<br>
+                                <a href="mailto:cliente@gmail.com">cliente@gmail.com</a>
+                            </p>
+                            
+                            <p style="margin: 10px 0; font-size: 12px; opacity: 0.8;">
+                                <a href="#">Cancelar suscripción</a> | 
+                                <a href="#">Política de privacidad</a>
+                            </p>
+                        </td>
+                    </tr>
+                    
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

@@ -16,9 +16,12 @@ use app\repositories\RepoToken;
 use app\helpers\Converter;
 use app\helpers\Validator;
 use app\helpers\Security;
+use app\helpers\Generator;
 use app\models\Alumno;
+use app\models\Ciclo;
 use app\models\AlumCursadoCiclo;
 use DateTime;
+use app\helpers\Correo;
 
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
@@ -431,9 +434,17 @@ function manejarPost(){
         $estudio->setFechaInicio($hoy);
         
         foreach($alumnosNoExisten as $alumno){
+            $passwd = $alumno->getPassword();
+            $alumno->setPassword(
+                Security::passwdToHash(
+                    $alumno->getPassword()
+                )
+            );
             $id = $repoAlumno->save($alumno); 
             $estudio->setAlumnoId($id);
             $repoAlumCiclo->save($estudio);
+            $correo = new Correo();
+            $correo->usuarioRegistrado($alumno, $passwd);
         }
         
         echo json_encode($correos_existentes);
@@ -542,12 +553,322 @@ function insertarAlumno(){
  *
  * @return void
  */
+/**
+ * manejarPut
+ * 
+ * Actualiza la información completa de un alumno incluyendo:
+ * - Datos personales (nombre, apellidos, correo, dirección, fecha nacimiento)
+ * - Contraseña (opcional, solo si se proporciona passwdActual y passwdNueva)
+ * - Foto de perfil (en base64 o URL existente)
+ * - CV (en base64 o URL existente) + generación automática de descripción con IA
+ * - Ciclos formativos cursados
+ * 
+ * @return void
+ */
 function manejarPut(){
-    
-    $data=json_decode(file_get_contents('php://input'),true); /* Para convertirlo a array, sino seria stdClass */
-    list($nombre,$correo,$direccion,$fecha)=$data;
-    
+    try {
+        // Obtener datos JSON del body
+        $data = json_decode(file_get_contents('php://input'), true);
+         // DEBUG: Ver qué llega exactamente
+        error_log("=== DEBUG DATOS RECIBIDOS ===");
+        error_log("foto recibida: " . (isset($data['foto']) ? substr($data['foto'], 0, 100) . '...' : 'NO ENVIADA'));
+        error_log("foto length: " . (isset($data['foto']) ? strlen($data['foto']) : 0));
+        error_log("cv recibido: " . (isset($data['cv']) ? substr($data['cv'], 0, 100) . '...' : 'NO ENVIADO'));
+        error_log("cv length: " . (isset($data['cv']) ? strlen($data['cv']) : 0));
+        
+        if (!$data) {
+            http_response_code(400);
+            echo json_encode([
+                'success' => false, 
+                'error' => 'Datos JSON inválidos'
+            ]);
+            return;
+        }
+        
+        // Validar que venga el ID
+        if (empty($data['id'])) {
+            http_response_code(400);
+            echo json_encode([
+                'success' => false, 
+                'error' => 'ID de usuario no proporcionado'
+            ]);
+            return;
+        }
+        
+        $userId = (int)$data['id'];
+        
+        // Obtener el alumno actual de la BD
+        $repoAlumno = new RepoAlumno();
+        $alumnoActual = $repoAlumno->findById($userId);
+        
+        if (!$alumnoActual) {
+            http_response_code(404);
+            echo json_encode([
+                'success' => false, 
+                'error' => 'Alumno no encontrado'
+            ]);
+            return;
+        }
+        
+        // Validar campos requeridos básicos
+        if (empty($data['nombre']) || empty($data['ap1']) || empty($data['correo']) || 
+            empty($data['direccion']) || empty($data['fechaNacimiento'])) {
+            http_response_code(400);
+            echo json_encode([
+                'success' => false, 
+                'error' => 'Faltan campos obligatorios'
+            ]);
+            return;
+        }
+        
+        // Validar y cambiar contraseña si se proporciona
+        $passwd = $alumnoActual->getPassword();
+        
+        if (!empty($data['passwdActual']) && !empty($data['passwdNueva'])) {
+            if (!Security::validatePasswd($data['passwdActual'], $alumnoActual->getPassword())) {
+                http_response_code(400);
+                echo json_encode([
+                    'success' => false, 
+                    'error' => 'La contraseña actual es incorrecta'
+                ]);
+                return;
+            }
+            
+            $passwd = Security::passwdToHash($data['passwdNueva']);
+        }
+        
+        // Validar correo si ha cambiado
+        if ($data['correo'] !== $alumnoActual->getCorreo()) {
+            $repoUser = new RepoUser();
+            $correoExiste = $repoUser->existenCorreos([$data['correo']]);
+            
+            if (!empty($correoExiste)) {
+                http_response_code(400);
+                echo json_encode([
+                    'success' => false, 
+                    'error' => 'El correo ya está registrado'
+                ]);
+                return;
+            }
+        }
+        
+        // Procesar foto si se envió
+        $foto = $alumnoActual->getFoto();
+        if (!empty($data['foto'])) {
+            if (strpos($data['foto'], 'data:') === 0) {
+                $resultadoFoto = procesarImagenBase64($data['foto'], $userId);
+                if ($resultadoFoto === false) {
+                    http_response_code(400);
+                    echo json_encode([
+                        'success' => false, 
+                        'error' => 'Error al procesar la imagen'
+                    ]);
+                    return;
+                }
+                $foto = $resultadoFoto;
+            } else {
+                $foto = $data['foto'];
+            }
+        }
+        
+        // Procesar CV y generar descripción si es nuevo
+        $cv = $alumnoActual->getCv();
+        $descripcion = $alumnoActual->getDescripcion();
+        $descripcionGenerada = false;
+        
+        if (!empty($data['cv'])) {
+            if (strpos($data['cv'], 'data:') === 0) {
+                $resultadoCV = procesarArchivoBase64($data['cv'], $userId);
+                if ($resultadoCV === false) {
+                    http_response_code(400);
+                    echo json_encode([
+                        'success' => false, 
+                        'error' => 'Error al procesar el CV'
+                    ]);
+                    return;
+                }
+                $cv = $resultadoCV;
+                
+                // Generar descripción automática con IA
+                try {
+                    $generator = new Generator();
+                    $descripcion = $generator->generateDescription($cv);
+                    $descripcionGenerada = true;
+                } catch (\Exception $e) {
+                    error_log("Error al generar descripción con IA: " . $e->getMessage());
+                    $descripcion = "Descripción pendiente de generar";
+                }
+            } else {
+                $cv = $data['cv'];
+            }
+        }
+        
+        // Crear objeto Alumno actualizado
+        $alumnoActualizado = new Alumno(
+            id: $userId,
+            nombre: trim($data['nombre']),
+            ap1: trim($data['ap1']),
+            ap2: trim($data['ap2'] ?? ''),
+            correo: trim($data['correo']),
+            fechaNacimiento: new DateTime($data['fechaNacimiento']),
+            direccion: trim($data['direccion']),
+            rol: $alumnoActual->getRol(),
+            passwd: $passwd,
+            foto: $foto,
+            cv: $cv,
+            token: $alumnoActual->getToken(),
+            descripcion: $descripcion
+        );
+        
+        // Actualizar el alumno en la BD
+        $actualizado = $repoAlumno->update($alumnoActualizado);
+        
+        if (!$actualizado) {
+            http_response_code(500);
+            echo json_encode([
+                'success' => false, 
+                'error' => 'Error al actualizar el alumno'
+            ]);
+            return;
+        }
+        
+        // Gestionar ciclos formativos
+        if (isset($data['ciclos']) && is_array($data['ciclos'])) {
+            $repoAlumCiclo = new RepoAlumCiclo();
+            
+            // Obtener ciclos actuales del alumno
+            $ciclosActuales = $repoAlumCiclo->findByAlumno($userId);
+            $ciclosActualesIds = array_map(fn($c) => $c->getId(), $ciclosActuales);
+            
+            // Obtener IDs de los nuevos ciclos
+            $nuevosCiclosIds = array_map(fn($c) => (int)$c['id'], $data['ciclos']);
+            
+            // Eliminar ciclos que ya no están en la lista
+            $ciclosAEliminar = array_diff($ciclosActualesIds, $nuevosCiclosIds);
+            foreach ($ciclosAEliminar as $cicloId) {
+                $repoAlumCiclo->deleteByCicloAlumno($userId, $cicloId);
+            }
+            
+            // Agregar nuevos ciclos que no existían
+            $ciclosAAgregar = array_diff($nuevosCiclosIds, $ciclosActualesIds);
+            foreach ($ciclosAAgregar as $cicloId) {
+                $alumCiclo = new AlumCursadoCiclo();
+                $alumCiclo->setAlumnoId($userId);
+                $alumCiclo->setCicloId($cicloId);
+                $alumCiclo->setFechaInicio(new DateTime());
+                $repoAlumCiclo->save($alumCiclo);
+            }
+        }
+        
+        // Respuesta exitosa
+        echo json_encode([
+            'success' => true,
+            'message' => 'Perfil actualizado correctamente',
+            'descripcion_generada' => $descripcionGenerada
+        ]);
+        
+    } catch (Exception $e) {
+        error_log("Error en manejarPut: " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode([
+            'success' => false,
+            'error' => 'Error del servidor'
+        ]);
+    }
+}
 
+/**
+ * Procesa una imagen en base64 y la guarda en el servidor
+ * 
+ * @param string $base64 Imagen en formato base64
+ * @param int $userId ID del usuario
+ * @return string|false Ruta del archivo guardado o false en caso de error
+ */
+function procesarImagenBase64(string $base64, int $userId) {
+    try {
+        // Extraer extensión y contenido
+        if (preg_match('/^data:image\/(\w+);base64,/', $base64, $matches)) {
+            $extension = $matches[1];
+            $base64 = substr($base64, strpos($base64, ',') + 1);
+        } else {
+            return false;
+        }
+        
+        // Decodificar base64
+        $imageData = base64_decode($base64);
+        if ($imageData === false) {
+            return false;
+        }
+        
+        // Crear directorio si no existe
+        $uploadDir = PROJECT_ROOT . 'public/assets/img/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+        
+        // Generar nombre único
+        $filename = 'foto_' . $userId . '_' . time() . '.' . $extension;
+        $filepath = $uploadDir . $filename;
+        
+        // Guardar el archivo
+        if (file_put_contents($filepath, $imageData) === false) {
+            return false;
+        }
+        
+        // Retornar la ruta relativa
+        return $filename;
+        
+    } catch (Exception $e) {
+        error_log("Error al procesar imagen: " . $e->getMessage());
+        return false;
+    }
+}
+
+/**
+ * Procesa un archivo PDF en base64 y lo guarda en el servidor
+ * 
+ * @param string $base64 Archivo en formato base64
+ * @param int $userId ID del usuario
+ * @return string|false Ruta del archivo guardado o false en caso de error
+ */
+function procesarArchivoBase64(string $base64, int $userId) {
+    try {
+        // Extraer extensión y contenido
+        if (preg_match('/^data:application\/(\w+);base64,/', $base64, $matches)) {
+            $extension = $matches[1];
+            $base64 = substr($base64, strpos($base64, ',') + 1);
+        } else {
+            return false;
+        }
+        
+        // Decodificar base64
+        $fileData = base64_decode($base64);
+        if ($fileData === false) {
+            return false;
+        }
+        
+        // Crear directorio si no existe
+        $uploadDir = PROJECT_ROOT . 'cvs/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+        
+        // Generar nombre único
+        $filename = 'cv_' . $userId . '_' . time() . '.pdf';
+        $filepath = $uploadDir . $filename;
+        
+        // Guardar el archivo
+        if (file_put_contents($filepath, $fileData) === false) {
+            return false;
+        }
+        
+        // Retornar la ruta relativa
+        return $filename;
+        
+    } catch (Exception $e) {
+        error_log("Error al procesar archivo: " . $e->getMessage());
+        return false;
+    }
 }
 /**
  * manejarDelete

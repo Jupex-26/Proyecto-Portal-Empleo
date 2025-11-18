@@ -131,7 +131,7 @@ function cargarSolicitudes(ofertaId) {
                 alumnos.forEach(alumno => {
                     const item = document.createElement('div');
                     item.classList.add('carousel-item','card','card-content', 'flex-col');
-                    /* Insertar luego: <p>${alumno.descripcion}</p> */
+                    /* Insertar luego:  */
                     item.innerHTML = `
                         <div>
                             <img src="./assets/img/${alumno.foto}" alt="foto alumno"></img>
@@ -141,7 +141,7 @@ function cargarSolicitudes(ofertaId) {
                             </div>
                         </div>
                         
-                        <p>Buscamos un/a Desarrollador/a Web talentoso/a y creativo/a para unirse a nuestro equipo y llevar nuestros proyectos digitales al siguiente nivel. La persona ideal es apasionada por la tecnología, tiene experiencia en desarrollo front-end y back-end, y está al día con las últimas tendencias en diseño y programación web.</p>
+                        <p>${alumno.descripcion}</p>
                         <div class="car-btns">
                             <img src="./assets/img/corazon.png" class="like icono"></img>
                             <img src="./assets/img/borrar.png" class='descartar icono'></img>

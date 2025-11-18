@@ -606,17 +606,9 @@ footer p {
     padding: 0.7em 1.5em;
 }
 
-.view-mode input:not([type="hidden"]),
-.view-mode textarea,
-.view-mode select {
-    background: var(--fondo);
-}
 
-.view-mode .file-input-button,
-.view-mode .add-ciclo-section .btn,
-.view-mode .ciclos li span {
-    opacity: 0.6;
-}
+
+
 
 /* ==========================
    CV
@@ -652,6 +644,7 @@ footer p {
 
 #ciclosContainer {
     margin-top: 1em;
+    list-style:square;
 }
 
 #ciclosContainer li {
@@ -710,7 +703,7 @@ footer p {
     margin:5em;
 }
 .ofertas .card-content{
-    height: 450px;
+    height: 525px;
 }
 
 .ofertas img{
@@ -757,6 +750,7 @@ footer p {
     padding: 0.5em 1em;
     border-radius: 5px;
     margin:1em 0;
+    width: 100%;
 }
 .ciclos li:hover{
     background-color: var(--fondo-header);
@@ -1072,7 +1066,7 @@ input:focus, textarea:focus {
     align-items: center;
 }
 
-.hidden {
+.hidden, #ciclosContainer li span.hidden {
     display: none;
 }
 

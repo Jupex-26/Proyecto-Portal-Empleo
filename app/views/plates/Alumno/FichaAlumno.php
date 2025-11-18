@@ -102,10 +102,11 @@
                                 </select>
                             </div>
                         </div>
+
                         
-                        <button type="button" class="btn btn-agregar-ciclo hidden">+ Agregar Ciclo</button>
+                        <button type="button" class="btn hidden add-ciclo">+ Agregar Ciclo</button>
                         
-                        <ul id="ciclosContainer" class="ciclos"></ul>
+                        <ul id="ciclosContainer" class="total-ciclos"></ul>
                     </div>
 
                     <div class="form-group full-width">
@@ -146,11 +147,11 @@
 
             
             <div class="botones">
-                <button id="snap" class="btn">Capturar</button>
-                <button id="resnap" class="hidden btn">Volver a Capturar</button>
                 <button id="cerrarBtn" class="btn">Cerrar</button>
+                <button id="resnap" class="hidden btn">Volver a Capturar</button>
+                <button id="snap" class="btn">Capturar</button>
                 <button class="conectar btn">Conectar cámara</button>
-                <button id="saveImg" class="btn">Guardar Imagen</button>
+                <button id="saveImg" class="btn guardar">Guardar Imagen</button>
             </div>
         </div>
     </div>

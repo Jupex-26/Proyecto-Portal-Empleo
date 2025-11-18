@@ -1,0 +1,182 @@
+/* Reset de estilos para clientes de correo */
+body, table, td, a { 
+    -webkit-text-size-adjust: 100%; 
+    -ms-text-size-adjust: 100%; 
+}
+
+table, td { 
+    mso-table-lspace: 0pt; 
+    mso-table-rspace: 0pt; 
+}
+
+img { 
+    -ms-interpolation-mode: bicubic; 
+    border: 0; 
+    height: auto; 
+    line-height: 100%; 
+    outline: none; 
+    text-decoration: none; 
+}
+
+body {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* Colores del sistema */
+:root {
+    --color-principal: #1E4D7B;
+    --color-secundario: #4e81d2;
+    --fondo: #f5f7fa;
+    --fondo-header: #e0ecf7;
+    --logo-verde: #96C03A;
+}
+
+/* Estilos generales */
+body {
+    background-color: #f5f7fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    color: #333333;
+}
+
+.email-container {
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: #ffffff;
+}
+
+/* Header */
+.email-header {
+    background-color: #e0ecf7;
+    padding: 30px 20px;
+    text-align: center;
+    border-bottom: 4px solid #1E4D7B;
+}
+
+.logo {
+    font-size: 32px;
+    font-weight: bold;
+    color: #1E4D7B;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.logo-accent {
+    color: #96C03A;
+}
+
+/* Contenido */
+.email-content {
+    padding: 40px 30px;
+}
+
+.greeting {
+    font-size: 18px;
+    color: #1E4D7B;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.title {
+    font-size: 24px;
+    color: #1E4D7B;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+.message {
+    color: #555555;
+    margin-bottom: 30px;
+    line-height: 1.8;
+}
+
+/* Botón */
+.button-container {
+    text-align: center;
+    margin: 35px 0;
+}
+
+.button {
+    display: inline-block;
+    padding: 15px 40px;
+    background-color: #1E4D7B;
+    color: #ffffff !important;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.button:hover {
+    background-color: #4e81d2;
+}
+
+/* Sección de información adicional */
+.info-box {
+    background-color: #e0ecf7;
+    border-left: 4px solid #1E4D7B;
+    padding: 20px;
+    margin: 30px 0;
+    border-radius: 4px;
+}
+
+.info-box p {
+    margin: 0;
+    color: #555555;
+    font-size: 14px;
+}
+
+/* Footer */
+.email-footer {
+    background-color: #1E4D7B;
+    color: #ffffff;
+    padding: 30px 20px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.email-footer a {
+    color: #96C03A;
+    text-decoration: none;
+}
+
+.email-footer a:hover {
+    text-decoration: underline;
+}
+
+.social-links {
+    margin: 20px 0;
+}
+
+.social-links a {
+    display: inline-block;
+    margin: 0 10px;
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.divider {
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+    margin: 20px 0;
+}
+
+/* Responsive */
+@media screen and (max-width: 600px) {
+    .email-content {
+        padding: 30px 20px !important;
+    }
+    
+    .title {
+        font-size: 20px !important;
+    }
+    
+    .button {
+        padding: 12px 30px !important;
+        font-size: 14px !important;
+    }
+}

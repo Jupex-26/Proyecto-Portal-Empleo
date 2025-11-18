@@ -162,4 +162,25 @@ class RepoAlumCiclo implements RepoMethods {
         
         return $ciclos;
     }
+
+    /**
+     * Elimina la relación entre un alumno y un ciclo
+     * 
+     * @param int $alumnoId ID del alumno
+     * @param int $cicloId ID del ciclo
+     * @return bool True si se eliminó correctamente
+     */
+    public function deleteByCicloAlumno(int $alumnoId, int $cicloId): bool {
+        try {
+            $sql = "DELETE FROM alum_cursado_ciclo WHERE alumno_id = :alumno_id AND ciclo_id = :ciclo_id";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindValue(':alumno_id', $alumnoId, PDO::PARAM_INT);
+            $stmt->bindValue(':ciclo_id', $cicloId, PDO::PARAM_INT);
+            
+            return $stmt->execute();
+        } catch (PDOException $e) {
+            error_log("Error al eliminar relación alumno-ciclo: " . $e->getMessage());
+            return false;
+        }
+    }
 }

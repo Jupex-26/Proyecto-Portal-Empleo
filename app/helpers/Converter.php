@@ -15,10 +15,6 @@ class Converter{
         return $jsonStrings;
     }
 
-    public static function passwdToHash(string $passwd):string{
-        $hash = password_hash($contraseña_plana, PASSWORD_DEFAULT)?? '';
-        return $hash;
-    }
 
     public static function postToCiclos($postData):array {
         $ciclos = [];

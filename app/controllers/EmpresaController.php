@@ -10,6 +10,7 @@ use app\helpers\Paginator;
 use app\helpers\Validator;
 use app\helpers\Security;
 use app\helpers\EmpresaValidator;
+use app\helpers\Correo;
 use app\models\User;
 use app\models\Empresa;
 /* 
@@ -414,6 +415,8 @@ class EmpresaController {
             $empresa = $repo->findById($id);
             $empresa->setActivo(true);
             $repo->update($empresa);
+            $correo = new Correo();
+            $correo->emailEmpresaActiva($empresa);
         }
         header('location: ?page='.$this->page.'&accion='.$pageAccion);
         exit;

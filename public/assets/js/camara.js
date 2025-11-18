@@ -1,5 +1,5 @@
 let stream=null;
-
+window.fotoCapturada = null;
 function conectarcamara(){
     const div=document.querySelector('.connect-cam');
     div.classList.remove('hidden');
@@ -20,17 +20,6 @@ function conectarcamara(){
         }
     }
     init();
-
-}
-
-
-async function guardarImg(){
-    const canvas = document.getElementById("canvas"); // Asumiendo que tu canvas tiene el id="canvas"
-    const video = document.getElementById("video"); // Ya usado en conectarcamara()
-    const snap = document.getElementById("snap"); // Botón para tomar la foto
-    const resnap = document.getElementById("resnap"); // Botón para volver a tomar la foto
-    const ventana = document.querySelector(".ventana-de-captura"); // O el selector correcto para tu "ventana"
-    console.log("guardando imagen");
     let context=canvas.getContext("2d");
     let recorte=document.querySelector("#recorte");
 
@@ -43,14 +32,11 @@ async function guardarImg(){
         snap.classList.add("hidden");
         resnap.classList.remove("hidden");
         context.drawImage(video,izq,top,ancho,alto,0,0,ancho,alto);
-    
         let imageBlob=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));
+        window.fotoCapturada = imageBlob;
         let form=new FormData();
         form.append("foto",imageBlob,"fotico.png");
-        fetch("php/guardar-img.php",{
-            method:"POST",
-            body:form
-        }).then((a)=>a.text()).then((texto)=>console.log(texto));
+        console.log(form.get("foto"));
     })
     resnap.addEventListener('click',function(){
         ventana.classList.remove("hidden");
@@ -59,8 +45,8 @@ async function guardarImg(){
         context.clearRect(0, 0, canvas.width, canvas.height);
 
     })
-
 }
+
 
 function apagarCamara() {
     const div=document.querySelector('.connect-cam');
