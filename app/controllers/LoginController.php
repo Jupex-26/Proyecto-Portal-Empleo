@@ -29,9 +29,7 @@ class LoginController {
      * Determina qué acción realizar según el valor enviado por POST['accion'].
      */
     public function index() {
-        error_reporting(E_ALL);
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
+
         $validator = new Validator();
         $repo = new RepoUser();
         $accionPost = filter_input(INPUT_POST, 'accion', FILTER_SANITIZE_FULL_SPECIAL_CHARS);

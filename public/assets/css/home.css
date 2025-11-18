@@ -42,7 +42,7 @@ h3 {
 }
 
 h1 {
-    font-size: 3em;
+    font-size: 3.5em;
 }
 
 h2 {
@@ -164,9 +164,6 @@ select.btn{
 .aprobado {
     color: var(--correcto);
 }
-.oculto{
-    display: none;
-}
 
 .buscador{
     margin: 3em 0 2em;
@@ -245,38 +242,7 @@ p.error{
 
 
 
-/* ==========================
-   MODALES
-========================== */
-.velo {
-    position: fixed;
-    inset: 0;
-    background: rgba(200, 200, 200, 0.8);
-    z-index: 98;
-}
 
-.modal {
-    position: fixed;
-    top: 5%;
-    left: 5%;
-    width: 90%;
-    height: 90vh;
-    background: white;
-    z-index: 99;
-    overflow-y: auto;
-    border-radius: 5px;
-    padding: 2em;
-    align-items: center;
-}
-
-.hidden {
-    display: none;
-}
-
-.activo {
-    display: flex;
-    flex-direction: column;
-}
 
 
 /* ==========================
@@ -290,7 +256,7 @@ p.error{
     grid-column: 1 / 3;
 }
 
-form .form-group {
+.form-group {
     margin: 1em 0;
 }
 .buscador form{
@@ -469,11 +435,10 @@ footer p {
 }
 
 .bienvenida h1 {
-    background: var(--color-principal-90);
     margin-bottom: 1.5em;
-    border-radius: 15px;
     color: white;
     padding: 0.8em;
+    text-shadow: 2px 2px 4px #1a2a43;
 }
 
 .bienvenida p {
@@ -483,6 +448,228 @@ footer p {
     border-radius: 15px;
     padding: 2em;
 }
+
+
+/* ==========================
+   PERFIL DE USUARIO
+========================== */
+
+.perfil-container {
+    max-width: 1000px;
+    margin: 3em auto;
+    padding: 0 2em;
+}
+
+.perfil-header {
+    text-align: center;
+    margin-bottom: 2em;
+}
+
+/* ==========================
+   FOTO DE PERFIL
+========================== */
+
+.photo-section {
+    text-align: center;
+    margin-bottom: 2em;
+}
+
+.photo-container {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    margin: 0 auto 1em;
+}
+
+.photo-preview {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid var(--color-principal);
+}
+
+.photo-placeholder {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: var(--fondo-card);
+    border: 4px solid var(--color-principal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 50px;
+    color: var(--color-secundario);
+}
+
+.file-input-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.file-input-button {
+    background: var(--color-principal);
+    color: white;
+    padding: 0.7em 1.5em;
+    border-radius: 6px;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 0.9em;
+    transition: 0.5s;
+}
+
+.file-input-button:hover {
+    background: var(--color-secundario);
+}
+
+#cvInput {
+    display: none;
+}
+
+.file-name {
+    margin-top: 0.5em;
+    font-size: 0.85em;
+    color: var(--color-principal);
+}
+
+/* ==========================
+   FORMULARIO
+========================== */
+
+.perfil-form {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5em;
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+/* ==========================
+   CONTRASEÑAS
+========================== */
+
+.password-title {
+    margin-bottom: 1em;
+}
+
+.password-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5em;
+}
+
+.password-grid .form-group {
+    margin: 0;
+}
+
+/* ==========================
+   SECCIÓN DE AGREGAR CICLOS
+========================== */
+
+.add-ciclo-section {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1em;
+    margin-bottom: 1em;
+}
+
+.add-ciclo-section .form-group {
+    margin: 0;
+}
+
+.add-ciclo-section label {
+    font-size: 0.9em;
+    margin-bottom: 0.5em;
+}
+
+.add-ciclo-section select {
+    width: 100%;
+}
+
+.btn-agregar-ciclo {
+    margin-bottom: 1em;
+}
+
+/* ==========================
+   MODO VISTA
+========================== */
+
+.mode-toggle {
+    text-align: right;
+    margin-bottom: 1.5em;
+}
+
+.mode-toggle .btn {
+    width: auto;
+    padding: 0.7em 1.5em;
+}
+
+.view-mode input:not([type="hidden"]),
+.view-mode textarea,
+.view-mode select {
+    background: var(--fondo);
+}
+
+.view-mode .file-input-button,
+.view-mode .add-ciclo-section .btn,
+.view-mode .ciclos li span {
+    opacity: 0.6;
+}
+
+/* ==========================
+   CV
+========================== */
+
+.cv-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    color: var(--color-principal);
+    text-decoration: none;
+    padding: 0.5em 1em;
+    background: var(--fondo-header);
+    border-radius: 6px;
+    margin-top: 0.5em;
+    transition: 0.3s;
+}
+
+.cv-link:hover {
+    background: var(--color-secundario);
+    color: white;
+}
+
+.cv-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+}
+
+/* ==========================
+   LISTADO DE CICLOS
+========================== */
+
+#ciclosContainer {
+    margin-top: 1em;
+}
+
+#ciclosContainer li {
+    background: white;
+    margin-bottom: 0.5em;
+}
+
+#ciclosContainer li span {
+    display: inline-flex;
+    align-items: center;
+}
+
+#ciclosContainer li span img {
+    width: 16px;
+    height: 16px;
+}
+
+
 
 /* ==========================
    PÁGINA HOME - EMPRESAS
@@ -788,7 +975,7 @@ div.registro-empresa{
 /* ==========================
    ESTILOS GENERALES DE INPUTS Y FORM
 ========================== */
-form .form-group {
+.form-group {
     display: flex;
     flex-direction: column;
     margin: 1em 0;
@@ -862,6 +1049,92 @@ input:focus, textarea:focus {
 
 
 /* ==========================
+   MODALES
+========================== */
+.velo {
+    position: fixed;
+    inset: 0;
+    background: rgba(200, 200, 200, 0.8);
+    z-index: 98;
+}
+
+.modal {
+    position: fixed;
+    top: 5%;
+    left: 5%;
+    width: 90%;
+    height: 90vh;
+    background: white;
+    z-index: 99;
+    overflow-y: auto;
+    border-radius: 5px;
+    padding: 2em;
+    align-items: center;
+}
+
+.hidden {
+    display: none;
+}
+
+.activo {
+    display: flex;
+    flex-direction: column;
+}
+
+
+#ventana{
+position: relative;
+height: 400px; width: 600px; 
+background-color: red;
+border: 1px solid black;
+}
+#recorte{
+position: absolute;
+height: 238px; 
+width: 358px;
+border: 1px solid black;
+top:20%;
+left:20%;
+
+}
+#rec{
+position: absolute;
+height: 20%; width: 100%;
+background-color: grey;
+opacity: 90%;
+top:0;
+left:0;
+}
+#rec2{
+position: absolute;
+height: 20%; width: 100%;
+background-color: grey;
+opacity: 90%;
+bottom: 0;
+
+}
+#rec3{
+position: absolute;
+height: 60%; width: 20%;
+background-color: grey;
+opacity: 90%;
+left: 0;
+
+top:20%;
+
+}
+#rec4{
+position: absolute;
+height: 60%; width: 20%;
+background-color: grey;
+opacity: 90%;
+right: 0;
+
+top:20%;
+
+}
+
+/* ==========================
    RESPONSIVE - MOBILE
 ========================== */
 @media (max-width: 480px) {
@@ -894,7 +1167,7 @@ input:focus, textarea:focus {
         gap: 0;
     }
 }
-@media (max-width: 600px) {
+@media (max-width: 768px) {
     form.alumno {
         grid-template-columns: 1fr;
     }
@@ -910,7 +1183,23 @@ input:focus, textarea:focus {
     .form-contacto {
         grid-template-columns: 1fr;
     }
+    .perfil-form {
+        grid-template-columns: 1fr;
+    }
+    
+    .add-ciclo-section {
+        grid-template-columns: 1fr;
+    }
+    
+    .password-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .perfil-container {
+        padding: 0 1em;
+    }
 }
+
 
 /* ==========================
    RESPONSIVE - TABLET

@@ -159,7 +159,7 @@ class Alumno extends User {
             'ciclos' => Converter::arrayToJson($this->getCiclos()),
             'cv' => $this->getCv(),
             'solicitudes' => Converter::arrayToJson($this->getSolicitudes()),
-            'fechaNacimiento' => $this->getFechaNac()?->format('d-m-Y')
+            'fechaNacimiento' => $this->getFechaNac()
         ];
 
         return $data; // mantiene acentos y caracteres especiales

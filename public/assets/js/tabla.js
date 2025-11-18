@@ -416,7 +416,7 @@ HTMLTableElement.prototype.desplegar = function() {
         // Alternar visibilidad de las filas (excepto el encabezado)
         Array.from(tbody.children).forEach((fila) => {
             if (fila !== desplegar) {
-                fila.classList.toggle('oculto');
+                fila.classList.toggle('hidden');
             }
         });
     }

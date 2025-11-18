@@ -1,0 +1,54 @@
+version: '3.3'
+
+services:
+  bd:
+    build:
+      context: ./bd
+    container_name: bd
+    ports:
+      - "3336:3306"
+    volumes:
+      - ./bd/data:/var/lib/mysql   # Persistencia de la base
+    restart: always
+    networks:
+      - empleo
+
+  web:
+    build:
+      context: .  # tu Dockerfile de PHP está en la raíz
+    container_name: web
+    ports:
+      - "8080:80"
+    volumes:
+      - ./api:/var/www/html/api       # API
+      - ./app:/var/www/html/app       # Lógica
+      - ./cvs:/var/www/html/cvs       # CVs
+      - ./pdf:/var/www/html/pdf       # PDF
+      - ./public:/var/www/html/public # Público
+      - ./config:/var/www/html/config # Configuraciones
+      - ./vendor:/var/www/html/vendor       # Vendor
+      - ./bootstrap.php:/var/www/html/bootstrap.php
+      - ./composer.json:/var/www/html/composer.json
+      - ./composer.lock:/var/www/html/composer.lock
+    depends_on:
+      - bd
+    networks:
+      - empleo
+    restart: always
+
+  # ---------------------------
+  # MailHog (SMTP para desarrollo)
+  # ---------------------------
+  mailhog:
+    image: mailhog/mailhog
+    container_name: mailhog_app
+    ports:
+      - "8025:8025"   # interfaz web para ver emails
+      - "1025:1025"   # servidor SMTP
+    networks:
+      - empleo
+    restart: always
+
+networks:
+  empleo:
+    driver: bridge

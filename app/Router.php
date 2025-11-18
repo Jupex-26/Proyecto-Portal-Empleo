@@ -9,6 +9,7 @@ use app\controllers\NotificacionController;
 use app\controllers\OfertaController;
 use app\controllers\EmpresaController;
 use app\controllers\StatController;
+use app\controllers\PerfilController;
 use app\helpers\Session;
 class Router{
     public function __construct(){
@@ -57,6 +58,8 @@ class Router{
                 $controller->index();
                 break;
             case 'perfil':
+                $controller=new PerfilController($platePath);
+                $controller->index();
                 break;
             case'logout':
                 Session::closeSession();

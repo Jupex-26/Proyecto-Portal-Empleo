@@ -230,7 +230,7 @@ function preSave(tabla) {
     // Obtener valores de familia y ciclo
     let familia = document.querySelector('#familia').value;
     let ciclo = document.querySelector('#ciclo').value;
-    
+
     // Obtener filas seleccionadas (excluye duplicados y headers)
     let array = tabla.obtenerSeleccionados();
     let filasValidas = array.filter(fila => !fila.classList.contains('seccion-header'));

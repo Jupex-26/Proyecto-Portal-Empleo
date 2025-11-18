@@ -149,7 +149,7 @@ function cargarSolicitudes(ofertaId) {
                         </div>
 
                     `;
-                    console.log(alumno);
+            
                     carousel.appendChild(item);
                 });
             }
@@ -245,7 +245,7 @@ function pintarSolicitudes(solicitudes) {
             </div>
             
             <form class="oferta-btns">
-                <button type="button" class="btn guardar" data-oferta-id="${oferta.id}">Ver Solicitudes</button>
+                <button type="button" class="btn eliminar" data-solicitud-id="${oferta.id}">Renunciar</button>
             </form>
         `;
         
@@ -329,7 +329,7 @@ function pintarOfertas(ofertas){
 function configurarListeners() {
     const botonesRenunciar = document.querySelectorAll('.oferta-btns button[data-solicitud-id]');
     const botonesSolicitud=document.querySelectorAll('.oferta-btns button[data-oferta-id]');
-    console.log(botonesSolicitud);
+    
     botonesSolicitud.forEach(btn => {
         btn.addEventListener('click', (function() {
             let primero=true;
@@ -337,7 +337,6 @@ function configurarListeners() {
                 if (primero){
                     primero=false;
                     const ofertaId = btn.dataset.ofertaId;
-                    console.log(ofertaId)
                     cargarSolicitudes(ofertaId);
                 }else{
                     primero=true;

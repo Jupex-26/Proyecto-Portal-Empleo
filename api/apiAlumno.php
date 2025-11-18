@@ -145,7 +145,7 @@ function responseAlumnos(){
     $repo=new RepoAlumno();
     $alumnos=$repo->findAll();
     $json=Converter::arrayToJson($alumnos);
-    echo $json;
+    echo json_encode($json);
 }
 
 function responseAlumno(){

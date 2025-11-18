@@ -1,0 +1,36 @@
+<?php
+namespace app\controllers;
+use League\Plates\Engine;
+use app\helpers\Session;
+use app\helpers\Login;
+class PerfilController{
+    private $templates;
+    private $user;
+    public function __construct($platePath){
+        $this->templates=new Engine($platePath); /* Cuando se haga una instancia de este controlador, creo una propiedad con la instancia de engine para los plates*/
+        $this->user=Session::readSession('user');
+    }
+    public function index(){
+                error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+        if (Login::isLogin()){
+            $rol=$this->user->getRol();
+            switch($rol){
+                case 1:
+                    break;
+                case 2:
+                    echo $this->templates->render('Empresa/FichaEmpresa',['user'=>$this->user]);
+                    break;
+                case 3:
+                    echo $this->templates->render('Alumno/FichaAlumno',['user'=>$this->user]);
+                    break;
+            }
+        }else{
+            header('location: ?page=login');
+        }
+        
+        
+    }
+}
+?>
