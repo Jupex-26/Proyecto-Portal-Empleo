@@ -23,9 +23,7 @@ use app\models\AlumCursadoCiclo;
 use DateTime;
 use app\helpers\Correo;
 
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
+
 
 /* Comprobar si tiene token y si pertenece a administrador */
 
@@ -391,63 +389,7 @@ function manejarPost(){
     $mock = $_SERVER['HTTP_MOCK'] ?? false;
     
     if ($mock){
-        $json = file_get_contents('php://input');
-        $data = json_decode($json, true);
-        $familia = $data['familia'];
-        $ciclo = $data['ciclo'];
-        $alumnosArray = $data['alumnos'];
-        $hoy = new DateTime();
-        
-        /* Añadir el validator y pasarle los strings, para la fecha hacer uso de:
-            $fecha = DateTime::createFromFormat('d/m/Y', fecha);
-         */
-        $alumnos = array_map(
-            fn($array) => new Alumno(
-                nombre: $array['nombre'],
-                ap1: $array['ap1'],
-                ap2: $array['ap2'] ?? '',
-                correo: $array['correo'], 
-                fechaNacimiento: new DateTime($array['fechaNacimiento']),
-                direccion: $array['direccion'],
-                rol: 3,
-                passwd: $array['nombre'] . '@' . $hoy->format('i') . $hoy->format('m')
-            ),
-            $alumnosArray // ← CORREGIDO: pasar el array correcto
-        );
-        
-        $correos = array_map(fn($alumno) => $alumno->getCorreo(), $alumnos);
-        $repoUser = new RepoUser();
-        $correos_existentes = $repoUser->existenCorreos($correos); 
-        
-        $alumnosNoExisten = array_filter(
-            $alumnos, 
-            fn($alumno) => !in_array($alumno->getCorreo(), $correos_existentes)
-        );
-        
-        $repoAlumno = new RepoAlumno(); 
-        $repoCiclo = new RepoCiclo();
-        $repoAlumCiclo = new RepoAlumCiclo();
-        $cicloObj = $repoCiclo->findById($ciclo); 
-        $estudio = new AlumCursadoCiclo();
-        
-        $estudio->setCicloId($cicloObj->getId());
-        $estudio->setFechaInicio($hoy);
-        
-        foreach($alumnosNoExisten as $alumno){
-            $passwd = $alumno->getPassword();
-            $alumno->setPassword(
-                Security::passwdToHash(
-                    $alumno->getPassword()
-                )
-            );
-            $id = $repoAlumno->save($alumno); 
-            $estudio->setAlumnoId($id);
-            $repoAlumCiclo->save($estudio);
-            $correo = new Correo();
-            $correo->usuarioRegistrado($alumno, $passwd);
-        }
-        
-        echo json_encode($correos_existentes);
+        mockAlumnos();
     } else {
         insertarAlumno();
     }
@@ -513,6 +455,66 @@ function insertarAlumno(){
             'message' => 'Error del servidor: ' . $e->getMessage()
         ]);
     }
+}
+
+function mockAlumnos(){
+        $json = file_get_contents('php://input');
+        $data = json_decode($json, true);
+        $familia = $data['familia'];
+        $ciclo = $data['ciclo'];
+        $alumnosArray = $data['alumnos'];
+        $hoy = new DateTime();
+        
+        /* Añadir el validator y pasarle los strings, para la fecha hacer uso de:
+            $fecha = DateTime::createFromFormat('d/m/Y', fecha);
+         */
+        $alumnos = array_map(
+            fn($array) => new Alumno(
+                nombre: $array['nombre'],
+                ap1: $array['ap1'],
+                ap2: $array['ap2'] ?? '',
+                correo: $array['correo'], 
+                fechaNacimiento: new DateTime($array['fechaNacimiento']),
+                direccion: $array['direccion'],
+                rol: 3,
+                passwd: $array['nombre'] . '@' . $hoy->format('i') . $hoy->format('m')
+            ),
+            $alumnosArray // ← CORREGIDO: pasar el array correcto
+        );
+        
+        $correos = array_map(fn($alumno) => $alumno->getCorreo(), $alumnos);
+        $repoUser = new RepoUser();
+        $correos_existentes = $repoUser->existenCorreos($correos); 
+        
+        $alumnosNoExisten = array_filter(
+            $alumnos, 
+            fn($alumno) => !in_array($alumno->getCorreo(), $correos_existentes)
+        );
+        
+        $repoAlumno = new RepoAlumno(); 
+        $repoCiclo = new RepoCiclo();
+        $repoAlumCiclo = new RepoAlumCiclo();
+        $cicloObj = $repoCiclo->findById($ciclo); 
+        $estudio = new AlumCursadoCiclo();
+        
+        $estudio->setCicloId($cicloObj->getId());
+        $estudio->setFechaInicio($hoy);
+        
+        foreach($alumnosNoExisten as $alumno){
+            $passwd = $alumno->getPassword();
+            $alumno->setPassword(
+                Security::passwdToHash(
+                    $alumno->getPassword()
+                )
+            );
+            $id = $repoAlumno->save($alumno); 
+            $estudio->setAlumnoId($id);
+            $repoAlumCiclo->save($estudio);
+            $correo = new Correo();
+            $correo->usuarioRegistrado($alumno, $passwd);
+        }
+        
+        echo json_encode($correos_existentes);
 }
 
 /**

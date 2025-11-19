@@ -30,10 +30,6 @@ class OfertaController{
      * @return void
      */
     public function index(){
-
-        error_reporting(E_ALL);
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
         if (Login::isLogin() && $this->user->getRol()=='2'){
             $getData = filter_input_array(INPUT_GET, FILTER_SANITIZE_SPECIAL_CHARS);
             $accion=$getData['accion']??'';

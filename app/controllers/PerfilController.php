@@ -12,9 +12,6 @@ class PerfilController{
         $this->user=Session::readSession('user');
     }
     public function index(){
-                error_reporting(E_ALL);
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
         if (Login::isLogin()){
             $rol=$this->user->getRol();
             switch($rol){

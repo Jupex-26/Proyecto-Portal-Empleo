@@ -7,7 +7,6 @@ window.addEventListener('load',function(){
     if (userJSON) {
         const datosUsuario = JSON.parse(userJSON);
         configurarToggleEdicion();
-        activarSelects();
         cargarDatos(datosUsuario, token);
     }
 })

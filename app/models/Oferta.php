@@ -102,7 +102,12 @@ class Oferta{
         $this->setFechaInicio(new DateTime($postData['fecha_inicio'])??$this->getFechaInicio());
         $this->setFechaFin(new DateTime($postData['fecha_fin'])??$this->getFechaFin());
         $this->setCiclos(Converter::postToCiclos($postData));
-    }
+    }    
+    /**
+     * toJson
+     *  Convierte el objeto Oferta a un array asociativo para JSON  
+     * @return array
+     */
     public function toJson(): array {
     return ([
         'id' => $this->id,
