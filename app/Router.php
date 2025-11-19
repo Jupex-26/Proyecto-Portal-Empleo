@@ -63,7 +63,7 @@ class Router{
                 break;
             
             default:
-                echo "404 Not Found";
+                header('location: ?page=home');
                 break;
         }
     }
