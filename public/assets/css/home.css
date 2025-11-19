@@ -222,11 +222,14 @@ p.error{
 .carousel-item {
     max-width: 300px;
     flex: 0 0 auto;
-    gap:2em;
+    gap:1em;
+}
+.carousel-item div.texto{
+    height: 400px;
 }
 .carousel-item > div > img{
     width: 5em;
-    height: auto;
+    height: 6em;
 }
 .carousel-item >div{
     display: flex;

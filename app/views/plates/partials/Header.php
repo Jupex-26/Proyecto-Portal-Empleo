@@ -6,7 +6,6 @@
       <ul>
         <li><a href="?page=oferta">Ofertas</a></li>
         <li><a href="?page=solicitud">Solicitudes</a></li>
-        <li><a href="?page=notificacion">Notificaciones</a></li>
         <li><a href="?page=contacto">Contacto</a></li>
       </ul>
     </nav>

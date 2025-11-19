@@ -54,7 +54,7 @@ class Correo
                 $titulo,
                 $cuerpo,
                 'Acceder al panel',
-                'https://tudominio.com/empresas/dashboard'
+                'http://localhost:8080/public?page=login'
             );
 
             // Contenido del correo
@@ -94,7 +94,7 @@ class Correo
                 '¡Bienvenido a nuestra plataforma!',
                 $mensaje,
                 'Iniciar sesión',
-                'https://localhost:8080/public/?page=login'
+                'http://localhost:8080/public?page=login'
             );
             
             $this->mail->isHTML(true);
@@ -135,7 +135,7 @@ class Correo
                 $titulo,
                 $mensaje,
                 $botonTexto ?? 'Ver más',
-                $botonUrl ?? 'https://localhost:8080/public/?page=login'
+                $botonUrl ?? 'http://localhost:8080/public?page=login'
             );
             
             $this->mail->isHTML(true);

@@ -6,7 +6,7 @@
     <main class="contacto-form">
         <h1>Contacto</h1>
         <div class="form-container">
-            <form class="contact-form">
+            <form class="contact-form" method="post">
                 <div class="form-header">
                     <span class="icon">📧</span>
                     <p>Completa el siguiente formulario y te responderemos lo antes posible</p>

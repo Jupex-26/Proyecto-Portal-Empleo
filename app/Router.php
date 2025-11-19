@@ -41,10 +41,6 @@ class Router{
                 $controller=new OfertaController($platePath);
                 $controller->index();
                 break;
-            case 'notificacion':
-                $controller=new NotificacionController($platePath);
-                $controller->index();
-                break;
             case 'users':
                 $controller=new UserController($platePath);
                 $controller->index();

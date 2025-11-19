@@ -3,6 +3,7 @@ namespace app\controllers;
 use League\Plates\Engine;
 use app\helpers\Session;
 use app\helpers\Login;
+use app\repositories\RepoAlumno;
 class PerfilController{
     private $templates;
     private $user;
@@ -23,6 +24,10 @@ ini_set('display_startup_errors', 1);
                     echo $this->templates->render('Empresa/FichaEmpresa',['user'=>$this->user]);
                     break;
                 case 3:
+                    /* Parche Temporal */
+                    $repo=new RepoAlumno();
+                    $this->user=$repo->findById($this->user->getId());
+                    Session::writeSession('user',$this->user);
                     echo $this->templates->render('Alumno/FichaAlumno',['user'=>$this->user]);
                     break;
             }

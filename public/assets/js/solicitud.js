@@ -136,12 +136,14 @@ function cargarSolicitudes(ofertaId) {
                         <div>
                             <img src="./assets/img/${alumno.foto}" alt="foto alumno"></img>
                             <div class="flex-col">
+                            
                             <p><strong>${alumno.nombre} ${alumno.ap1}</strong></p>
                             <p>${alumno.correo}</p>
                             </div>
                         </div>
-                        
+                        <div class="texto">
                         <p>${alumno.descripcion}</p>
+                        </div>
                         <div class="car-btns">
                             <img src="./assets/img/corazon.png" class="like icono"></img>
                             <img src="./assets/img/borrar.png" class='descartar icono'></img>

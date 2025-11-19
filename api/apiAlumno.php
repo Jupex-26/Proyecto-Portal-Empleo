@@ -569,12 +569,7 @@ function manejarPut(){
     try {
         // Obtener datos JSON del body
         $data = json_decode(file_get_contents('php://input'), true);
-         // DEBUG: Ver qué llega exactamente
-        error_log("=== DEBUG DATOS RECIBIDOS ===");
-        error_log("foto recibida: " . (isset($data['foto']) ? substr($data['foto'], 0, 100) . '...' : 'NO ENVIADA'));
-        error_log("foto length: " . (isset($data['foto']) ? strlen($data['foto']) : 0));
-        error_log("cv recibido: " . (isset($data['cv']) ? substr($data['cv'], 0, 100) . '...' : 'NO ENVIADO'));
-        error_log("cv length: " . (isset($data['cv']) ? strlen($data['cv']) : 0));
+         
         
         if (!$data) {
             http_response_code(400);
