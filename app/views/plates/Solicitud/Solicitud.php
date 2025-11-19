@@ -9,7 +9,11 @@
 <main>
     
     <div class="ofertas"></div>
-
+    <div class="velo hidden"></div>
+    <div class="modal hidden">
+        <iframe src="" frameborder="0" class="cv"></iframe>
+        <button class="close-modal btn">Cerrar</button>
+    </div>
 </main>
 <?= $this->stop() ?>
 

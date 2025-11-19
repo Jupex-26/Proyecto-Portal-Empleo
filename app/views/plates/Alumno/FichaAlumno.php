@@ -145,6 +145,7 @@
                 <canvas id="canvas" width="358" height="238"></canvas>
             </div>
 
+
             
             <div class="botones">
                 <button id="cerrarBtn" class="btn">Cerrar</button>
@@ -154,6 +155,11 @@
                 <button id="saveImg" class="btn guardar">Guardar Imagen</button>
             </div>
         </div>
+        <div class="modal hidden modal-cv">
+                <iframe id="cvFrame" class="cv-frame cv" src="" frameborder="0"></iframe>
+                <button id="cerrarCv" class="btn cerrar-cv">Cerrar</button>
+                
+        </div> 
     </div>
 <?= $this->stop()?>
 <?= $this->start('footer')?>

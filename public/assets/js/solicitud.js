@@ -129,6 +129,10 @@ function cargarSolicitudes(ofertaId) {
                 carousel.innerHTML = `<p>No hay solicitudes aún.</p>`;
             } else {
                 alumnos.forEach(alumno => {
+                    console.log(alumno);
+                    let estado=alumno.solicitudes[0].estado;
+                    if (estado==='DENEGADO') return;
+                    let corazon=estado==='INTERESADO'?'corazon-act.png':'corazon.png';
                     const item = document.createElement('div');
                     item.classList.add('carousel-item','card','card-content', 'flex-col');
                     /* Insertar luego:  */
@@ -144,10 +148,10 @@ function cargarSolicitudes(ofertaId) {
                         <div class="texto">
                         <p>${alumno.descripcion}</p>
                         </div>
-                        <div class="car-btns">
-                            <img src="./assets/img/corazon.png" class="like icono"></img>
+                        <div class="car-btns" data-solicitud="${alumno.solicitudes[0].id}">
+                            <img src="./assets/img/${corazon}" class="like icono" data-estado="${estado}"></img>
                             <img src="./assets/img/borrar.png" class='descartar icono'></img>
-                            <img src="./assets/img/ver.png" class='ver-cv icono'></img>
+                            <img src="./assets/img/ver.png" class='ver-cv icono' data-cv="${alumno.cv}"></img>
                         </div>
 
                     `;
@@ -175,9 +179,11 @@ function cargarSolicitudes(ofertaId) {
             nextBtn.addEventListener('click', () => {
                 carousel.scrollBy({ left: scrollAmount, behavior: 'smooth' });
             });
+            
 
             /* configurar Like Eliminar y Ver CV(hacer update a la api con like y eliminar, like:Estado:'INTERESADO', eliminar:'DENEGADO',
             ver cv hago un modal y como ya tengo el cv no hace falta nada mas) */
+            configurarListenersSolicitud();
         }
     })
     .catch(error => {
@@ -399,6 +405,94 @@ function configurarListeners() {
         }
     });
 }
+
+
+
+function configurarListenersSolicitud() {
+    const likeButtons = document.querySelectorAll('.carousel-item .like');
+    const deleteButtons = document.querySelectorAll('.carousel-item .descartar');
+    const viewCvButtons = document.querySelectorAll('.carousel-item .ver-cv');
+    const token = obtenerToken();
+    likeButtons.forEach(btn => {
+        btn.onclick = function() {
+            const solicitudId = btn.parentElement.dataset.solicitud;
+            let nuevoEstado = btn.dataset.estado === 'INTERESADO' ? 'PROCESO' : 'INTERESADO';
+
+            fetch('../api/apiAlumno.php', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'AUTH': `Bearer ${token}`,
+                    'ACCION':'SOLICITUD'
+                },
+                body: JSON.stringify({ id: solicitudId, estado: nuevoEstado })
+            })
+            .then(res => res.text())
+            .then(texto => JSON.parse(texto))
+            .then(datos => {
+                if (datos.success) {
+                    btn.src = nuevoEstado === 'INTERESADO' ? './assets/img/corazon-act.png' : './assets/img/corazon.png';
+                    btn.dataset.estado = nuevoEstado;
+                } else {
+                    alert(datos.message || 'Error al actualizar estado');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al procesar la solicitud');
+            });
+        }
+    });
+
+    deleteButtons.forEach(btn => {
+        btn.onclick = function() {
+            const solicitudId = btn.parentElement.dataset.solicitud;
+            if (!confirm('¿Estás seguro de que deseas descartar esta solicitud?')) {
+                return;
+            }
+            let nuevoEstado = 'DENEGADO';
+            fetch('../api/apiAlumno.php', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'AUTH': `Bearer ${token}`,
+                    'ACCION':'SOLICITUD'
+                },
+                body: JSON.stringify({ id: solicitudId, estado: nuevoEstado })
+            })
+            .then(res => res.text())
+            .then(texto => JSON.parse(texto))
+            .then(datos => {
+                if (datos.success) {
+                    alert('Solicitud descartada');
+                    btn.closest('.carousel-item').remove();
+                } else {
+                    alert(datos.message || 'Error al descartar solicitud');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al procesar la solicitud');
+            });
+        }
+    });
+
+    viewCvButtons.forEach(btn => {
+        btn.onclick = function() {
+            const cvPath = btn.dataset.cv;
+            let modalDiv = document.querySelector('.modal');
+            let veloDiv = document.querySelector('.velo');
+            let modal=new Modal(modalDiv, veloDiv);
+            modal.open();
+            let cerrar=modalDiv.querySelector('.close-modal');
+            cerrar.onclick=function(){
+                modal.close();
+            }
+            let cvFrame = modalDiv.querySelector('.cv');
+            cvFrame.src = `/../cvs/${cvPath}#zoom=120`;
+        }
+    });
+}           
 
 // ============================================================================
 // SECCIÓN 6: UTILIDADES

@@ -107,7 +107,7 @@ class Validator {
     /**
      * Valida fecha de nacimiento
      */
-    validateFechaNacimiento(fieldName, requireMayorEdad = false, errorMessage = 'Fecha inválida') {
+    validateFechaNacimiento(fieldName, requireMayorEdad = true, errorMessage = 'Fecha inválida') {
         if (!this.validateRequired(fieldName, 'La fecha de nacimiento es obligatoria')) {
             return false;
         }
@@ -143,7 +143,7 @@ class Validator {
     /**
      * Valida todos los campos del formulario
      */
-    validateAll() {
+    validateAll(pass=true) {
         this.errors = {};
         
         // Validar campos requeridos
@@ -151,8 +151,11 @@ class Validator {
         this.validateRequired('ap1', 'El primer apellido es obligatorio');
         this.validateRequired('direccion', 'La dirección es obligatoria');
         this.validateEmail('correo');
-        this.validatePassword('passwd', { minLength: 6 });
-        this.validateFechaNacimiento('fecha_nacimiento', false);
+        if (pass){
+            this.validatePassword('passwd', { minLength: 6 });
+        }
+        
+        this.validateFechaNacimiento('fecha_nacimiento');
 
 
         return Object.keys(this.errors).length === 0;
@@ -206,4 +209,49 @@ class Validator {
     getErrors() {
         return this.errors;
     }
+}
+
+
+/**
+ * Implementa un diálogo de confirmación personalizado usando un modal de HTML.
+ * NO usa prompt() ni confirm(). Devuelve una Promesa para manejar la asincronía.
+ * * @param {string} mensaje - La pregunta que se mostrará al usuario.
+ * @returns {Promise<boolean>} - Resuelve a true (Aceptar) o false (Cancelar).
+ */
+function confirmacion(mensaje) {
+    const modal = document.getElementById('mi-modal-personalizado');
+    const mensajeElement = document.getElementById('modal-pregunta');
+    const btnAceptar = document.getElementById('btn-aceptar');
+    const btnCancelar = document.getElementById('btn-cancelar');
+
+    // 1. Configurar y mostrar el modal
+    mensajeElement.textContent = mensaje;
+    modal.style.display = 'flex'; // Usar 'flex' para mostrar y centrarlo
+
+    // 2. Devolver la Promesa
+    return new Promise((resolve) => {
+        
+        // Helper para cerrar el modal y limpiar listeners
+        const limpiar = () => {
+            modal.style.display = 'none'; 
+            btnAceptar.removeEventListener('click', handleAceptar);
+            btnCancelar.removeEventListener('click', handleCancelar);
+        };
+
+        // Handler para ACEPTAR
+        const handleAceptar = () => {
+            limpiar();
+            resolve(true); // Resuelve con TRUE
+        };
+
+        // Handler para CANCELAR
+        const handleCancelar = () => {
+            limpiar();
+            resolve(false); // Resuelve con FALSE
+        };
+        
+        // Añadir los listeners de eventos
+        btnAceptar.addEventListener('click', handleAceptar);
+        btnCancelar.addEventListener('click', handleCancelar);
+    });
 }

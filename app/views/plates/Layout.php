@@ -14,6 +14,7 @@
     <script src="./assets/js/validator.js"></script>
     <script src="./assets/js/modal.js"></script>
     <script src="./assets/js/select.js"></script>
+    <script src="./assets/js/alumno.js"></script>
     <script src="./assets/js/script.js"></script>
     <?= $this->section('js')?>
 </head>

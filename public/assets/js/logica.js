@@ -18,7 +18,9 @@ function obtenerToken() {
  * Carga inicial de la lista de alumnos al cargar la página
  * Obtiene la plantilla HTML y los datos de la API para renderizar la tabla principal
  */
-window.addEventListener('load', function () {
+window.addEventListener('load', cargarTablas)
+
+function cargarTablas() {    
     const listaUsuario = document.querySelector('#listaUsuario');
     const token = obtenerToken();
     
@@ -39,8 +41,7 @@ window.addEventListener('load', function () {
                     ordenarTablas();
                 });
         })
-})
-
+}
 // ============================================================================
 // SECCIÓN 2: GESTIÓN DE MODALES Y BOTONES PRINCIPALES
 // ============================================================================
@@ -61,7 +62,7 @@ window.addEventListener('load', function () {
         let modal = new Modal(modalDiv, document.querySelector(".velo"));
         modal.open();
         // Mostrar botones del modal
-        let botones = modalDiv.querySelectorAll(".botones");
+        let botones = modalDiv.querySelectorAll(".no-quitar");
         botones[0].classList.remove("hidden");
         eliminarElementosMenosElementos(modalDiv, botones);
         // Configurar botón de cerrar
@@ -72,17 +73,45 @@ window.addEventListener('load', function () {
         // Configurar botón de borrar contenido del modal
         let borrar = document.querySelector(".borrar");
         borrar.onclick = function () {
-            let botones = modalDiv.querySelectorAll(".botones");
+            let botones = modalDiv.querySelectorAll(".no-quitar");
             eliminarElementosMenosElementos(modalDiv, botones);
         }
     }
 })
 
 window.addEventListener('load',function(){
-    // BOTÓN: Inscribir un solo alumno (pendiente de implementar)
     let btnAlumno = document.querySelector(".carga-alumno");
     btnAlumno.onclick = function () {
-        /* Inscribir un alumno */
+        let modalDiv = document.querySelector(".modal");
+        let modal = new Modal(modalDiv, document.querySelector(".velo"));
+        let formModal = modalDiv.querySelector(".form-modal");
+
+        modal.open();
+        
+        let todosLosBotones = modalDiv.querySelectorAll(".no-quitar");
+        todosLosBotones.forEach(btnGroup => btnGroup.classList.add("hidden"));
+        
+
+        fetch("./assets/plates/formAlumno.html")
+        .then((x)=>x.text())
+        .then(x=>{
+            eliminarElementosMenosElementos(modalDiv, todosLosBotones);
+            formModal = modalDiv.querySelector(".form-modal");
+            formModal.classList.remove("hidden");
+            document.querySelectorAll('.botones').forEach(el => el.classList.add("hidden"));
+            formModal.innerHTML=x;
+            document.querySelector('.btn-volver').onclick=(e)=>{
+                e.preventDefault(); 
+                document.querySelector('.util-btns').classList.remove("hidden");
+                formModal.innerHTML="";
+                modal.close();
+            };
+            
+            // 6. Configurar el botón "Guardar" del FORMULARIO
+            document.querySelector('.btn-guardar').onclick=(e)=>saveAlumno(modalDiv,e);
+            
+            
+        });
     }
 })
 
@@ -287,7 +316,7 @@ function preSave(tabla) {
  */
 function pintarTabla(plantilla, datos, elemento) {
     // Limpiar contenido previo del modal
-    let botones = elemento.querySelectorAll(".botones");
+    let botones = elemento.querySelectorAll(".no-quitar");
     eliminarElementosMenosElementos(elemento, botones);
     
     // Crear contenedor temporal
@@ -329,7 +358,7 @@ function pintarTabla(plantilla, datos, elemento) {
  */
 function pintarDatos(plantilla, datos, elemento) {
     // Limpiar contenido previo
-    let botones = elemento.querySelectorAll(".botones");
+    let botones = elemento.querySelectorAll(".no-quitar");
     eliminarElementosMenosElementos(elemento, botones);
     
     // Crear contenedor temporal
@@ -373,7 +402,7 @@ function modalAlumno(tr) {
     const token = obtenerToken();
     
     // Limpiar modal
-    let botones = modalDiv.querySelectorAll(".botones");
+    let botones = modalDiv.querySelectorAll(".no-quitar");
     eliminarElementosMenosElementos(modalDiv, botones);
     
     // Abrir modal
@@ -397,8 +426,107 @@ function modalAlumno(tr) {
                 .then((x) => (x.text()))
                 .then((texto) => JSON.parse(texto))
                 .then((datos) => {
-                    console.log(datos);
-                    pintarAlumno(plantilla, datos, modalDiv)
+                    pintarAlumno(plantilla, datos, modalDiv);
+                    let utils=document.querySelector('.util-btns');
+                    utils.classList.add("hidden");
+                    let cancelar=document.querySelector('.cancelar-modal');
+                    cancelar.onclick=(e)=>{
+                        e.preventDefault();
+                        let botones = modalDiv.querySelectorAll(".no-quitar");
+                        eliminarElementosMenosElementos(modalDiv, botones);
+                        utils.classList.remove("hidden");
+                        modal.close();
+                    }
+                    let update=document.querySelector('.update-alum');
+                    update.onclick=(e)=>{
+                        e.preventDefault();
+                        let form=modalDiv.querySelector('.alumno');
+                        const validator=new Validator(form);
+                        if(validator.validateAll(false)){
+                            fetch("../api/apiAlumno.php",{
+                                method: 'PUT',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'AUTH': token,
+                                    'ACCION':'ADMINEDIT'
+                                },
+                                body: JSON.stringify({
+                                    id: form.querySelector('#id').value,
+                                    nombre: form.querySelector('#nombre').value,
+                                    ap1: form.querySelector('#ap1').value,
+                                    ap2: form.querySelector('#ap2').value,
+                                    correo: form.querySelector('#correo').value,
+                                    fechaNacimiento: form.querySelector('#fechaNacimiento').value,
+                                    direccion: form.querySelector('#direccion').value,
+                                    passwd: form.querySelector('#passwd').value
+                                })
+                            })
+                            .then((res)=>res.json())
+                            .then((datos)=>{
+                                if (datos.success) {
+                                    let botones = modalDiv.querySelectorAll(".no-quitar");
+                                    eliminarElementosMenosElementos(modalDiv, botones);
+                                    utils.classList.remove("hidden");
+                                    modal.close();
+                                    console.log("OK:", datos);
+                                    cargarTablas();
+                                } else {
+                                    let mensajeError = datos.error;
+                                    let p=document.createElement('p');
+                                    p.classList.add('error');
+                                    p.innerHTML=mensajeError;
+                                    form.appendChild(p);
+                                    console.log(form);
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                alert('Error al actualizar el alumno');
+                            });
+                        }else{
+                            validator.showErrors();
+                        }
+                    }
+                    let eliminar=document.querySelector('.delete-alum');
+                    eliminar.onclick=async (e)=>{
+                        e.preventDefault();
+                        let confirmar= await confirmacion("¿Estás seguro de que deseas eliminar este alumno?");
+                        if (confirmar){
+                            fetch("../api/apiAlumno.php",{
+                                method: 'DELETE',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'AUTH': token,
+                                    'ACCION':'alumno'
+                                },
+                                body: JSON.stringify({
+                                    id: tr.querySelector('.id').innerHTML
+                                })
+                            })
+                            .then((res)=>res.json())
+                            .then((datos)=>{
+                                if (datos.success) {
+                                    let botones = modalDiv.querySelectorAll(".no-quitar");
+                                    eliminarElementosMenosElementos(modalDiv, botones);
+                                    utils.classList.remove("hidden");
+                                    modal.close();
+                                    console.log("OK:", datos);
+                                    cargarTablas();
+                                    
+                                } else {
+                                    console.log("Error:", datos.message);
+                                    alert(datos.message);
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                alert('Error al eliminar el alumno');
+                            });
+                        }else{
+                            return;
+                        }
+                    }
+                    
                 })
         })
 }
@@ -420,7 +548,7 @@ function pintarAlumno(plantilla, datos, elemento) {
     contenedor.querySelector("#ap2").value = datos.ap2;
     contenedor.querySelector("#correo").value = datos.correo;
     contenedor.querySelector("#direccion").value = datos.direccion;
-    contenedor.querySelector("#fechaNacimiento").value = datos.fechaNacimiento;
+    contenedor.querySelector("#fechaNacimiento").value = datos.fechaNacimiento.date.split(' ')[0];
     
     // Insertar formulario en el modal
     while (contenedor.children.length > 0) {
@@ -473,3 +601,4 @@ function parseCSVToArray(csvText, separator = ';') {
 
     return data;
 }
+

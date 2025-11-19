@@ -8,6 +8,7 @@
     
         <div class="card-content card oferta-card">
                 <img src="./assets/img/<?=$empresa->getFoto()?>" alt="logo-empresa" srcset="">
+                <div class="oferta-texto">
                 <h2><?= $oferta->getNombre() ?></h2>
                 <p><?=$oferta->getDescripcion()?></p>
                 <ul>
@@ -17,7 +18,6 @@
                     
                 <?php endforeach;?>
                 </ul>
-                
                     <div class="ofertas-fechas flex-col">
                         <p>Fecha Inicio</p>
                         <p><?=$oferta->getFechaInicio()->format('d-m-Y')?></p>
@@ -26,7 +26,7 @@
                         <p>Fecha Fin</p>
                         <p><?=$oferta->getFechaFin()->format('d-m-Y')?></p>
                     </div>
-                    
+                </div>
                     <form class="oferta-btns" method="GET" action="?page=oferta">
                         <input type="hidden" name="page" value="oferta">
                         <button class="guardar btn" name="accion" value="editar">Editar</button>

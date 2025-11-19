@@ -13,7 +13,7 @@ class StatController{
     public function index(){
          if (Login::isLogin()){
             /* TO DO */
-            echo $this->templates->render('Admin/AdminStat',['page'=>$_GET['page']]); 
+            echo $this->templates->render('Admin/AdminStat',['page'=>$_GET['page'],'user'=>$this->user]); 
         }else{
             header('location:?page=home');
         }

@@ -20,6 +20,7 @@ use app\helpers\Generator;
 use app\models\Alumno;
 use app\models\Ciclo;
 use app\models\AlumCursadoCiclo;
+use app\models\EstadoSolicitud;
 use DateTime;
 use app\helpers\Correo;
 
@@ -153,7 +154,7 @@ function responseAlumno(){
     $id=(int)$_GET['id'];
     $repo=new RepoAlumno();
     $alumno=$repo->findById($id);
-    echo json_encode($alumno->toJson(), JSON_UNESCAPED_UNICODE);
+    echo json_encode($alumno->toJson());
 }
 
 function responseFamilias(){
@@ -555,6 +556,185 @@ function mockAlumnos(){
  *
  * @return void
  */
+
+/**
+ * manejarPut
+ * Es el encargado de gestionar las peticiones PUT al API.
+ *
+ * @return void
+ */
+function manejarPut(){
+    $accion=$_SERVER['HTTP_ACCION']?? '';
+    switch($accion){
+        case 'SOLICITUD':
+            actualizarSolicitud();
+            break;
+        case 'ALUMNO':
+            actualizarAlumno();
+            break;
+        case 'ADMINEDIT':
+            actualizarAlumnoAdmin();
+            break;
+        default:
+            
+            break;
+    }
+    
+}
+
+
+/*  id: form.querySelector('#id').value,
+                                    nombre: form.querySelector('#nombre').value,
+                                    ap1: form.querySelector('#ap1').value,
+                                    ap2: form.querySelector('#ap2').value,
+                                    correo: form.querySelector('#correo').value,
+                                    fechaNacimiento: form.querySelector('#fechaNacimiento').value,
+                                    direccion: form.querySelector('#direccion').value,
+                                    passwd: form.querySelector('#passwd').value */
+
+
+/**
+ * actualizarSolicitud
+ *
+ * @return void
+ */
+function actualizarSolicitud(){
+    $data = json_decode(file_get_contents('php://input'), true);
+    $repo = new RepoSolicitud();
+    $solicitud = $repo->findById($data["id"]);
+    $solicitud->setEstado(EstadoSolicitud::from($data["estado"]));
+    $bool = $repo->update($solicitud);
+    echo json_encode(["success" => $bool]);
+}
+
+function actualizarAlumnoAdmin(){
+    try {
+        // Obtener datos JSON del body
+        $data = json_decode(file_get_contents('php://input'), true);
+        $validator = new Validator();
+
+        
+        if (!$data) {
+            http_response_code(400);
+            echo json_encode([
+                'success' => false, 
+                'error' => 'Datos JSON inválidos'
+            ]);
+            return;
+        }
+        
+        // Validar que venga el ID
+        if (empty($data['id'])) {
+            http_response_code(400);
+            echo json_encode([
+                'success' => false, 
+                'error' => 'ID de usuario no proporcionado'
+            ]);
+            return;
+        }
+        
+        $userId = (int)$data['id'];
+        
+        // Obtener el alumno actual de la BD
+        $repoAlumno = new RepoAlumno();
+        $alumnoActual = $repoAlumno->findById($userId);
+        
+        if (!$alumnoActual) {
+            http_response_code(404);
+            echo json_encode([
+                'success' => false, 
+                'error' => 'Alumno no encontrado'
+            ]);
+            return;
+        }
+        
+        // Validar campos requeridos básicos
+        if ((empty($data['nombre']) || !$validator->validarNombre('nombre',$data)) || 
+            (empty($data['ap1']) || !$validator->validarNombre('ap1',$data)) || empty($data['correo']) || 
+            empty($data['direccion']) || (empty($data['fechaNacimiento']) || !$validator->validarFecha('fechaNacimiento',$data))) {
+            http_response_code(400);
+            echo json_encode([
+                'success' => false, 
+                'error' => 'Faltan campos o no son válidos'
+            ]);
+            return;
+        }
+        
+        // Validar y cambiar contraseña si se proporciona
+        $passwd = $alumnoActual->getPassword();
+        
+        if (!empty($data['passwd'])) {
+                http_response_code(400);
+                echo json_encode([
+                    'success' => false, 
+                    'error' => 'La contraseña actual es incorrecta'
+                ]);
+                return;
+            $passwd = Security::passwdToHash($data['passwdNueva']);
+        }
+        
+        // Validar correo si ha cambiado
+        if (($data['correo'] !== $alumnoActual->getCorreo()) && $validator->validarCorreo('correo',$data)) {
+            $repoUser = new RepoUser();
+            $correoExiste = $repoUser->existenCorreos([$data['correo']]);
+            
+            if (!empty($correoExiste)) {
+                http_response_code(400);
+                echo json_encode([
+                    'success' => false, 
+                    'error' => 'El correo ya está registrado'
+                ]);
+                return;
+            }
+        }
+        
+        // Crear objeto Alumno actualizado
+        $alumnoActualizado = new Alumno(
+            id: $userId,
+            nombre: trim($data['nombre']),
+            ap1: trim($data['ap1']),
+            ap2: trim($data['ap2'] ?? ''),
+            correo: trim($data['correo']),
+            fechaNacimiento: new DateTime($data['fechaNacimiento']),
+            direccion: trim($data['direccion']),
+            rol: $alumnoActual->getRol(),
+            passwd: $passwd,
+            foto: $alumnoActual->getFoto(),
+            cv: $alumnoActual->getCv(),
+            token: $alumnoActual->getToken(),
+            descripcion: $alumnoActual->getDescripcion()
+        );
+        
+        // Actualizar el alumno en la BD
+        $actualizado = $repoAlumno->update($alumnoActualizado);
+        
+        if (!$actualizado) {
+            http_response_code(500);
+            echo json_encode([
+                'success' => false, 
+                'error' => 'Error al actualizar el alumno'
+            ]);
+            return;
+        }
+        
+        // Respuesta exitosa
+        echo json_encode([
+            'success' => true,
+            'message' => 'Perfil actualizado correctamente'
+        ]);
+        
+    } catch (Exception $e) {
+        error_log("Error en manejarPut: " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode([
+            'success' => false,
+            'error' => 'Error del servidor'
+        ]);
+    }
+}
+
+
+
 /**
  * manejarPut
  * 
@@ -567,7 +747,7 @@ function mockAlumnos(){
  * 
  * @return void
  */
-function manejarPut(){
+function actualizarAlumno(){
     try {
         // Obtener datos JSON del body
         $data = json_decode(file_get_contents('php://input'), true);
@@ -773,6 +953,7 @@ function manejarPut(){
         ]);
     }
 }
+
 
 /**
  * Procesa una imagen en base64 y la guarda en el servidor

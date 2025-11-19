@@ -762,6 +762,11 @@ footer p {
     cursor: pointer;
 }
 
+iframe.cv {
+    height: 90vh;
+    width: 100%;
+}
+
 /* ==========================
    PÁGINA HOME - CONTACTO
 ========================== */
@@ -1069,7 +1074,7 @@ input:focus, textarea:focus {
     align-items: center;
 }
 
-.hidden, #ciclosContainer li span.hidden {
+.hidden, #ciclosContainer li span.hidden, .util-btns.hidden {
     display: none;
 }
 

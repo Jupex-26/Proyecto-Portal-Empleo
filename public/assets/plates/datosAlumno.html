@@ -1,4 +1,4 @@
-<form action="" class="alumno">
+<form class="alumno">
     <div class="form-group">
         <label for="id">ID</label>
         <input type="number" name="id" id="id" disabled>
@@ -29,7 +29,16 @@
         <input type="text" name="direccion" id="direccion">
     </div>
     <div class="form-group">
+        <label for="passwd">Contraseña</label>
+        <input type="password" name="passwd" id="passwd" placeholder="*********">
+    </div>
+    <div class="form-group">
         <label for="fechaNacimiento">Fecha Nacimiento</label>
-        <input type="text" name="fechaNacimiento" id="fechaNacimiento">
+        <input type="date" name="fecha_nacimiento" id="fechaNacimiento">
+    </div>
+    <div class="two-col util-btns form-group">
+        <button class="btn guardar update-alum">Guardar</button>
+        <button class="btn eliminar delete-alum">Eliminar</button>
+        <button class="btn cancelar-modal">Cancelar</button>
     </div>
 </form>

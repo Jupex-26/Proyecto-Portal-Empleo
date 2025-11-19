@@ -129,7 +129,8 @@ class RepoAlumno implements RepoMethods {
                                 : null,
             descripcion: $row['descripcion']     
         );
-}
+    }
+
     /**
      * Inserta un nuevo alumno en user + alumno.
      */

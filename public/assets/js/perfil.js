@@ -91,9 +91,9 @@ function mostrarFoto(src) {
     const container = document.getElementById('cvLinkContainer');
     if (cvData) {
         container.innerHTML = `
-            <a href="../../cvs/${cvData}" target="_blank" class="cv-link">
+            <button type="button" data-cv="../../cvs/${cvData}" class="cv-link">
                 📄 Ver CV actual
-            </a>
+            </button>
         `;
     } else {
         container.innerHTML = '';
@@ -209,6 +209,24 @@ function configurarListenersPerfil(data) {
                 cvName.textContent = file.name;
             }
         });
+    }
+    let cvlink = document.querySelector('.cv-link');
+    cvlink.onclick = function(e) { 
+        e.preventDefault();
+        let modalDiv = document.querySelector('.modal-cv');
+        let overlayDiv = document.querySelector('.velo');
+        let modal = new Modal(modalDiv, overlayDiv);
+        modal.open();
+        let iframe= modalDiv.querySelector('iframe');
+        iframe.classList.remove('hidden');
+        iframe.src=cvlink.getAttribute('data-cv');
+        console.log(iframe);
+        let cerrarBtn = modalDiv.querySelector('#cerrarCv');
+        cerrarBtn.onclick = () => {
+            iframe.classList.add('hidden');
+            iframe.src="";
+            modal.close();
+        };
     }
 }
 
@@ -365,7 +383,8 @@ function enviarFetch(datos, token) {
         headers: {
             'Content-Type': 'application/json',
             'MOCK': false,
-            'AUTH': token
+            'AUTH': token,
+            'ACCION':'ALUMNO'
         },
         body: JSON.stringify(datos)
     })
