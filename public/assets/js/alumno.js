@@ -34,7 +34,7 @@ function saveAlumno(div,e){
                 console.log("OK:", datos);
                 let formgroup=div.querySelectorAll(".form-group");
                 formgroup.forEach(e=>e.remove());
-                div.querySelector('.btn-save').remove();
+                div.querySelector('.btn-guardar').remove();
                 let h2 = document.createElement("h2");
                 h2.textContent = "Registro Completado";
                 form.prepend(h2);
