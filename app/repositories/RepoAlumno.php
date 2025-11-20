@@ -209,7 +209,7 @@ class RepoAlumno implements RepoMethods {
                 ':rol'        => $alumno->getRol(),
                 ':direccion'  => $alumno->getDireccion(),
                 ':foto'       => $alumno->getFoto(),
-                ':token'      => $alumno->getToken()
+                ':token'      => ($alumno->getToken() > 0) ? $alumno->getToken() : null
             ]);
 
             $sqlAlumno = "UPDATE alumno SET ap1 = :ap1, ap2 = :ap2, cv = :cv, fecha_nacimiento = :fecha, descripcion = :descripcion WHERE id = :id";

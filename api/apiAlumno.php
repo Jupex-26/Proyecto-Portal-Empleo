@@ -638,7 +638,6 @@ function actualizarAlumnoAdmin(){
         // Obtener el alumno actual de la BD
         $repoAlumno = new RepoAlumno();
         $alumnoActual = $repoAlumno->findById($userId);
-        
         if (!$alumnoActual) {
             http_response_code(404);
             echo json_encode([
