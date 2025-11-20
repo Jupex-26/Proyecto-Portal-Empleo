@@ -39,8 +39,11 @@ function saveAlumno(div,e){
                 h2.textContent = "Registro Completado";
                 form.prepend(h2);
                 let login=document.querySelector('.login-form');
-                login.querySelector('.correo_login').value=correo;
-                login.querySelector('.passwd_login').value=passwd;
+                if (login){
+                    login.querySelector('.correo_login').value=correo;
+                    login.querySelector('.passwd_login').value=passwd;
+                }
+                
             } else {
                 console.warn("Error:", datos.message);
                 alert(datos.message);
