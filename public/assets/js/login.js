@@ -5,29 +5,37 @@ document.addEventListener("DOMContentLoaded", () => {
         // No hacemos preventDefault: dejamos que el submit se ejecute normalmente
         const email = form.querySelector("input[name='correo_login']").value.trim();
         const pass = form.querySelector("input[name='passwd_login']").value;
-
-        try {
-            // Hacemos la consulta a la API solo para obtener token y alumno
-            const res = await fetch("../api/apiLogin.php", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, pass })
-            });
-
-            const data = await res.json();
-
-            if (res.ok) {
-                // Guardar en storage aunque la página se recargue
-                localStorage.setItem("user", JSON.stringify(data.user));
-                localStorage.setItem("token", data.token);
-                sessionStorage.setItem("user", JSON.stringify(data.user));
-                sessionStorage.setItem("token", data.token);
-            }
-        } catch (err) {
-            console.error("Error al conectarse al servidor:", err);
+        // Hacemos la consulta a la API solo para obtener token y alumno
+        fetch("../api/apiLogin.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, pass })
+        })
+        .then((res)=>res.json())
+        .then((data)=>{
+            console.log(data);
+            if (data) {
+                console.log("Login exitoso");
+            // Guardar en storage aunque la página se recargue
+            localStorage.setItem("user", JSON.stringify(data.user));
+            localStorage.setItem("token", data.token);
+            sessionStorage.setItem("user", JSON.stringify(data.user));
+            sessionStorage.setItem("token", data.token);
+            console.log(sessionStorage.getItem("token"));
         }
+        else {
+            alert("Error de autenticación: " + data.message);
+            console.log(sessionStorage.getItem("token"));
+        }
+        })
+        .catch((err)=>{
+            console.error("Error al conectarse al servidor:", err);
+        });
+        
+            
     });
 });
+
 
 
 

@@ -252,16 +252,55 @@ HTMLTableElement.prototype.editar = function() {
             
             // Al hacer click en guardar: guardar cambios y volver a mostrar editar/borrar
             btnSave.onclick = function() {
-                this.parentElement.parentElement.guardar();
-                this.style.display = "none";
-                btnCancel.style.display = "none";
-                btnEdit.style.display = "inline-block";
-                btnBorrar.style.display = "inline-block";
+                /* let bool=validarErrores(this.parentElement.parentElement); */
+                
+                    this.parentElement.parentElement.guardar();
+                    this.style.display = "none";
+                    btnCancel.style.display = "none";
+                    btnEdit.style.display = "inline-block";
+                    btnBorrar.style.display = "inline-block";
+                
             }
         }
     }
 };
 
+/* TO-DO */
+function validarErrores(tr){
+    let inputs = tr.querySelectorAll("input[type=text]");
+    let form = document.createElement('form');
+    form.append(...inputs);
+    console.log(form);
+    let size = inputs.length;
+    let valido=true;
+    
+    for (let i = 0; i < size; i++) {
+        let clase=inputs[i].parentElement.className;
+        let valor=inputs[i].value;
+        let validator=new Validator();
+        switch(clase){
+            case "nombre":
+                validator.validate("nombre",valor,true,50);
+                break;
+            case "ap1":
+                validator.validate("apellido",valor,true,50);
+                break;
+            case "ap2":
+                validator.validate("apellido",valor,false,50);
+                break;
+            case "direccion":
+                validator.validate("direccion",valor,true,100);
+                break;
+            case "correo":
+                validator.validate("email",valor,true,100);
+                break;
+            case "fechaNacimiento":
+                validator.validate("fechaNacimiento",valor,true,null);
+                break;
+        }
+    }
+    return valido;
+}
 /**
  * Desactiva el modo de edición de la tabla
  * Cancela todos los cambios pendientes y elimina la columna de botones

@@ -16,11 +16,5 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /var/www/html
 
 # Copy the entrypoint script into the container
-COPY docker-entrypoint.sh /usr/local/bin/
 
-# Make the script executable
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
-
-# Set the entrypoint
-ENTRYPOINT ["docker-entrypoint.sh"]
-CMD ["apache2-foreground"]
+RUN chown -R www-data:www-data /var/www/html

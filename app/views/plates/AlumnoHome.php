@@ -1,5 +1,7 @@
 <?=$this->layout('home')?>
 <?= $this->start('empresas')?>
+<?php foreach($empresas as $empresa): ?>
+
 <section class="empresas">
       <h2>Empresas Más Populares</h2>
       <div class="logos">
@@ -18,4 +20,5 @@
         </div>
       </div>
     </section>
+<?php endforeach;?>
 <?= $this->stop()?>

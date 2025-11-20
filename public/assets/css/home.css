@@ -177,6 +177,11 @@ select.btn{
     z-index: 20;
 }
 
+.hidden {
+    display: none !important; /* !important para asegurar que siempre se oculte */
+}
+
+
 p.error{
     margin-top: 1.2em;
     background-color: #ffcccc;
@@ -204,8 +209,8 @@ p.error{
     align-items: center;
     gap: 0.5rem;
     margin-top: 1rem;
-    width: 150%;
-    margin-left: -25%;
+    width: 130%;
+    margin-left: -15%;
     z-index: 9;
 }
 
@@ -290,16 +295,20 @@ p.error{
 /* ==========================
    HEADER / NAVBAR
 ========================== */
-header.navbar {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
+header   {
     background-color: var(--fondo-header);
     box-shadow: var(--shadow);
-    padding: 1em 6em;
     width: 100%;
     height: 6em;
     color: var(--color-secundario);
+}
+
+header .navbar{
+    display: flex;
+    justify-content: space-around;
+    padding: 1em 6em;
+    align-items: center;
+    height: 6em;
 }
 
 header .logo img{
@@ -313,7 +322,7 @@ header nav ul {
     gap: 3em;
 }
 
-header.navbar a {
+header .navbar a {
     color: var(--color-principal);
     font-size: 1em;
 }
@@ -321,6 +330,73 @@ header.navbar a {
 header .perfil img {
     height: 3.5em;
     width: auto;
+}
+.registro-header{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+
+/* From Uiverse.io by Cevorob */ 
+.burger {
+  position: relative;
+  width: 40px;
+  height: 30px;
+  background: transparent;
+  cursor: pointer;
+  display: none;
+}
+
+.burger input {
+  display: none;
+}
+
+.burger span {
+  display: block;
+  position: absolute;
+  height: 4px;
+  width: 100%;
+  background: black;
+  border-radius: 9px;
+  opacity: 1;
+  left: 0;
+  transform: rotate(0deg);
+  transition: .25s ease-in-out;
+}
+
+.burger span:nth-of-type(1) {
+  top: 0px;
+  transform-origin: left center;
+}
+
+.burger span:nth-of-type(2) {
+  top: 50%;
+  transform: translateY(-50%);
+  transform-origin: left center;
+}
+
+.burger span:nth-of-type(3) {
+  top: 100%;
+  transform-origin: left center;
+  transform: translateY(-100%);
+}
+
+.burger input:checked ~ span:nth-of-type(1) {
+  transform: rotate(45deg);
+  top: 0px;
+  left: 5px;
+}
+
+.burger input:checked ~ span:nth-of-type(2) {
+  width: 0%;
+  opacity: 0;
+}
+
+.burger input:checked ~ span:nth-of-type(3) {
+  transform: rotate(-45deg);
+  top: 28px;
+  left: 5px;
 }
 
 /* ---- MENÚ DESPLEGABLE PERFIL ---- */
@@ -433,11 +509,12 @@ footer p {
    PÁGINA HOME 
 ========================== */
 .bienvenida {
-    text-align: center;
+    text-align: justify;
     padding: 7em 12em;
 }
 
 .bienvenida h1 {
+    text-align: center;
     margin-bottom: 1.5em;
     color: white;
     padding: 0.8em;
@@ -445,7 +522,6 @@ footer p {
 }
 
 .bienvenida p {
-    text-align: justify;
     margin-bottom: 2em;
     background: #ffffffe3;
     border-radius: 15px;
@@ -701,36 +777,39 @@ footer p {
 ========================== */
 
 .ofertas{
-    width: 60%;
+    width: 70%;
     justify-self: center;
     margin:5em;
 }
-.ofertas .card-content{
-    height: 525px;
-}
+
 
 .ofertas img{
     width: 10em;
     height: auto;
-    grid-area: logo;
+    grid-area: 1/1/3/2;
     margin: 0 1em;
+    justify-self: center;
 }
-.ofertas ul {grid-area: ciclos; list-style:square;}
-.ofertas-fechas > p{grid-area: fechas; font-size: small;}
-.ofertas h2{ grid-area: titulo;}
-.ofertas p{ grid-area: texto; text-align: justify;}
-.ofertas .oferta-btns{grid-area: buttons; display:flex; justify-content: end; gap:3em;}
-.oferta-card{
+.ofertas-fechas{
+    display: flex;
+    justify-content: space-around;
+}
+.ofertas .oferta-texto{
     display: grid;
-    grid-template-areas: 
-        "logo titulo titulo"
-        "logo texto texto"
-        "logo ciclos ciclos"
-        "logo fechas fechas"
-        "logo buttons buttons";
+    gap:0.5em;
+    height: 20em;
+    grid-template-rows: 20% repeat(2,auto) 10%;
+}
+.ofertas ul { list-style:square;}
+.ofertas-fechas p{ font-size: small;}
+.ofertas p{ text-align: justify;}
+.ofertas .oferta-btns{display:flex; justify-content: end; gap:3em; grid-area: 2/1/3/3;}
+.oferta-card{
+    display:grid;
     gap:2em;
     align-items: center;
-    grid-template-columns: 25% 25% 40%;
+    grid-template-rows: 75% 12%;
+    grid-template-columns: 25% 70%;
 }
 .new-oferta{
     margin: 3em;
@@ -934,7 +1013,7 @@ div.registro-empresa{
 }
 /* Imagenes */
 .top-section img,
-.left img {
+.left img, #fotoAlumno {
     width: 9em;
     height: 9em;
     border: none;
@@ -1170,20 +1249,37 @@ top:20%;
     }
 }
 @media (max-width: 768px) {
+    h1{
+        font-size: 2em;
+    }
+    h2{
+        font-size: 1.5em;
+    }
+    p, li, a{
+        font-size: 0.9em;
+    }
     form.alumno {
         grid-template-columns: 1fr;
     }
-
+    .card{
+        padding: 1em;
+    }
     .charge,
     .util-btns {
         grid-template-columns: 1fr;
         gap: 2em;
     }
+    .btn{
+        width: 7em;
+        padding: 0.5em;
+
+    }
 
     div > .top-section,
     .bottom-section,
     .form-contacto {
-        grid-template-columns: 1fr;
+        display: flex;
+        flex-direction: column;
     }
     .perfil-form {
         grid-template-columns: 1fr;
@@ -1200,8 +1296,160 @@ top:20%;
     .perfil-container {
         padding: 0 1em;
     }
+    .bienvenida{
+        padding: 2em;
+    }
+    .bienvenida h1 {
+    text-align: center;
+    margin-bottom: 1em;
+    padding: 0;
+    }
+    header .navbar{
+        display: none;
+    }
+
+    /* Mostramos el icono de la hamburguesa */
+    .burger {
+        display: block;
+        position: absolute;
+        top: 30%;
+        left: 47.5%;
+    }
+
+    /* Cuando el checkbox está marcado, mostramos el menú */
+    .burger-check:checked ~ .navbar{
+        
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5em;
+        padding-bottom: 1em;
+        background-color: var(--fondo-header); /* Añadimos fondo */
+        width: 100%;
+        padding-top: 5em; /* Espacio para que no se solape con el icono */
+        height: 30em;
+    }
+    .burger-check:checked ~ .navbar nav ul {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 1em;
+    }
+    #dropdownMenu ul{
+        width: 250%;
+    }
+
+/* ==========================
+   RESPONSIVE - FORMULARIOS
+========================== */
+div.registro-empresa{
+    width: 90%;
+    margin: 1em;
+}
+.container{
+    margin: 0;
+}
+.card-content form > .top-section {
+    grid-template-columns: 1fr;
+    gap:1em;
+    margin: 0;
+
+}
+.left {
+    margin-left:0;
+}
+.right {
+    width: 100%;
+    padding-top: 0;
 }
 
+.fechas{
+    grid-template-columns: 1fr;
+
+}
+.new-oferta .buscador > div{
+    display: flex;
+    flex-direction: column;
+    gap:1em;
+}
+.new-oferta .ciclos{
+    width: 100%;
+}
+
+
+/* ==========================
+   RESPONSIVE - OFERTAS CARD
+========================== */
+    .buscador form{
+        flex-direction: column;
+        gap:1em;
+    }
+    .ofertas{
+        width: 93%;
+        margin:1em;
+    }
+    .oferta-card{
+        grid-template-rows: auto auto;
+        grid-template-columns: auto;
+        height: 600px;
+        gap:0.7em;
+    }
+    .ofertas .oferta-card img{
+        grid-area: auto;
+    }
+    .ofertas .oferta-texto{
+        grid-area: auto;
+        gap:1em;
+    }
+    .ofertas .oferta-texto h2{
+        justify-self: center;
+    }
+    .ofertas .oferta-btns{
+        grid-area: auto;
+        justify-content: center;
+        gap: 1em;
+    }
+    .ofertas img{
+        width: 5em;
+        height: auto;
+        margin: 0;
+        justify-self: center;
+    }
+    .oferta-texto ul{
+        margin-left: 0.5em;
+    }
+
+
+    .carousel-item >div{
+        flex-direction: column;
+        align-items: center;
+    }
+    .carousel-item .car-btns{
+        flex-direction: row;
+    }
+
+    .carousel-item div.texto{
+        text-align: center;
+        height: 370px;
+    }
+
+/* ==========================
+   UTILIDADES (MODAL, BOTONES...)
+========================== */
+    .modal {
+        width: 95%;
+        top: 7.5%;
+        left: 2.5%;
+        padding: 1em;
+    }
+    .login-back {
+        margin:0;
+    }
+
+
+}
 
 /* ==========================
    RESPONSIVE - TABLET

@@ -95,7 +95,7 @@ class OfertaController{
                 $repo->saveMasivo($id,$oferta->getCiclos());
                 $this->user->addOferta($oferta);
                 header('location: ?page=oferta');
-                exit;
+                
             }
             
         }
@@ -127,7 +127,7 @@ class OfertaController{
                 $repo = new RepoCicloOferta();
                 $repo->updateRelacion($oferta->getId(),$oferta->getCiclos());
                 header('location: ?page=oferta');
-                exit;
+                
             }
         }
         
@@ -159,7 +159,7 @@ class OfertaController{
             $repo->delete($oferta->getId());
             $this->user->deleteOferta($oferta);
             header('location: ?page=oferta');
-            exit;
+            
         }
         echo $this->templates->render('Ofertas/EliminarOferta',['empresa'=>$this->user, 'validator'=>$validator, 'oferta'=>$oferta, 'user'=>$this->user, 'accion'=>$accion]);
     }
@@ -237,7 +237,7 @@ class OfertaController{
         $solicitud->setId($repo->save($solicitud));
         $this->user->addSolicitud($solicitud);
         header('location: ?page=oferta');
-        exit;
+        
     }
 
     /**
@@ -255,7 +255,7 @@ class OfertaController{
         $repo->delete($solicitud->getId());
         $this->user->deleteSolicitud($solicitud);
         header('location: ?page=oferta');
-        exit;
+        
     }
 
     /**

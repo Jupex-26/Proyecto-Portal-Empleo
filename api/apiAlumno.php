@@ -75,11 +75,13 @@ $tokenData = validarToken();
 
 // Si el token no es válido, detener la ejecución
 if ($tokenData === false) {
-    exit;
+    return json_encode(['success' => false, 'message' => 'Acceso denegado']);
+} else{
+    // Token válido, continuar con el router
+    router();
 }
 
-// Token válido, continuar con el router
-router();
+
 
 function router(){
     $req=$_SERVER['REQUEST_METHOD'];

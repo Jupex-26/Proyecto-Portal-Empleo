@@ -214,7 +214,6 @@ class Validator {
 
 /**
  * Implementa un diálogo de confirmación personalizado usando un modal de HTML.
- * NO usa prompt() ni confirm(). Devuelve una Promesa para manejar la asincronía.
  * * @param {string} mensaje - La pregunta que se mostrará al usuario.
  * @returns {Promise<boolean>} - Resuelve a true (Aceptar) o false (Cancelar).
  */
@@ -227,6 +226,7 @@ function confirmacion(mensaje) {
     // 1. Configurar y mostrar el modal
     mensajeElement.textContent = mensaje;
     modal.style.display = 'flex'; // Usar 'flex' para mostrar y centrarlo
+
 
     // 2. Devolver la Promesa
     return new Promise((resolve) => {

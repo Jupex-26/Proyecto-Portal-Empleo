@@ -8,24 +8,29 @@
     
         <div class="card-content card oferta-card">
                 <img src="./assets/img/<?=$oferta->getFoto()??''?>" alt="logo-empresa" srcset="">
-                <h2><?= $oferta->getNombre() ?></h2>
-                <p><?=$oferta->getDescripcion()?></p>
-                <ul>
-                <?php foreach($oferta->getCiclos() as $ciclo):?>
+                <div class="oferta-texto">
                     
-                        <li><?= $ciclo->getNombre()?></li>
-                    
-                <?php endforeach;?>
-                </ul>
-                
-                    <div class="ofertas-fechas flex-col">
-                        <p>Fecha Inicio</p>
-                        <p><?=$oferta->getFechaInicio()->format('d-m-Y')?></p>
-                    </div>
-                    <div class="ofertas-fechas flex-col">
-                        <p>Fecha Fin</p>
-                        <p><?=$oferta->getFechaFin()->format('d-m-Y')?></p>
-                    </div>
+                    <h2><?= $oferta->getNombre() ?></h2>
+                    <p><?=$oferta->getDescripcion()?></p>
+                    <ul>
+                    <?php foreach($oferta->getCiclos() as $ciclo):?>
+                        
+                            <li><?= $ciclo->getNombre()?></li>
+                        
+                    <?php endforeach;?>
+                    </ul>
+                    <div class="ofertas-fechas">
+                            <div class="flex-col">
+                                <p>Fecha Inicio</p>
+                                <p><?=$oferta->getFechaInicio()->format('d-m-Y')?></p>
+                            </div>
+                        
+                            <div class="flex-col">
+                                <p>Fecha Fin</p>
+                                <p><?=$oferta->getFechaFin()->format('d-m-Y')?></p>
+                            </div>
+                        </div>
+                </div>
                     <?php if($user->getCv()==''):?>
                         
                         <div class="oferta-btns">

@@ -490,7 +490,7 @@ function modalAlumno(tr) {
                     let eliminar=document.querySelector('.delete-alum');
                     eliminar.onclick=async (e)=>{
                         e.preventDefault();
-                        let confirmar= await confirmacion("¿Estás seguro de que deseas eliminar este alumno?");
+                        let confirmar= confirm("¿Estás seguro de que deseas eliminar este alumno?");
                         if (confirmar){
                             fetch("../api/apiAlumno.php",{
                                 method: 'DELETE',
@@ -539,9 +539,11 @@ function modalAlumno(tr) {
  */
 function pintarAlumno(plantilla, datos, elemento) {
     let contenedor = document.createElement("div");
+    console.log(datos);
     contenedor.innerHTML = plantilla;
     
     // Rellenar campos del formulario
+    contenedor.querySelector("#fotoAlumno").src = './assets/img/' + datos.foto;
     contenedor.querySelector("#id").value = datos.id;
     contenedor.querySelector("#nombre").value = datos.nombre;
     contenedor.querySelector("#ap1").value = datos.ap1;

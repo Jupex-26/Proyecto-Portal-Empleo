@@ -474,5 +474,24 @@ public function findById(int $id): ?Empresa {
 
         $empresa->setFoto($nuevoNombre);
     }
+
+    /**
+     * Cuenta el número de empresas activas e inactivas.
+     *
+     * @return array Un array con el estado ('Activas', 'Inactivas') y la cantidad.
+     */
+    public function contarPorActividad(): array {
+        $sql = "SELECT 
+                    CASE 
+                        WHEN activo = 1 THEN 'Activas' 
+                        ELSE 'Inactivas' 
+                    END as estado, 
+                    COUNT(*) as cantidad 
+                FROM empresa 
+                GROUP BY activo";
+                
+        $stmt = $this->conn->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
 ?>

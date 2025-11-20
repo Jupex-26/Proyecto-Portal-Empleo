@@ -63,14 +63,6 @@ a#link-size {
     padding-left: 2em;
 }
 
-
-
-
-
-
-
-
-
 /* ==========================
    FORMULARIOS
 ========================== */
@@ -271,7 +263,6 @@ td.seccion-header:hover{
     background-repeat: no-repeat;
     width: 15px;
     height: 13px;
-    text-indent: -9999px;
     overflow: hidden;
 }
 
@@ -318,3 +309,70 @@ td.seccion-header:hover{
     opacity: 0.7;
 }
 
+@media (max-width: 768px)  {
+    /* ==========================
+   PAGINAS - ADMIN
+========================== */
+    
+    .panel{
+        flex-direction: column;
+    }
+    .sidebar{
+        width: 100%;
+    }
+    
+    .sidebar nav{
+        display: grid;
+        grid-template-columns: repeat(2,2fr);
+        gap: 1em;
+        margin: 1em 0;
+    }
+    .sidebar nav a{
+        padding: 1em;
+        text-align: center;
+    }
+    .nav-item:hover,
+    .nav-item.active {
+        background-color: var(--fondo-header);
+        box-shadow: none;
+        padding-left: 1em;
+    }
+    .listado-empresa{
+        grid-template-columns: auto;
+        gap:1em;
+    }
+    form.alumno, .charge{
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+    }
+    .util-btns{
+        gap:2em;
+        width: auto;
+        margin: 0;
+    }
+
+    .choose{
+        width: 100%;
+    
+    }
+    .user-menu{
+        margin-right: 1em;
+    }
+    
+    /* ==========================
+       TABLAS RESPONSIVE
+    ========================== */
+    table.responsive {
+        overflow: auto;
+        -webkit-overflow-scrolling: touch; /* Para un scroll más suave en iOS */
+        display: block;
+        width: 100%;
+    
+    }
+    table.seleccionable{
+        height:60vh;
+    }
+
+
+}

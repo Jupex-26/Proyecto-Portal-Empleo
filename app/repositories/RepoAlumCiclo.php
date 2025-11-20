@@ -183,4 +183,29 @@ class RepoAlumCiclo implements RepoMethods {
             return false;
         }
     }
+
+    /**
+     * Cuenta el número de alumnos por cada ciclo formativo.
+     *
+     * @return array Un array de arrays asociativos con 'ciclo' (nombre) y 'cantidad'.
+     *               Ej: [['ciclo' => 'DAW', 'cantidad' => 15], ...]
+     */
+    public function contarAlumnosPorCiclo(): array {
+        $sql = "
+            SELECT 
+                c.nombre AS ciclo,
+                COUNT(acc.alumno_id) AS cantidad
+            FROM 
+                alum_cursado_ciclo acc
+            JOIN 
+                ciclo c ON acc.ciclo_id = c.id
+            GROUP BY 
+                c.id, c.nombre
+            ORDER BY
+                cantidad DESC
+        ";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
 }

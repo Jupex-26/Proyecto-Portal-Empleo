@@ -12,13 +12,29 @@
     </section>
     </div>
 <?= $this->section('empresas') ?>
+<section class="empresas">
+      <h2>Empresas Más Populares</h2>
+      <div class="logos">
+<?php foreach($empresas as $empresa): ?>
+
+
+      
+        <div class="empresa">
+          <img src="./assets/img/<?=$empresa->getFoto()?>" alt="Nter">
+          <h2><?=$empresa->getNombre()?></h2>
+          <p><?=$empresa->getDescripcion()?></p>
+        </div>
+      
+<?php endforeach;?>
+</div>
+    </section>
 <?= $this->section('home-card')?>
 <section class="contacto">
       <h2>Contáctanos</h2>
       <div class="contacto-card">
         <p>Si deseas ponerte en contacto con nosotros, estamos aquí para ayudarte. Haz clic en el botón de contacto y
           accede a nuestro formulario.</p>
-        <button class="btn">Contacto</button>
+        <button class="btn"><a href="?page=contacto">Contacto</a></button>
       </div>
     </section>
 </main>

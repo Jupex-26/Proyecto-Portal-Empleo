@@ -14,10 +14,12 @@ class HomeController {
         $this->user=Session::readSession('user'); 
     }
     public function index() {
+        $repo=new RepoEmpresa();
+        $empresas=$repo->findAllLimitWActive(0,5,true);
         if (Login::isLogin()&&$this->user->getRol()==1){
             echo $this->templates->render('Admin/AdminHome',['user'=>$this->user,'page'=>$_GET['page']]);
         }else{
-            echo $this->templates->render('home', ['user'=>$this->user]);
+            echo $this->templates->render('home', ['user'=>$this->user,'empresas'=>$empresas]);
         }  
     }
     /* Hacer top 5 de empresas y enseñarlas,

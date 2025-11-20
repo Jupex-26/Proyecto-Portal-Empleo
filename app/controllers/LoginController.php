@@ -66,7 +66,7 @@ class LoginController {
             if ($user){
                 Login::login($user);
                 header('location:?page=home');
-                exit;
+                
             }else{
                 $validator->insertarError('correo_login',"Esta cuenta no está activada");
                 echo $this->templates->render('login', ['validator' => $validator,'correo'=>$correo]);
@@ -98,7 +98,7 @@ class LoginController {
                 $empresa->setPassword(Security::passwdToHash($empresa->getPassword()));
                 $repo->save($empresa);
                 header('location:?page=login&accion=registrado');
-                exit;
+                
             }
             
         }

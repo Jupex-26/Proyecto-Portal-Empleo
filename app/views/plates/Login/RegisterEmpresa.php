@@ -1,6 +1,6 @@
 <?= $this->layout('layout'); 
 $this->start('main'); ?>
-    <header class="navbar">
+    <header class="sticky registro-header">
         <div class="logo">
             <img src="./assets/img/logo.png" alt="" class="registro-logo">
         </div>

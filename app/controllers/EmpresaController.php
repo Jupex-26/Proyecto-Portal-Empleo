@@ -64,11 +64,11 @@ class EmpresaController {
                     break;
                 default:
                     header('location:?page=empresas');
-                    exit;
+                    
             }
         } else {
             header('location:?page=home');
-            exit;
+            
         }
     }
 
@@ -201,7 +201,7 @@ class EmpresaController {
                     break;
                 case 'cancelar':
                     header("location:?page=empresas&accion=".$pageAccion);
-                    exit;
+                   
             }
         }
             echo $this->templates->render('Admin/AdminFormEmpresa', [
@@ -232,7 +232,7 @@ class EmpresaController {
                     if ($id) $repo->delete($id);
                 case 'cancelar':
                      header("location:?page=".$this->page."&accion=".$pageAccion);  
-                    exit;
+                    
                     break;
             }
         } else {
@@ -258,7 +258,7 @@ class EmpresaController {
     private function verEmpresa($repo, $pageAccion, $postData) {
         if (isset($postData['action']) && $postData['action'] === 'cancelar') {
             header("location:?page=".$this->page."&accion=".$pageAccion);
-            exit;
+            
         } else {
             $id = filter_var($postData['id'] ?? null, FILTER_VALIDATE_INT);
             $empresa = $repo->findById($id);
@@ -419,7 +419,7 @@ class EmpresaController {
             $correo->emailEmpresaActiva($empresa);
         }
         header('location: ?page='.$this->page.'&accion='.$pageAccion);
-        exit;
+        
     }
 }
 ?>

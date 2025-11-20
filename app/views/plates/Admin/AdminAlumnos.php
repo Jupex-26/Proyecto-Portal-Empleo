@@ -14,13 +14,6 @@
     <div class="card-content card">
         <div id="listaUsuario"></div>
     </div>
-    <div id="mi-modal-personalizado" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: center;">
-    <div style="background: white; padding: 25px; border-radius: 8px; max-width: 400px; text-align: center;">
-            <p id="modal-pregunta" style="font-weight: bold; margin-bottom: 20px;">[Aquí va el mensaje]</p>
-            <button id="btn-aceptar" class="btn">Aceptar</button>
-            <button id="btn-cancelar" class="btn" style="margin-left: 10px;">Cancelar</button>
-        </div>
-    </div>
     <div class="velo hidden"></div>
     <div class="modal hidden">
         <div class="botones choose hidden no-quitar">

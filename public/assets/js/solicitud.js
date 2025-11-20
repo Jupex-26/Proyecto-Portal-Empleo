@@ -237,21 +237,23 @@ function pintarSolicitudes(solicitudes) {
         
         card.innerHTML = `
             <img src="./assets/img/${oferta.foto || 'usuario.png'}" alt="logo-empresa" srcset="">
-            <h2>${oferta.nombre || oferta.titulo}</h2>
-            <p>${oferta.descripcion || ''}</p>
-            <ul>
-                ${ciclosHTML}
-            </ul>
-            
-            <div class="ofertas-fechas flex-col">
-                <p>Fecha Inicio</p>
-                <p>${fechaInicio}</p>
+            <div class="oferta-texto">
+                <h2>${oferta.nombre || oferta.titulo}</h2>
+                <p>${oferta.descripcion || ''}</p>
+                <ul>
+                    ${ciclosHTML}
+                </ul>
+                <div class="ofertas-fechas">
+                    <div class="flex-col">
+                        <p>Fecha Inicio</p>
+                        <p>${fechaInicio}</p>
+                    </div>
+                    <div class="flex-col">
+                        <p>Fecha Fin</p>
+                        <p>${fechaFin}</p>
+                    </div>
+                </div>
             </div>
-            <div class="ofertas-fechas flex-col">
-                <p>Fecha Fin</p>
-                <p>${fechaFin}</p>
-            </div>
-            
             <form class="oferta-btns">
                 <button type="button" class="btn eliminar" data-solicitud-id="${oferta.id}">Renunciar</button>
             </form>
@@ -299,19 +301,22 @@ function pintarOfertas(ofertas){
         
         card.innerHTML = `
             <img src="./assets/img/${oferta.foto}" alt="logo-empresa" srcset="">
-            <h2>${oferta.nombre || oferta.titulo}</h2>
-            <p>${oferta.descripcion || ''}</p>
-            <ul>
-                ${ciclosHTML}
-            </ul>
-            
-            <div class="ofertas-fechas flex-col">
-                <p>Fecha Inicio</p>
-                <p>${fechaInicio}</p>
-            </div>
-            <div class="ofertas-fechas flex-col">
-                <p>Fecha Fin</p>
-                <p>${fechaFin}</p>
+            <div class="oferta-texto">
+                <h2>${oferta.nombre || oferta.titulo}</h2>
+                <p>${oferta.descripcion || ''}</p>
+                <ul>
+                    ${ciclosHTML}
+                </ul>
+                <div class="ofertas-fechas">
+                    <div class="flex-col">
+                        <p>Fecha Inicio</p>
+                        <p>${fechaInicio}</p>
+                    </div>
+                    <div class="flex-col">
+                        <p>Fecha Fin</p>
+                        <p>${fechaFin}</p>
+                    </div>
+                </div>
             </div>
             
             <form class="oferta-btns">
